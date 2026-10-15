@@ -6,7 +6,7 @@ import { themeOf } from './themes.js';
 // each tank and one more below the last (the output zone, where results come out into flasks).
 // The scene is tall enough for 5 tanks; shorter funnels end higher up. Titles live in the page header.
 export const CW = 200;
-const ZW = 164, TOP = 14, ZH = 40, LH = 30, MAX_STAGES = 5;
+const ZW = 164, TOP = 12, ZH = 40, LH = 30, MAX_STAGES = 5;
 // The pixel layer is drawn at RES× the logical grid: scenery stays blocky, gauges get finer pixels.
 const RES = 2;
 const tankTop = j => TOP + ZH + j * (LH + ZH);
@@ -110,7 +110,8 @@ export class Scene {
         // No room around a zone: agents work in the open, on top of the tank below.
         const y = zoneTop(k);
         this.pipe(c, cx, y + 4, y + ZH);
-        if (k < 0) this.hopper(c, cx, y - 5, y + 5);
+        // On top: a small funnel at the very top of the column and a short pipe down to the gauge.
+        if (k < 0) { this.pipe(c, cx, y - 2, y + 4); this.hopper(c, cx, y - 11, y - 2); }
         gaugeRim(c, cx, y + 4 + GAUGE_R + 2);
       }
       f.stages.forEach((s, j) => {
