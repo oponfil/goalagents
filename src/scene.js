@@ -110,7 +110,7 @@ export class Scene {
         // No room around a zone: agents work in the open, on top of the tank below.
         const y = zoneTop(k);
         this.pipe(c, cx, y + 4, y + ZH);
-        if (k < 0) this.hopper(c, cx, y - 10, y + 5);
+        if (k < 0) this.hopper(c, cx, y - 5, y + 5);
         gaugeRim(c, cx, y + 4 + GAUGE_R + 2);
       }
       f.stages.forEach((s, j) => {
@@ -137,13 +137,13 @@ export class Scene {
   // A small funnel on top of the first pipe, where new items pour in.
   hopper(c, cx, y0, y1) {
     for (let y = y0; y < y1; y++) {
-      const t = (y - y0) / (y1 - y0 - 1), half = Math.round(15 - t * 10.5);
+      const t = (y - y0) / (y1 - y0 - 1), half = Math.round(9 - t * 4.5);
       c.fillStyle = '#5E626B'; c.fillRect(cx - half, y, half * 2 + 1, 1);
       c.fillStyle = '#8E939D'; c.fillRect(cx - half + 1, y, half * 2 - 1, 1);
       c.fillStyle = '#B9BEC7'; c.fillRect(cx - half + 1, y, 2, 1);
     }
-    c.fillStyle = '#B9BEC7'; c.fillRect(cx - 16, y0 - 1, 33, 1);
-    c.fillStyle = '#5E626B'; c.fillRect(cx - 16, y0, 33, 1);
+    c.fillStyle = '#B9BEC7'; c.fillRect(cx - 10, y0 - 1, 21, 1);
+    c.fillStyle = '#5E626B'; c.fillRect(cx - 10, y0, 21, 1);
   }
 
   pipe(c, cx, y0, y1) {

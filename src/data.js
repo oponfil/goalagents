@@ -48,10 +48,11 @@ export const FUNNELS = [
     stages: [
       { count: 240, forms: ['job found', 'jobs found'] },
       { count: 96, forms: ['applied', 'applied'] },
+      { count: 30, forms: ['screening call', 'screening calls'] },
       { count: 14, forms: ['interview', 'interviews'] },
       { count: 4, forms: ['final round', 'final rounds'] },
     ],
-    flows: [8, 4, 0.8, 0.2, 1 / 21],
+    flows: [8, 4, 1.6, 0.8, 0.2, 1 / 21],
     cubes: 1,
     goal: { total: 5, every: 21 },
     workers: [
@@ -65,7 +66,8 @@ export const FUNNELS = [
       { agent: 'grok', zone: 1, state: 'sleep', wakeIn: 12 },
       { agent: 'deepseek', zone: 1, state: 'work' },
       { agent: 'mistral', zone: 2, state: 'work' },
-      { agent: 'claude', zone: 3, state: 'work' },
+      { agent: 'qwen', zone: 3, state: 'work' },
+      { agent: 'claude', zone: 4, state: 'work' },
     ],
   },
   {
@@ -77,8 +79,9 @@ export const FUNNELS = [
       { count: 64, forms: ['conversation', 'conversations'] },
       { count: 9, forms: ['first date', 'first dates'] },
       { count: 3, forms: ['second date', 'second dates'] },
+      { count: 1, forms: ['met the friends', 'met the friends'] },
     ],
-    flows: [8, 3, 0.5, 0.2, 1 / 60],
+    flows: [8, 3, 0.5, 0.2, 0.08, 1 / 60],
     cubes: 0,
     goal: { total: 1, every: 30 },
     workers: [
@@ -91,7 +94,8 @@ export const FUNNELS = [
       },
       { agent: 'chatgpt', zone: 2, state: 'sleep', wakeIn: 9 * 3600 },
       { agent: 'gemini', zone: 2, state: 'work' },
-      { agent: 'mistral', zone: 3, state: 'work' },
+      { agent: 'deepseek', zone: 3, state: 'work' },
+      { agent: 'mistral', zone: 4, state: 'work' },
     ],
   },
   {
@@ -126,8 +130,10 @@ export const FUNNELS = [
       { count: 52000, forms: ['view', 'views'] },
       { count: 3100, forms: ['profile visit', 'profile visits'] },
       { count: 1240, forms: ['follower', 'followers'] },
+      { count: 400, forms: ['subscriber', 'subscribers'] },
+      { count: 90, forms: ['trial member', 'trial members'] },
     ],
-    flows: [300, 20, 8, 0.5],
+    flows: [300, 20, 8, 3, 1.2, 0.5],
     cubes: 8,
     goal: { total: 30, every: 2 },
     workers: [
@@ -138,6 +144,8 @@ export const FUNNELS = [
       { agent: 'kimi', zone: 1, state: 'sleep', wakeIn: 10 },
       { agent: 'hermes', zone: 2, state: 'work' },
       { agent: 'claude', zone: 2, state: 'sleep', wakeIn: 18 },
+      { agent: 'perplexity', zone: 3, state: 'work' },
+      { agent: 'deepseek', zone: 4, state: 'work' },
     ],
   },
   {
@@ -148,8 +156,10 @@ export const FUNNELS = [
       { count: 30, forms: ['target', 'targets'] },
       { count: 11, forms: ['finding', 'findings'] },
       { count: 6, forms: ['report', 'reports'] },
+      { count: 4, forms: ['triaged', 'triaged'] },
+      { count: 3, forms: ['accepted', 'accepted'] },
     ],
-    flows: [2, 0.6, 0.3, 1 / 10],
+    flows: [2, 0.6, 0.3, 0.2, 0.15, 1 / 10],
     cubes: 2,
     goal: { total: 12, every: 7 },
     workers: [
@@ -162,6 +172,8 @@ export const FUNNELS = [
       },
       { agent: 'qwen', zone: 1, state: 'work' },
       { agent: 'grok', zone: 2, state: 'work' },
+      { agent: 'gemini', zone: 3, state: 'sleep', wakeIn: 14 },
+      { agent: 'kimi', zone: 4, state: 'work' },
     ],
   },
   {
@@ -172,9 +184,10 @@ export const FUNNELS = [
       { count: 120, forms: ['investor', 'investors'] },
       { count: 35, forms: ['intro', 'intros'] },
       { count: 12, forms: ['meeting', 'meetings'] },
+      { count: 5, forms: ['partner meeting', 'partner meetings'] },
       { count: 2, forms: ['in due diligence', 'in due diligence'] },
     ],
-    flows: [5, 1.5, 0.4, 0.1, 1 / 14],
+    flows: [5, 1.5, 0.4, 0.2, 0.1, 1 / 14],
     cubes: 0,
     goal: { total: 10, every: 14 },
     workers: [
@@ -188,6 +201,7 @@ export const FUNNELS = [
       { agent: 'grok', zone: 2, state: 'sleep', wakeIn: 2 * 3600 },
       { agent: 'mistral', zone: 2, state: 'work' },
       { agent: 'deepseek', zone: 3, state: 'work' },
+      { agent: 'qwen', zone: 4, state: 'work' },
     ],
   },
 ];
