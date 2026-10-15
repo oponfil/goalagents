@@ -30,7 +30,9 @@ export function mountDashboard(funnels, opts = {}) {
   // the screen (a little vertical scroll is fine for the tallest funnel). Resizing the window
   // only changes how many funnels are visible; the rest are reached with horizontal scroll.
   const byH = (scroller.clientHeight - 20) / scene.H;
-  const scale = Math.max(1, Math.min(scroller.clientWidth / (4.2 * CW), byH * 1.35));
+  // On a phone the pixel scene would be too small at 1:1, so it starts 30% larger there.
+  const minScale = scroller.clientWidth < 600 ? 1.3 : 1;
+  const scale = Math.max(minScale, Math.min(scroller.clientWidth / (4.2 * CW), byH * 1.35));
   function layout() {
     if (scene.dpr !== (window.devicePixelRatio || 1)) scene.resize(scale, window.devicePixelRatio || 1);
     scroller.classList.toggle('fits', scene.funnels.length * CW * scale <= scroller.clientWidth);
