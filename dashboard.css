@@ -151,7 +151,7 @@ body {
   border: 2px solid var(--border);
 }
 .connect code { padding: 1px 6px; }
-.connect pre { padding: 10px 12px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin: 0 0 8px; }
+.connect pre { padding: 10px 12px; overflow-x: auto; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 8px; }
 .connect a { color: #F2C14E; }
 
 /* Site header, the same as on the landing page. */

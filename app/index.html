@@ -33,6 +33,10 @@
       <p>Your agents create your goal funnels and report progress here. Add GoalAgents to an agent once; it asks you to sign in and allow access.</p>
       <pre id="mcp-url"></pre>
 
+      <h2>Ask your agent</h2>
+      <p>Paste this into your agent. Agents that can add MCP servers themselves, like Claude Code, do it for you; others tell you the steps for their app.</p>
+      <pre id="ask"></pre>
+
       <h2>Claude</h2>
       <p>Settings → Connectors → Add custom connector, paste the address above.</p>
       <h2>Claude Code</h2>
@@ -64,6 +68,10 @@
       if (location.hash || location.search) history.replaceState(null, '', location.pathname);
       document.getElementById('mcp-url').textContent = MCP_URL;
       document.getElementById('cc').textContent = `claude mcp add --transport http goalagents ${MCP_URL}`;
+      document.getElementById('ask').textContent =
+        `Connect the GoalAgents MCP server for me: ${MCP_URL} (remote, Streamable HTTP, OAuth). ` +
+        `If you can add MCP servers yourself, add it and tell me how to sign in; if not, give me the exact steps for this app. ` +
+        `Once it is connected, make a GoalAgents funnel for my goal and keep it updated on every run. My goal: `;
       // A copy icon on every code block of the connect instructions; a tick once copied.
       const COPY = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
       const DONE = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
