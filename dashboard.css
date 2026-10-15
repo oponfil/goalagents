@@ -173,3 +173,5 @@ body {
 .sitebar .links a.signin:hover { background: #FFD866; border-color: #FFD866; }
 @media (max-width: 560px) { .sitebar .links { gap: 14px; } .sitebar .links .wide { display: none; } .sitebar .links a.signin { padding: 4px 12px; } }
 .sitebar .links a.gh { display: flex; }
+.sitebar .logo { display: inline-flex; align-items: center; }
+.sitebar .logo .mark { image-rendering: pixelated; margin-right: 8px; }
