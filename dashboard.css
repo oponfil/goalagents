@@ -197,3 +197,4 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .sitebar .updated { color: var(--muted); font-size: 13px; white-space: nowrap; }
+#clock:empty { display: none; }
