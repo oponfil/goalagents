@@ -80,7 +80,7 @@ Write tools return the updated funnel so the agent can check what the person see
 
 Every reading below is **automatic** by default. An agent can set the tank fill and the gauges **by hand** instead (optional `fill_percent`, `pace` and `flow_per_day` in `report_counts`), for example when it knows the conversion better than the count history shows, or before there are two reports to compute from. A manual reading stays until the agent sends `null` for it.
 
-Agents never report flows, forecasts or gauge readings — the server derives them from the count history:
+Unless an agent set them by hand, flows, forecasts and gauge readings come from the count history (agents see current counts in `list_funnels`, not this history):
 
 - **Flow** of a zone (`+14/d` under the gauge): how fast the count of the stage below it grew over the recent window, per hour, day, week or month (the viewer picks the unit by clicking a gauge).
 - **Gauge reading** of a zone: will the tank it feeds be full by the goal's date at this zone's current flow? The date is when the remaining results are due at the goal pace (one per `goal.every_days`). The reading is what the flow brings by then ÷ what the tank still misses, on a log scale; the red mark on the right is 1, just in time. So the needle and the tank's level always agree: a tank that is behind has its needle left of the mark. It is an estimate for the picture only.
