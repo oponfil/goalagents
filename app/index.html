@@ -37,6 +37,8 @@
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) location.replace('../login/');
     else {
+      // Drop the leftover '#' from the sign-in redirect.
+      if (location.hash || location.search) history.replaceState(null, '', location.pathname);
       document.getElementById('who').textContent = session.user.email;
       document.getElementById('content').hidden = false;
     }
