@@ -161,15 +161,15 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 8px 20px;
-  border-bottom: 2px solid var(--border);
+  /* The same width and height as the header on the landing page, whatever the scene below. */
+  padding: 18px max(20px, calc((100% - 1000px) / 2));
 }
-.sitebar .logo { font-weight: 700; font-size: 20px; text-decoration: none; color: var(--text); }
+.sitebar .logo { font-weight: 700; font-size: 22px; text-decoration: none; color: var(--text); }
 .sitebar .logo span { color: #F2C14E; }
 .sitebar .links { display: flex; align-items: center; gap: 20px; font-size: 15px; }
 .sitebar .links a { color: var(--muted); text-decoration: none; white-space: nowrap; }
 .sitebar .links a:hover, .sitebar .links a.here { color: var(--text); }
-.sitebar .links a.signin { white-space: nowrap; background: #F2C14E; color: #1B1714; font-weight: 600; padding: 6px 16px; border: 2px solid #F2C14E; }
+.sitebar .links a.signin { white-space: nowrap; background: #F2C14E; color: #1B1714; font-weight: 600; padding: 8px 18px; border: 2px solid #F2C14E; }
 .sitebar .links a.signin:hover { background: #FFD866; border-color: #FFD866; }
 @media (max-width: 560px) { .sitebar .links { gap: 14px; } .sitebar .links .wide { display: none; } .sitebar .links a.signin { padding: 4px 12px; } }
 .sitebar .links a.gh { display: flex; }
