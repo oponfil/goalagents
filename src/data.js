@@ -38,9 +38,9 @@ export const FUNNELS = [
       { count: 14, forms: ['interview', 'interviews'] },
       { count: 4, forms: ['final round', 'final rounds'] },
     ],
-    flows: [12, 6, 1.2, 0.3, 1 / 10],
+    flows: [8, 4, 0.8, 0.2, 1 / 21],
     cubes: 1,
-    goal: { total: 10, every: 14 },
+    goal: { total: 5, every: 21 },
     workers: [
       { agent: 'chatgpt', zone: -1, state: 'work' },
       { agent: 'perplexity', zone: -1, state: 'work' },

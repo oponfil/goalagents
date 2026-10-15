@@ -16,7 +16,7 @@ export const H = flasksY(MAX_STAGES) + 50;
 const tankW = (j, n) => Math.round((156 - (n > 1 ? j * 60 / (n - 1) : 0)) / 2) * 2;
 const GAUGE_R = 9;
 export const DAY_SECONDS = 2;
-const PER_ROW = 9;  // result items per row under a funnel
+const PER_ROW = 10;  // result items per row under a funnel, the same for every theme
 const FONT = '"Rubik", system-ui, sans-serif';
 
 const PERIODS = ['d', 'w', 'h'];
