@@ -14,8 +14,14 @@ export const AGENTS = {
   hermes: { name: 'Hermes', color: '#8A6E3A', chat: 'https://nousresearch.com' },
 };
 
-// Any other agent name gets a plain grey shirt without a logo.
-export const agentInfo = id => AGENTS[id] || { name: id, color: '#8A8F98', chat: '' };
+// Several agents of one kind tell themselves apart with a suffix: "claude-search" is a Claude,
+// shown as "Claude · search". Any other name gets a plain grey shirt without a logo.
+export function agentInfo(id) {
+  if (AGENTS[id]) return AGENTS[id];
+  const [kind, ...rest] = id.split(/[-_]/), base = AGENTS[kind];
+  if (base && rest.length) return { ...base, name: `${base.name} · ${rest.join(' ')}` };
+  return { name: id, color: '#8A8F98', chat: '' };
+}
 
 // Where "Open" and "Reply" go: the agent's desktop app when it has a link scheme (Claude),
 // otherwise its chat in the browser.

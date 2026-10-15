@@ -14,7 +14,7 @@ const THEMES = ['mine', 'lab', 'forge', 'love', 'code', 'money'] as const
 const forms = z.array(z.string().min(1).max(40)).min(2).max(3)
 const funnelId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/).describe('Funnel id, e.g. "job-search"')
 const agent = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,31}$/)
-  .describe('Who you are: claude, chatgpt, grok, gemini, deepseek, kimi, qwen, mistral, perplexity, hermes, or another lowercase name')
+  .describe('Who you are: claude, chatgpt, grok, gemini, deepseek, kimi, qwen, mistral, perplexity, hermes, or another lowercase name. Several agents of one kind in a funnel add a suffix: claude-search, claude-apply (shown as Claude with its logo)')
 
 const INSTRUCTIONS = `GoalAgents shows the person their goals as funnels and the agents working them.
 A funnel is one goal (e.g. "Job Search") with 2-5 stages top to bottom (jobs found → applied → interview → final round) and a result at the bottom (offer).

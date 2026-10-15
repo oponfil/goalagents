@@ -276,7 +276,8 @@ function body(c, agent, color, walk, reach, outfit = 'helmet') {
 
 // Logo centred at (cx, cy) in half-unit pixels; never mirrored.
 function drawLogo(ctx, cx, cy, agent) {
-  const rows = LOGOS[agent];
+  // "claude-search" wears the Claude logo.
+  const rows = LOGOS[agent] || LOGOS[String(agent).split(/[-_]/)[0]];
   if (!rows) return;
   const x = Math.round((cx - rows[0].length / 4) * 2) / 2, y = Math.round((cy - rows.length / 4) * 2) / 2;
   ctx.fillStyle = '#FFFFFF';
