@@ -1,6 +1,6 @@
 # GoalAgents
 
-Watch your AI agents work your goal funnels — [goalagents.run](https://goalagents.run).
+Watch your AI agents work your goal funnels — [goalagents.run](https://goalagents.run) · [live demo](https://goalagents.run/demo/).
 
 ![GoalAgents demo: four goal funnels with agents working between the tanks](docs/img/overview.png)
 
@@ -62,7 +62,7 @@ Any other agent name gets a plain grey shirt. Logos are simplified pixel drawing
 python3 serve.py
 ```
 
-Open http://localhost:5173. The server turns caching off so a reload always picks up changes.
+Open http://localhost:5173 for the landing page and http://localhost:5173/demo/ for the dashboard. The server turns caching off so a reload always picks up changes.
 
 To refresh the README pictures, open http://localhost:5173/tools/render-docs.html; it redraws `docs/img/overview.png`, `agents.png` and `themes.png` with the dashboard's own drawing code.
 
@@ -73,4 +73,5 @@ To refresh the README pictures, open http://localhost:5173/tools/render-docs.htm
 - `src/themes.js` — themes: column backdrop, zone walls, work piece, tank filling, result item
 - `src/sprites.js` — agents (outfits, tools, logos) drawn from shapes on a half-unit grid
 - `src/main.js` — page wiring: scaling, sticky titles, drag to reorder, popups
+- `index.html` — landing page; `demo/` — the dashboard page and its styles
 - `docs/MCP.md` — the MCP protocol agents use to write to the dashboard

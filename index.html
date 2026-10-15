@@ -4,20 +4,85 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoalAgents</title>
+  <meta name="description" content="Watch your AI agents work your goal funnels.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --bg: #1B1714;
+      --panel: #241F1B;
+      --text: #F4EDE1;
+      --muted: #B8AE9F;
+      --border: #4A3F35;
+      --accent: #F2C14E;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 "Rubik", system-ui, sans-serif; }
+    a { color: inherit; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+    .logo { font-weight: 700; font-size: 22px; text-decoration: none; }
+    .logo span { color: var(--accent); }
+    .links { display: flex; gap: 20px; font-size: 15px; }
+    .links a { color: var(--muted); text-decoration: none; }
+    .links a:hover { color: var(--text); }
+    .hero { padding: 48px 0 32px; text-align: center; }
+    h1 { font-size: clamp(32px, 6vw, 52px); line-height: 1.12; margin: 0 auto 18px; max-width: 760px; font-weight: 700; }
+    .lead { color: var(--muted); font-size: 19px; max-width: 640px; margin: 0 auto 28px; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 12px 22px; border: 2px solid var(--border); text-decoration: none; font-weight: 600; }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #1B1714; }
+    .btn:hover { border-color: var(--muted); }
+    .btn.primary:hover { background: #FFD866; border-color: #FFD866; }
+    .shot { display: block; margin: 40px auto 0; width: 100%; border: 2px solid var(--border); image-rendering: pixelated; }
+    .points { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; padding: 40px 0; }
+    .point { background: var(--panel); border: 2px solid var(--border); padding: 18px 20px; }
+    .point h3 { margin: 0 0 6px; font-size: 18px; }
+    .point p { margin: 0; color: var(--muted); font-size: 15px; }
+    footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(--muted); font-size: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  </style>
 </head>
 <body>
-  <header id="titles">
-    <div id="titles-track"></div>
-    <div id="clock" title="Demo time runs fast: one day every two seconds"></div>
-  </header>
-  <main id="scroller">
-    <canvas id="scene"></canvas>
-  </main>
-  <div id="pop" hidden></div>
-  <script type="module" src="src/main.js"></script>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="./">Goal<span>Agents</span></a>
+      <div class="links">
+        <a href="demo/">Demo</a>
+        <a href="https://github.com/oponfil/goalagents/blob/main/docs/MCP.md">Docs</a>
+        <a href="https://github.com/oponfil/goalagents">GitHub</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <h1>Watch your AI agents work your goal funnels</h1>
+      <p class="lead">Every goal is a funnel: a job, a partner, a paper, an audience. Your agents move it stage by stage. See the flow, the next result, and who is waiting for you.</p>
+      <div class="cta">
+        <a class="btn primary" href="demo/">Open the live demo</a>
+        <a class="btn" href="https://github.com/oponfil/goalagents/blob/main/docs/MCP.md">Connect your agents</a>
+      </div>
+      <a href="demo/"><img class="shot" src="docs/img/overview.png" alt="GoalAgents dashboard: goal funnels with pixel agents working between the stages"></a>
+    </section>
+
+    <section class="points">
+      <div class="point">
+        <h3>Goals as funnels</h3>
+        <p>Not tasks — stages. How much is at each step, how fast it flows, when the next result is due.</p>
+      </div>
+      <div class="point">
+        <h3>Your agents, at work</h3>
+        <p>Claude, ChatGPT, Gemini and others report through MCP. You watch them mine, brew, forge and code.</p>
+      </div>
+      <div class="point">
+        <h3>Answer from anywhere</h3>
+        <p>When an agent needs you, it raises a hand. Reply from your phone and it gets back to work.</p>
+      </div>
+    </section>
+
+    <footer>
+      <span>Built at U-Hackathon 2026, Bangkok</span>
+      <a href="https://github.com/oponfil/goalagents">github.com/oponfil/goalagents</a>
+    </footer>
+  </div>
 </body>
 </html>

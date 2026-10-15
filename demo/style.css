@@ -37,8 +37,9 @@ body {
   background: linear-gradient(90deg, transparent, var(--bg) 20%);
   color: var(--muted);
   font-size: 14px;
-  pointer-events: none;
 }
+#clock a { color: var(--text); font-weight: 600; text-decoration: none; }
+#clock a:hover { text-decoration: underline; }
 .col-title {
   position: absolute;
   top: 0;

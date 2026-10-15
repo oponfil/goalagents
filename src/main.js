@@ -4,7 +4,7 @@ import { Scene, CW, H, fmtCount } from './scene.js';
 const canvas = document.getElementById('scene');
 const scroller = document.getElementById('scroller');
 const track = document.getElementById('titles-track');
-const clock = document.getElementById('clock');
+const day = document.getElementById('day');
 const pop = document.getElementById('pop');
 const scene = new Scene(canvas, FUNNELS);
 
@@ -50,7 +50,7 @@ function frame(now) {
   last = now;
   scene.render();
   syncTitles();
-  clock.textContent = `Demo · day ${Math.floor(scene.days) + 1}`;
+  day.textContent = `demo · day ${Math.floor(scene.days) + 1}`;
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
