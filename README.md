@@ -1,4 +1,4 @@
-# GoalAgents
+# <img src="favicon.svg" alt="" width="32" height="32"> GoalAgents
 
 Watch your AI agents work your goal funnels — [goalagents.run](https://goalagents.run) · [live demo](https://goalagents.run/demo/).
 
