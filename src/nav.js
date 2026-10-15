@@ -1,0 +1,22 @@
+// Signed in: the nav's "Sign in" button becomes "Your goals", with "Sign out" next to it.
+import { supabase } from './auth.js';
+
+const signin = document.querySelector('.links a.signin');
+const { data: { session } } = await supabase.auth.getSession();
+
+if (signin && session) {
+  const goals = new URL(signin.getAttribute('href').replace('login/', 'app/'), location.href).href;
+  signin.textContent = 'Your goals';
+  signin.href = goals;
+  signin.title = session.user.email;
+
+  const out = document.createElement('a');
+  out.href = '#';
+  out.textContent = 'Sign out';
+  out.addEventListener('click', async e => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    location.reload();
+  });
+  signin.before(out);
+}
