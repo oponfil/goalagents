@@ -55,3 +55,4 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 .doc h2 { font-size: 20px; margin: 28px 0 8px; }
 .doc p, .doc li { color: var(--muted); line-height: 1.6; }
 .doc a { color: var(--accent); }
+.gbtn { min-height: 44px; display: flex; justify-content: center; }

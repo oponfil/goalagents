@@ -2,3 +2,5 @@
 // rows is limited by row-level security, never by keeping this key secret.
 export const SUPABASE_URL = 'https://wbnmtecgahwzwvcqenlk.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_VaGOkfWYKFalAUfhQsN9xw_w2phwPCr';
+// Public OAuth client ID: Google's sign-in button runs on our own pages.
+export const GOOGLE_CLIENT_ID = '994359194611-0l6atv7bfgmdlfsd15p09gjju6h58khf.apps.googleusercontent.com';
