@@ -182,3 +182,5 @@ body {
   background: var(--panel); border: 2px solid var(--border); color: var(--muted); cursor: pointer;
 }
 .copybox .copy:hover { border-color: var(--muted); color: var(--text); }
+/* A plain scrolling page inside the dashboard layout (connect). */
+.page { flex: 1; overflow: auto; }

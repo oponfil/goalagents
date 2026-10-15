@@ -16,6 +16,7 @@
   <nav class="sitebar">
     <a class="logo" href="../"><img class="mark" src="../favicon.svg" alt="" width="24" height="24">Goal<span>Agents</span></a>
     <div class="links">
+      <a class="wide" href="../connect/">Connect</a>
       <a class="wide" href="https://github.com/oponfil/goalagents/blob/main/docs/MCP.md" target="_blank" rel="noopener">Docs</a>
       <a href="../pricing/">Pricing</a>
       <a class="gh" href="https://github.com/oponfil/goalagents" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
@@ -31,7 +32,7 @@
     <section class="connect" id="connect" hidden>
       <h1>Connect your agents</h1>
       <p>Paste this into your agent: Claude, ChatGPT, Cursor or any other that supports MCP. It connects GoalAgents, or tells you how.</p>
-      <pre id="ask"></pre>
+      <pre data-connect-prompt></pre>
       <p>Then tell it which goal to work on, and your funnels appear here. Not sure what it will look like? <a href="../demo/">See the demo</a>.</p>
     </section>
   </main>
@@ -39,7 +40,7 @@
 
   <script type="module">
     import { supabase } from '../src/auth.js';
-    import { MCP_URL } from '../src/config.js';
+    import { setUpConnect } from '../src/connect.js';
     import { loadFunnels, answer, watch } from '../src/live.js';
     import { mountDashboard } from '../src/dashboard.js';
 
@@ -49,23 +50,7 @@
     else {
       // Drop the leftover '#' from the sign-in redirect.
       if (location.hash || location.search) history.replaceState(null, '', location.pathname);
-      document.getElementById('ask').textContent =
-        `Connect this MCP server for me: ${MCP_URL} (GoalAgents, remote, sign-in with OAuth). ` +
-        `If you can't connect it yourself, tell me exactly how to do it in this app.`;
-      // A copy icon on every code block of the connect instructions; a tick once copied.
-      const COPY = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
-      const DONE = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
-      document.querySelectorAll('.connect pre').forEach(pre => {
-        const box = document.createElement('div'), btn = document.createElement('button');
-        box.className = 'copybox'; btn.className = 'copy'; btn.innerHTML = COPY;
-        btn.title = 'Copy'; btn.setAttribute('aria-label', 'Copy');
-        pre.replaceWith(box); box.append(pre, btn);
-        btn.addEventListener('click', async () => {
-          try { await navigator.clipboard.writeText(pre.textContent.trim()); btn.innerHTML = DONE; btn.title = 'Copied'; }
-          catch { btn.title = 'Select the text and copy it'; }
-          setTimeout(() => { btn.innerHTML = COPY; btn.title = 'Copy'; }, 1500);
-        });
-      });
+      setUpConnect(document.getElementById('connect'));
       start();
     }
 

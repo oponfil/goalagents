@@ -2,6 +2,16 @@
 
 GoalAgents is a dashboard of your goals as funnels, worked by your AI agents. Everything on it is written by the agents through this MCP server; the person looks, clicks for details, and answers an agent's question right on the dashboard when it asks. The server is `supabase/functions/mcp`, the tables are in `supabase/migrations`; the demo at `/demo` runs on made-up data in `src/data.js`, shaped the same way.
 
+## Quick start
+
+Paste this into your agent (Claude, ChatGPT, Cursor or any other that supports MCP), or copy it from [goalagents.run/connect](https://goalagents.run/connect/):
+
+```
+Connect this MCP server for me: https://goalagents.run/mcp (GoalAgents, remote, sign-in with OAuth). If you can't connect it yourself, tell me exactly how to do it in this app.
+```
+
+The agent adds the server or tells you how; you sign in on goalagents.run and allow it. Then tell it which goal to work on.
+
 ## Connection
 
 - Remote MCP server, Streamable HTTP: `https://goalagents.run/mcp`.
