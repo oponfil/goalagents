@@ -10,9 +10,18 @@
   <link rel="stylesheet" href="../dashboard.css">
 </head>
 <body>
+  <nav class="sitebar">
+    <a class="logo" href="../">Goal<span>Agents</span></a>
+    <div class="links">
+      <a href="../demo/">Demo</a>
+      <a class="wide" href="https://github.com/oponfil/goalagents/blob/main/docs/MCP.md">Docs</a>
+      <a class="wide" href="https://github.com/oponfil/goalagents">GitHub</a>
+      <a class="signin" href="../login/">Sign in</a>
+    </div>
+  </nav>
   <header id="titles">
     <div id="titles-track"></div>
-    <div id="clock"><a href="../">GoalAgents</a><span class="who" id="day"></span><button id="signout">Sign out</button></div>
+    <div id="clock"><span id="day"></span></div>
   </header>
   <main id="scroller">
     <canvas id="scene" hidden></canvas>
@@ -50,25 +59,22 @@
     else {
       // Drop the leftover '#' from the sign-in redirect.
       if (location.hash || location.search) history.replaceState(null, '', location.pathname);
-      document.getElementById('signout').addEventListener('click', async () => {
-        await supabase.auth.signOut();
-        location.replace('../');
-      });
       document.getElementById('mcp-url').textContent = MCP_URL;
       document.getElementById('cc').textContent = `claude mcp add --transport http goalagents ${MCP_URL}`;
-      start(session.user.email);
+      start();
     }
 
     // The person's funnels, redrawn whenever an agent writes.
-    async function start(email) {
+    async function start() {
       const canvas = document.getElementById('scene'), connect = document.getElementById('connect');
       let board = null, pending = false;
       const show = funnels => {
         const empty = !funnels.length;
         connect.hidden = !empty;
         canvas.hidden = empty;
+        document.getElementById('titles').hidden = empty;
         if (empty) return;
-        if (!board) board = mountDashboard(funnels, { live: true, clock: () => email, onAnswer: answer, orderKey: 'goalagents-order-live' });
+        if (!board) board = mountDashboard(funnels, { live: true, onAnswer: answer, orderKey: 'goalagents-order-live' });
         else if (!board.setFunnels(funnels)) pending = true; // the person is typing an answer
       };
       const refresh = async () => {
@@ -81,5 +87,6 @@
       document.addEventListener('focusout', () => { if (pending) refresh(); });
     }
   </script>
+  <script type="module" src="../src/nav.js"></script>
 </body>
 </html>
