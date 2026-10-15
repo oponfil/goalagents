@@ -1,4 +1,4 @@
-// Signed in: the nav's "Sign in" button becomes "Your goals", with "Sign out" next to it.
+// Signed in: the nav's "Sign in" button becomes "Goals", with "Sign out" next to it.
 import { supabase, siteUrl } from './auth.js';
 
 const signin = document.querySelector('.links a.signin');
@@ -6,7 +6,7 @@ const { data: { session } } = await supabase.auth.getSession();
 
 if (signin && session) {
   const goals = new URL(signin.getAttribute('href').replace('login/', 'app/'), location.href).href;
-  signin.textContent = 'Your goals';
+  signin.textContent = 'Goals';
   signin.href = goals;
   signin.title = session.user.email;
 

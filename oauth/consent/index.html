@@ -33,7 +33,7 @@
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
     const show = html => { card.innerHTML = html; };
     const problem = text => show(`<h1>Can't connect</h1><p class="sub">${esc(text)}</p>
-      <a class="btn" href="${siteUrl('app/')}">Go to your goals</a>`);
+      <a class="btn" href="${siteUrl('app/')}">Go to Goals</a>`);
 
     const id = new URLSearchParams(location.search).get('authorization_id');
     if (!id) problem('This link has no authorization request. Start connecting from your agent again.');
