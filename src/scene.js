@@ -424,30 +424,18 @@ export class Scene {
   }
 }
 
-// Rough projection for the gauges, from the funnel's own numbers (visual only, not a forecast model).
-// Pass-through rate of each stage is next count / this count; the last stage's rate is results
-// over its count, smoothed so an empty start does not read as zero. A zone's reading is how many
-// results per day its current flow would yield, against the goal rate of one per goal.every days;
-// the output zone's flow is already results per day.
-// A reading is null (empty gauge) when it can't be estimated: no goal, flow not reported yet,
-// or a stage further down is empty so its pass-through rate is unknown.
+// Rough projection for the gauges and tanks, from the funnel's own numbers (visual only, not a
+// forecast model).
+// Tank fill: items at a stage so far ÷ items needed there for the whole goal (goal.total results).
+// "Needed" uses the conversion along the flows (out of a stage ÷ into it).
+// Gauge of a zone: will the tank it feeds be full by the goal's date at this zone's flow? The date
+// is when the remaining results are due at the goal pace (one per goal.every days). The reading is
+// what the flow brings by then ÷ what the tank still misses: 1 is on the red mark, so the needle and
+// the tank's level tell the same story. The output zone's "tank" is the results row.
+// A reading is null (empty gauge) when it can't be estimated: no goal, or a flow not reported yet.
 function project(f) {
-  const st = f.stages, n = st.length, every = f.goal?.every;
-  const pass = st.map((s, j) => (j < n - 1
-    ? (s.count > 0 ? Math.min(1, st[j + 1].count / s.count) : null)
-    : (f.cubes + 0.5) / (s.count + 1)));
-  const yieldFrom = i => (pass.slice(i).includes(null) ? null : pass.slice(i).reduce((p, c) => p * c, 1));
-  const reading = (fl, i) => {
-    const y = yieldFrom(i);
-    return every > 0 && fl != null && y != null ? fl * y * every : null;
-  };
-  const zones = f.flows.map(reading);
-  const outFlow = f.flows[n];
-  // Tank fill: items at this stage so far ÷ items needed here for the whole goal (goal.total
-  // results). "Needed" uses the conversion along the flows (out of a stage ÷ into it).
-  const fl = f.flows;
+  const st = f.stages, n = st.length, every = f.goal?.every, total = f.goal?.total, fl = f.flows;
   const conv = st.map((s, j) => (fl[j] > 0 && fl[j + 1] != null ? Math.min(1, fl[j + 1] / fl[j]) : null));
-  const total = f.goal?.total;
   const need = st.map((s, j) => {
     const c = conv.slice(j);
     if (!(total > 0) || c.includes(null)) return null;
@@ -455,7 +443,15 @@ function project(f) {
     return y > 0 ? total / y : null;
   });
   const fill = st.map((s, j) => (need[j] ? Math.min(1, s.count / need[j]) : null));
-  return { zones, out: zones[n], eta: outFlow > 0 ? 1 / outFlow : null, fill, need };
+  const days = total > 0 && every > 0 ? Math.max(0, total - f.cubes) * every : null;
+  const reading = (flow, i) => {
+    const want = i < n ? need[i] : total, have = i < n ? st[i].count : f.cubes;
+    if (days == null || flow == null || !want) return null;
+    if (have >= want || days === 0) return 1e3; // already enough: the needle rests far right
+    return flow * days / (want - have);
+  };
+  const zones = fl.map(reading);
+  return { zones, out: zones[n], eta: fl[n] > 0 ? 1 / fl[n] : null, fill, need };
 }
 const SWEEP0 = 0.75 * Math.PI, SWEEP = 1.5 * Math.PI;
 // Pace vs goal: red — far behind, yellow — close, green — on pace, bright green — well ahead.

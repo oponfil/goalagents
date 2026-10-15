@@ -69,11 +69,10 @@ Write tools return the updated funnel so the agent can check what the person see
 Agents never report flows, forecasts or gauge readings — the server derives them from the count history:
 
 - **Flow** of a zone (`+14/d` under the gauge): how fast the count of the stage below it grew over the recent window, per hour, day, week or month (the viewer picks the unit by clicking a gauge).
-- **Pass-through rate** of a stage: next stage count ÷ this stage count. For the last stage: results ÷ its count, smoothed so an empty start does not read as zero.
-- **Gauge reading** of a zone: results per day its current flow would yield through the pass-through rates below it, against the goal rate (1 ÷ `goal.every_days`). The needle uses a log scale; the red mark on the right is the goal. It is an estimate for the picture only.
+- **Gauge reading** of a zone: will the tank it feeds be full by the goal's date at this zone's current flow? The date is when the remaining results are due at the goal pace (one per `goal.every_days`). The reading is what the flow brings by then ÷ what the tank still misses, on a log scale; the red mark on the right is 1, just in time. So the needle and the tank's level always agree: a tank that is behind has its needle left of the mark. It is an estimate for the picture only.
 - **Output zone**: its flow is results per day (from the `results` history); its gauge compares that with the goal rate, and its plate shows the estimated days to the next result, coloured by pace (red far behind, yellow close, green on pace, bright green well ahead).
 - **Tank fill** (water level, left to right): items at a stage so far ÷ items needed there for the whole goal (`goal.total` results), where "needed" comes from the conversion along the flows below it. Shown as murky streaks when it can't be estimated.
-- **Unknown reading**: if there is no goal, no flow reported yet, or a stage below is empty, the gauge shows a dimmed dial with no needle and a `?`.
+- **Unknown reading**: if there is no goal or no flow reported yet for the zone or below it, the gauge shows a dimmed dial with no needle and a `?`.
 
 ## What an agent should do on every run
 
