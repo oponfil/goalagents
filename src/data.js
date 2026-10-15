@@ -163,7 +163,7 @@ export const FUNNELS = [
     ],
     flows: [5, 1.5, 0.4, 0.1, 1 / 14],
     cubes: 0,
-    goal: { total: 2, every: 45 },
+    goal: { total: 10, every: 14 },
     workers: [
       { agent: 'chatgpt', zone: -1, state: 'work' },
       { agent: 'perplexity', zone: -1, state: 'work' },

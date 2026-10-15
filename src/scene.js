@@ -220,10 +220,12 @@ export class Scene {
         } else {
           // The tank fills left to right (ore, liquid, coins or hearts, by theme): how much of
           // what is needed here for the whole goal.
+          // The filling is drawn over the whole tank and a little past it, then cut at the level,
+          // so a full tank is filled to its right wall and the pattern stays put as it rises.
           const w = Math.max(fill > 0 ? 2 : 0, Math.round(inner * fill / 2) * 2);
           if (w > 0) {
             c.save(); c.beginPath(); c.rect(x + 2, y + 2, w, LH - 4); c.clip();
-            theme.tank(c, x + 2, y + 2, w, LH - 4, j, n, t, fi * 97 + j * 13 + 5);
+            theme.tank(c, x + 2, y + 2, inner + 8, LH - 4, j, n, t, fi * 97 + j * 13 + 5);
             c.restore();
           }
         }
