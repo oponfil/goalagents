@@ -13,6 +13,9 @@ const tankTop = j => TOP + ZH + j * (LH + ZH);
 const zoneTop = k => (k < 0 ? TOP : tankTop(k) + LH);
 const flasksY = n => zoneTop(n - 1) + ZH + 4;
 export const H = flasksY(MAX_STAGES) + 50;
+// Tall enough for the longest column: its tanks, the rows of result items and the two lines under them.
+export const sceneHeight = funnels => Math.max(H, ...funnels.map(f =>
+  flasksY(f.stages.length) + Math.ceil((f.goal?.total || 0) / PER_ROW) * 22 + 30));
 // Tanks narrow from 156 at the top to 76 at the bottom whatever their number, so every funnel
 // is the same pyramid; stages in between are spaced evenly.
 const tankW = (j, n) => Math.round((156 - (n > 1 ? j * 80 / (n - 1) : 0)) / 2) * 2;
@@ -34,6 +37,7 @@ export class Scene {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.funnels = funnels.map(f => ({ ...f, stages: f.stages.map(s => ({ ...s })) }));
+    this.H = sceneHeight(this.funnels);
     this.lo = document.createElement('canvas');
     this.lctx = this.lo.getContext('2d');
     this.bg = document.createElement('canvas');
@@ -71,10 +75,10 @@ export class Scene {
   resize(scale, dpr) {
     this.scale = scale; this.dpr = dpr; this.S = scale * dpr;
     const w = this.funnels.length * CW;
-    this.lo.width = this.bg.width = w * RES; this.lo.height = this.bg.height = H * RES;
+    this.lo.width = this.bg.width = w * RES; this.lo.height = this.bg.height = this.H * RES;
     this.canvas.style.width = w * scale + 'px';
-    this.canvas.style.height = H * scale + 'px';
-    this.canvas.width = Math.round(w * this.S); this.canvas.height = Math.round(H * this.S);
+    this.canvas.style.height = this.H * scale + 'px';
+    this.canvas.width = Math.round(w * this.S); this.canvas.height = Math.round(this.H * this.S);
     this.drawBackground();
   }
 
@@ -102,10 +106,10 @@ export class Scene {
     const c = this.bg.getContext('2d'), r = rng(42);
     const w = this.funnels.length * CW;
     c.setTransform(RES, 0, 0, RES, 0, 0);
-    c.fillStyle = '#1B1714'; c.fillRect(0, 0, w, H);
+    c.fillStyle = '#1B1714'; c.fillRect(0, 0, w, this.H);
     this.funnels.forEach((f, fi) => {
       const cx = this.cx(fi), n = f.stages.length, theme = themeOf(f);
-      theme.backdrop(c, fi * CW, CW, H, r);
+      theme.backdrop(c, fi * CW, CW, this.H, r);
       for (let k = -1; k < n; k++) {
         // No room around a zone: agents work in the open, on top of the tank below.
         const y = zoneTop(k);
@@ -263,7 +267,7 @@ export class Scene {
     for (const a of this.agents) this.drawAgent(c, a);
     for (const s of this.sparks) { c.fillStyle = s.col; c.fillRect(s.x, s.y, 2, 2); }
     if (this.dropAt !== null) {
-      c.fillStyle = '#F2C14E'; c.fillRect(this.dropAt * CW - 2, 2, 4, H - 4);
+      c.fillStyle = '#F2C14E'; c.fillRect(this.dropAt * CW - 2, 2, 4, this.H - 4);
     }
 
     const g = this.ctx;

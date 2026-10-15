@@ -1,7 +1,7 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
 import { agentInfo, agentButton, chatLink, plural } from './data.js';
-import { Scene, CW, H, fmtCount } from './scene.js';
+import { Scene, CW, fmtCount } from './scene.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://) hand over to the app without an empty tab.
@@ -29,7 +29,7 @@ export function mountDashboard(funnels, opts = {}) {
   // Scene size is fixed at load: about four funnels across the screen, but not much taller than
   // the screen (a little vertical scroll is fine for the tallest funnel). Resizing the window
   // only changes how many funnels are visible; the rest are reached with horizontal scroll.
-  const byH = (scroller.clientHeight - 20) / H;
+  const byH = (scroller.clientHeight - 20) / scene.H;
   const scale = Math.max(1, Math.min(scroller.clientWidth / (4.2 * CW), byH * 1.35));
   function layout() {
     if (scene.dpr !== (window.devicePixelRatio || 1)) scene.resize(scale, window.devicePixelRatio || 1);

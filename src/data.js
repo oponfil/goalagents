@@ -79,7 +79,7 @@ export const FUNNELS = [
       { count: 64, forms: ['conversation', 'conversations'] },
       { count: 9, forms: ['first date', 'first dates'] },
       { count: 3, forms: ['second date', 'second dates'] },
-      { count: 1, forms: ['met the friends', 'met the friends'] },
+      { count: 1, forms: ['sleepover', 'sleepovers'] },
     ],
     flows: [8, 3, 0.5, 0.2, 0.08, 1 / 60],
     cubes: 0,
