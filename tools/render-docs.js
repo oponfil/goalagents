@@ -80,15 +80,32 @@ function themesSheet() {
 
 // The dashboard itself: the first four funnels after a short run of the demo, so tanks have
 // moved and agents are mid-action.
+// The first columns of the demo as the dashboard shows them: titles on their column's backdrop
+// (with the red badge of agents waiting), then the scene after 12 seconds of simulated time.
 function overview() {
-  const scale = 2, cols = 4;
+  const scale = 2, dpr = 2, cols = 4, K = scale * dpr, TH = 22;
   const scene = new Scene(document.createElement('canvas'), FUNNELS);
-  scene.resize(scale, 2);
+  scene.resize(scale, dpr);
   for (let i = 0; i < 12 * 30; i++) scene.update(1 / 30);
   scene.render();
   const src = scene.canvas, w = Math.round(src.width * cols / scene.funnels.length);
-  const [c, g] = canvas(w, src.height);
-  g.drawImage(src, 0, 0, w, src.height, 0, 0, w, src.height);
+  const [c, g] = canvas(w, TH * K + src.height);
+  g.drawImage(src, 0, 0, w, src.height, 0, TH * K, w, src.height);
+  for (let fi = 0; fi < cols; fi++) {
+    const f = scene.funnels[fi], x = fi * CW * K, cx = x + CW * K / 2, cy = TH * K / 2;
+    g.drawImage(scene.titleStrip(fi, TH), x, 0, CW * K, TH * K);
+    g.font = `600 ${19 * dpr}px ${FONT}`;
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    const waiting = scene.waitingFor(f), tw = g.measureText(f.title).width, bw = waiting ? 28 * dpr : 0;
+    g.shadowColor = 'rgba(0,0,0,0.8)'; g.shadowBlur = 6 * dpr; g.shadowOffsetY = dpr;
+    g.fillStyle = '#F4EDE1'; g.fillText(f.title, cx - bw / 2, cy);
+    g.shadowColor = 'transparent';
+    if (waiting) {
+      const bx = cx - bw / 2 + tw / 2 + 8 * dpr + 10 * dpr;
+      g.fillStyle = '#FF6B5E'; g.beginPath(); g.arc(bx, cy, 10 * dpr, 0, Math.PI * 2); g.fill();
+      g.font = `600 ${13 * dpr}px ${FONT}`; g.fillStyle = '#FFFFFF'; g.fillText(String(waiting), bx, cy + dpr / 2);
+    }
+  }
   return c;
 }
 
