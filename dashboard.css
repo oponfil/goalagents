@@ -167,7 +167,7 @@ body {
 .sitebar .logo { font-weight: 700; font-size: 20px; text-decoration: none; color: var(--text); }
 .sitebar .logo span { color: #F2C14E; }
 .sitebar .links { display: flex; align-items: center; gap: 20px; font-size: 15px; }
-.sitebar .links a { color: var(--muted); text-decoration: none; }
+.sitebar .links a { color: var(--muted); text-decoration: none; white-space: nowrap; }
 .sitebar .links a:hover, .sitebar .links a.here { color: var(--text); }
 .sitebar .links a.signin { white-space: nowrap; background: #F2C14E; color: #1B1714; font-weight: 600; padding: 6px 16px; border: 2px solid #F2C14E; }
 .sitebar .links a.signin:hover { background: #FFD866; border-color: #FFD866; }

@@ -15,7 +15,7 @@ nav { display: flex; align-items: center; justify-content: space-between; gap: 1
 .logo { font-weight: 700; font-size: 22px; text-decoration: none; }
 .logo span { color: var(--accent); }
 .links { display: flex; align-items: center; gap: 20px; font-size: 15px; }
-.links a { color: var(--muted); text-decoration: none; }
+.links a { color: var(--muted); text-decoration: none; white-space: nowrap; }
 .links a:hover { color: var(--text); }
 .links a.signin { white-space: nowrap; background: var(--accent); color: #1B1714; font-weight: 600; padding: 8px 18px; border: 2px solid var(--accent); }
 .links a.signin:hover { background: #FFD866; border-color: #FFD866; color: #1B1714; }
