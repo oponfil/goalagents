@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — GoalAgents</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../site.css">
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="../">Goal<span>Agents</span></a>
+      <div class="links"><a href="../demo/">Demo</a></div>
+    </nav>
+
+    <div class="card">
+      <h1>Sign in</h1>
+      <p class="sub">New here? The same steps create your account.</p>
+
+      <button class="btn primary" id="google">Continue with Google</button>
+
+      <div class="or">or with email</div>
+
+      <form id="email-form">
+        <input class="field" id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+        <button class="btn" type="submit">Email me a sign-in link</button>
+      </form>
+
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase, appUrl } from '../src/auth.js';
+
+    const msg = document.getElementById('msg');
+    const say = (text, kind = '') => { msg.textContent = text; msg.className = 'msg ' + kind; };
+
+    // Already signed in: go straight to the account page.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) location.replace(appUrl());
+
+    document.getElementById('google').addEventListener('click', async () => {
+      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: appUrl() } });
+      if (error) say(error.message, 'error');
+    });
+
+    document.getElementById('email-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      say('Sending…');
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: appUrl() } });
+      if (error) say(error.message, 'error');
+      else say(`Check ${email} for a sign-in link.`, 'ok');
+    });
+  </script>
+</body>
+</html>

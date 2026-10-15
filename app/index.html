@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your goals — GoalAgents</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../site.css">
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="../">Goal<span>Agents</span></a>
+      <div class="links">
+        <span id="who"></span>
+        <a href="#" id="signout">Sign out</a>
+      </div>
+    </nav>
+
+    <section class="hero" id="content" hidden>
+      <h1>Your goals</h1>
+      <div class="empty">
+        <h2>No funnels yet</h2>
+        <p>Connect your agents and they will create your goal funnels and report progress here. Agent connection is coming next.</p>
+        <span class="code">https://goalagents.run/mcp</span>
+        <p><a href="../demo/">See what it will look like →</a></p>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { supabase } from '../src/auth.js';
+
+    // Coming back from Google or an email link, supabase-js reads the session from the URL.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) location.replace('../login/');
+    else {
+      document.getElementById('who').textContent = session.user.email;
+      document.getElementById('content').hidden = false;
+    }
+
+    document.getElementById('signout').addEventListener('click', async e => {
+      e.preventDefault();
+      await supabase.auth.signOut();
+      location.replace('../');
+    });
+  </script>
+</body>
+</html>

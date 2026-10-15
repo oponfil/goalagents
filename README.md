@@ -74,4 +74,5 @@ To refresh the README pictures, open http://localhost:5173/tools/render-docs.htm
 - `src/sprites.js` — agents (outfits, tools, logos) drawn from shapes on a half-unit grid
 - `src/main.js` — page wiring: scaling, sticky titles, drag to reorder, popups
 - `index.html` — landing page; `demo/` — the dashboard page and its styles
+- `login/`, `app/` — sign-in (Google or an email link via Supabase Auth) and the account page; `src/config.js` holds the Supabase project URL and publishable key
 - `docs/MCP.md` — the MCP protocol agents use to write to the dashboard

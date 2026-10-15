@@ -1,0 +1,50 @@
+/* Shared styles for the landing, sign-in and account pages. */
+:root {
+  --bg: #1B1714;
+  --panel: #241F1B;
+  --text: #F4EDE1;
+  --muted: #B8AE9F;
+  --border: #4A3F35;
+  --accent: #F2C14E;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 "Rubik", system-ui, sans-serif; }
+a { color: inherit; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+.logo { font-weight: 700; font-size: 22px; text-decoration: none; }
+.logo span { color: var(--accent); }
+.links { display: flex; gap: 20px; font-size: 15px; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover { color: var(--text); }
+.hero { padding: 48px 0 32px; text-align: center; }
+h1 { font-size: clamp(32px, 6vw, 52px); line-height: 1.12; margin: 0 auto 18px; max-width: 760px; font-weight: 700; }
+.lead { color: var(--muted); font-size: 19px; max-width: 640px; margin: 0 auto 28px; }
+.cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn { display: inline-block; padding: 12px 22px; border: 2px solid var(--border); text-decoration: none; font-weight: 600; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #1B1714; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary:hover { background: #FFD866; border-color: #FFD866; }
+.shot { display: block; margin: 40px auto 0; width: 100%; border: 2px solid var(--border); image-rendering: pixelated; }
+.points { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; padding: 40px 0; }
+.point { background: var(--panel); border: 2px solid var(--border); padding: 18px 20px; }
+.point h3 { margin: 0 0 6px; font-size: 18px; }
+.point p { margin: 0; color: var(--muted); font-size: 15px; }
+footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(--muted); font-size: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* Sign-in and account pages */
+.card { max-width: 420px; margin: 48px auto; background: var(--panel); border: 2px solid var(--border); padding: 28px; }
+.card h1 { font-size: 28px; margin: 0 0 6px; text-align: left; }
+.card .sub { color: var(--muted); margin: 0 0 22px; font-size: 15px; }
+.card .btn { width: 100%; text-align: center; cursor: pointer; font: inherit; font-weight: 600; background: none; color: var(--text); }
+.card .btn.primary { background: var(--accent); color: #1B1714; }
+.or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 14px; margin: 18px 0; }
+.or::before, .or::after { content: ""; flex: 1; border-top: 2px solid var(--border); }
+.field { width: 100%; padding: 12px 14px; margin-bottom: 10px; background: var(--bg); border: 2px solid var(--border); color: var(--text); font: inherit; }
+.field:focus { outline: none; border-color: var(--accent); }
+.msg { min-height: 22px; margin-top: 14px; font-size: 14px; color: var(--muted); }
+.msg.error { color: #FF6B5E; }
+.msg.ok { color: #7BD88F; }
+.empty { border: 2px dashed var(--border); padding: 28px; text-align: center; color: var(--muted); margin: 24px 0; }
+.empty h2 { color: var(--text); font-size: 22px; margin: 0 0 8px; }
+.code { display: block; background: var(--bg); border: 2px solid var(--border); padding: 10px 12px; font: 14px ui-monospace, monospace; color: var(--text); margin: 12px auto; max-width: 520px; overflow-x: auto; }
