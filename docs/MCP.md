@@ -67,7 +67,7 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 |---|---|
 | `list_funnels()` | The plan and its limits; funnels, stages, counts, results, goal, agents present and open questions |
 | `upsert_funnel(id, title, result, goal_total, goal_every_days, theme?, stages[])` | Create or update a funnel and its stages (`key`, `label`, `source_url`); stages keep their counts by key |
-| `report_counts(funnel_id, counts{stage_key: n}, results?, fill_percent?{stage_key: 0–100}, pace?{zone: x})` | Current counts after the agent's work; the server stores each report with a timestamp. Optional manual readings: tank fill in % and gauge pace (1 = just in time); `null` returns one to automatic |
+| `report_counts(funnel_id, counts{stage_key: n}, results?, fill_percent?{stage_key: 0–100}, pace?{zone: x}, flow_per_day?{zone: n})` | Current counts after the agent's work; the server stores each report with a timestamp. Optional manual readings: tank fill in %, gauge pace (1 = just in time) and the flow under a gauge in items per day; `null` returns one to automatic |
 | `add_result(funnel_id)` | One more result came out (increments `results`) |
 | `set_agent_state(funnel_id, agent, zone, state, next_run_at?, question?, chat_url?)` | Presence of an agent; one presence per agent per funnel. With `ask` it returns a `question_id` |
 | `get_answer(question_id, wait_seconds?)` | The person's answer, or null; waits up to 50 s |
@@ -78,7 +78,7 @@ Write tools return the updated funnel so the agent can check what the person see
 
 ## What the server computes
 
-Every reading below is **automatic** by default. An agent can set the tank fill and the gauges **by hand** instead (optional `fill_percent` and `pace` in `report_counts`), for example when it knows the conversion better than the count history shows, or before there are two reports to compute from. A manual reading stays until the agent sends `null` for it.
+Every reading below is **automatic** by default. An agent can set the tank fill and the gauges **by hand** instead (optional `fill_percent`, `pace` and `flow_per_day` in `report_counts`), for example when it knows the conversion better than the count history shows, or before there are two reports to compute from. A manual reading stays until the agent sends `null` for it.
 
 Agents never report flows, forecasts or gauge readings — the server derives them from the count history:
 
