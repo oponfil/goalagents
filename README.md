@@ -1,0 +1,76 @@
+# GoalAgents
+
+Watch your AI agents work your goal funnels — [goalagents.run](https://goalagents.run).
+
+![GoalAgents demo: four goal funnels with agents working between the tanks](docs/img/overview.png)
+
+Every goal is a vertical column of tanks, one per stage (jobs found → applied → interviews → offer). Between the tanks are work zones where agents — Claude, ChatGPT, Gemini and others — move items to the next stage. Results drop out at the bottom. You see the whole picture at once: how much is at each stage, how fast it flows, which agent is working, who is waiting for you, and when the next result is due.
+
+The dashboard is read-only. Agents create and update everything through an MCP server; you only watch, click for details, and jump into an agent's chat when it needs you. Protocol, data model and how the readings are estimated: [docs/MCP.md](docs/MCP.md).
+
+Prototype for U-Hackathon 2026 (Bangkok). It runs on demo data (six example goals in `src/data.js`); there is no backend yet.
+
+## How to read it
+
+| On screen | Meaning |
+|---|---|
+| Tank and its number | How many items are at this stage. The fill, left to right, is the share of what this stage needs for the whole goal |
+| Gauge in a zone | Pace: what the zone's current flow would deliver against the goal; the red mark is the goal. Dimmed with `?` when it can't be estimated yet |
+| Label under the gauge | Flow into the next stage (`+12/d`); click a gauge to switch hours, days, weeks |
+| Agent with a tool | Working on that step |
+| Agent lying with a timer | Waiting for its next scheduled run |
+| Agent with a red `!` | Waiting for you; click to read the question and open its chat. The red badge in the header counts them |
+| Bottom zone and items | Results so far, the estimated time to the next one, and the goal |
+
+## Themes
+
+Each funnel picks a look; the data and behaviour are the same.
+
+![The six themes: mine, lab, forge, love, code, money](docs/img/themes.png)
+
+| Theme | Agents | Work piece | Tanks fill with | Results |
+|---|---|---|---|---|
+| `mine` | miners with pickaxes | ore rock | ore and gems, richer by stage | ore carts |
+| `lab` | chemists pouring reagents | Petri dish | liquid, deeper colour by stage | flasks |
+| `forge` | smiths with hammers | anvil | coins: copper, silver, gold | chests |
+| `love` | cupids with bows | bed | hearts, pink to red | hearts |
+| `code` | hackers on laptops | keyboard | scrolling code | chips |
+| `money` | bankers with stamps | contract | banknotes, gold at the end | money bags |
+
+## Agents
+
+![Agents in brand colours with their logos on the shirt](docs/img/agents.png)
+
+| Id | Agent |
+|---|---|
+| `claude` | Claude |
+| `chatgpt` | ChatGPT |
+| `grok` | Grok |
+| `gemini` | Gemini |
+| `deepseek` | DeepSeek |
+| `kimi` | Kimi |
+| `qwen` | Qwen |
+| `mistral` | Mistral |
+| `perplexity` | Perplexity |
+| `hermes` | Hermes (Nous Research) |
+
+Any other agent name gets a plain grey shirt. Logos are simplified pixel drawings for the prototype; each belongs to its owner.
+
+## Run
+
+```bash
+python3 serve.py
+```
+
+Open http://localhost:5173. The server turns caching off so a reload always picks up changes.
+
+To refresh the README pictures, open http://localhost:5173/tools/render-docs.html; it redraws `docs/img/agents.png` and `docs/img/themes.png` with the dashboard's own drawing code.
+
+## Code
+
+- `src/data.js` — demo funnels and the agent list
+- `src/scene.js` — Canvas 2D scene: layout, simulation, gauges, hit areas
+- `src/themes.js` — themes: column backdrop, zone walls, work piece, tank filling, result item
+- `src/sprites.js` — agents (outfits, tools, logos) drawn from shapes on a half-unit grid
+- `src/main.js` — page wiring: scaling, sticky titles, drag to reorder, popups
+- `docs/MCP.md` — the MCP protocol agents use to write to the dashboard
