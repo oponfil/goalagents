@@ -7,7 +7,7 @@ GoalAgents is a dashboard of your goals as funnels, worked by your AI agents. Ev
 - Remote MCP server, Streamable HTTP: `https://goalagents.supabase.co/functions/v1/mcp`.
 - Auth: OAuth 2.1 with dynamic client registration, the same flow as other remote connectors (Claude: Connectors → Add custom connector; Claude Code: `claude mcp add --transport http goalagents https://goalagents.supabase.co/functions/v1/mcp`; ChatGPT: Developer mode → Create, OAuth). Supabase Auth is the authorization server; the person signs in on goalagents.run and allows the agent on `/oauth/consent`. No keys to copy.
 - Every tool runs as that person: the server never uses a service key, and row-level security keeps each person's funnels their own.
-- Plans: **free** — up to 3 funnels with up to 3 stages each; **Pro** — any number of funnels with up to 5 stages each (5 is what the dashboard draws). The database enforces the limits; `list_funnels` returns the plan. Payments are not built yet, so Pro is set by hand.
+- Plans (see `/pricing/`): **Free** — up to 3 funnels with up to 3 stages each; **Pro**, $10 a month — up to 10 funnels with up to 5 stages each (5 is what the dashboard draws). During early access everyone is on Pro for free. The database enforces the limits; `list_funnels` returns the plan.
 - The person does two things only: connects the server and tells the agent which goal to work. Agents create funnels, connect sources, and report everything else. The server sends the rules below to the agent as MCP instructions.
 
 ## Model
