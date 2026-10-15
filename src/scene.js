@@ -376,41 +376,34 @@ export class Scene {
     this.funnels.forEach((f, fi) => {
       const cx = this.cx(fi), n = f.stages.length;
       f.stages.forEach((s, j) => {
-        // The number and its label on one line when they fit. Otherwise the label goes on two lines
-        // next to a number as tall as both, so the number never shrinks.
+        // The number is the same size in every tank. Its label sits to the right on one line, or on
+        // two lines when one does not fit.
         const num = fmtCount(s.count), label = plural(s.count, s.forms);
         const maxW = (tankW(j, n) - 12) * S, y = (tankTop(j) + LH / 2 + 2) * S;
         const width = (text, weight, size) => { g.font = `${weight} ${size * S}px ${FONT}`; return g.measureText(text).width; };
-        g.textAlign = 'left'; g.textBaseline = 'middle';
-        g.shadowColor = 'rgba(0,0,0,0.85)'; g.shadowBlur = S * 1.2;
-        const wn = width(num, 700, 11), wl = width(' ' + label, 500, 8.6);
-        if (wn + wl <= maxW) {
-          const x0 = cx * S - (wn + wl) / 2;
-          g.fillStyle = '#FFFFFF'; g.font = `700 ${11 * S}px ${FONT}`; g.fillText(num, x0, y);
-          g.fillStyle = '#EAF3FF'; g.font = `500 ${8.6 * S}px ${FONT}`; g.fillText(' ' + label, x0 + wn, y);
-        } else {
+        const bigN = 15, gap = 3 * S, wN = width(num, 700, bigN);
+        let lines = [label, ''];
+        if (wN + gap + width(label, 500, 8.6) > maxW) {
           // Split the label where its two lines come out most even.
           const words = label.split(' ');
-          let lines = [label, ''];
-          if (words.length > 1) {
-            let best = Infinity;
-            for (let i = 1; i < words.length; i++) {
-              const a = words.slice(0, i).join(' '), b2 = words.slice(i).join(' ');
-              const w = Math.max(width(a, 500, 8.6), width(b2, 500, 8.6));
-              if (w < best) { best = w; lines = [a, b2]; }
-            }
+          let best = Infinity;
+          for (let i = 1; i < words.length; i++) {
+            const a = words.slice(0, i).join(' '), b2 = words.slice(i).join(' ');
+            const w = Math.max(width(a, 500, 8.6), width(b2, 500, 8.6));
+            if (w < best) { best = w; lines = [a, b2]; }
           }
-          const bigN = 17, gap = 3 * S, wN = width(num, 700, bigN);
-          let ls = 8.6;
-          while (wN + gap + Math.max(width(lines[0], 500, ls), width(lines[1], 500, ls)) > maxW && ls > 6) ls -= 0.25;
-          const wL = Math.max(width(lines[0], 500, ls), width(lines[1], 500, ls));
-          const x0 = cx * S - (wN + gap + wL) / 2;
-          g.fillStyle = '#FFFFFF'; g.font = `700 ${bigN * S}px ${FONT}`; g.fillText(num, x0, y);
-          g.fillStyle = '#EAF3FF'; g.font = `500 ${ls * S}px ${FONT}`;
-          const dy = ls * 0.55 * S;
-          g.fillText(lines[0], x0 + wN + gap, lines[1] ? y - dy : y);
-          if (lines[1]) g.fillText(lines[1], x0 + wN + gap, y + dy);
         }
+        let ls = 8.6;
+        const labelW = sz => Math.max(width(lines[0], 500, sz), width(lines[1], 500, sz));
+        while (wN + gap + labelW(ls) > maxW && ls > 6) ls -= 0.25;
+        const x0 = cx * S - (wN + gap + labelW(ls)) / 2;
+        g.textAlign = 'left'; g.textBaseline = 'middle';
+        g.shadowColor = 'rgba(0,0,0,0.85)'; g.shadowBlur = S * 1.2;
+        g.fillStyle = '#FFFFFF'; g.font = `700 ${bigN * S}px ${FONT}`; g.fillText(num, x0, y);
+        g.fillStyle = '#EAF3FF'; g.font = `500 ${ls * S}px ${FONT}`;
+        const dy = ls * 0.55 * S;
+        g.fillText(lines[0], x0 + wN + gap, lines[1] ? y - dy : y);
+        if (lines[1]) g.fillText(lines[1], x0 + wN + gap, y + dy);
         g.shadowColor = 'transparent'; g.shadowBlur = 0;
       });
       const pr = project(f);
