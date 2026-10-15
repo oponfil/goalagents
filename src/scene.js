@@ -6,7 +6,7 @@ import { themeOf } from './themes.js';
 // each tank and one more below the last (the output zone, where results come out into flasks).
 // The scene is tall enough for 5 tanks; shorter funnels end higher up. Titles live in the page header.
 export const CW = 200;
-const ZW = 164, TOP = 6, ZH = 40, LH = 30, MAX_STAGES = 5;
+const ZW = 164, TOP = 14, ZH = 40, LH = 30, MAX_STAGES = 5;
 // The pixel layer is drawn at RES× the logical grid: scenery stays blocky, gauges get finer pixels.
 const RES = 2;
 const tankTop = j => TOP + ZH + j * (LH + ZH);
@@ -107,9 +107,10 @@ export class Scene {
       const cx = this.cx(fi), n = f.stages.length, theme = themeOf(f);
       theme.backdrop(c, fi * CW, CW, H, r);
       for (let k = -1; k < n; k++) {
+        // No room around a zone: agents work in the open, on top of the tank below.
         const y = zoneTop(k);
-        theme.zone(c, cx - ZW / 2, y, ZW, ZH, r);
         this.pipe(c, cx, y + 4, y + ZH);
+        if (k < 0) this.hopper(c, cx, y - 10, y + 5);
         gaugeRim(c, cx, y + 4 + GAUGE_R + 2);
       }
       f.stages.forEach((s, j) => {
@@ -131,6 +132,18 @@ export class Scene {
     c.fillStyle = '#1B1714'; c.fillRect(0, 0, CW, h);
     themeOf(this.funnels[fi]).backdrop(c, 0, CW, h, rng(42 + fi));
     return strip;
+  }
+
+  // A small funnel on top of the first pipe, where new items pour in.
+  hopper(c, cx, y0, y1) {
+    for (let y = y0; y < y1; y++) {
+      const t = (y - y0) / (y1 - y0 - 1), half = Math.round(15 - t * 10.5);
+      c.fillStyle = '#5E626B'; c.fillRect(cx - half, y, half * 2 + 1, 1);
+      c.fillStyle = '#8E939D'; c.fillRect(cx - half + 1, y, half * 2 - 1, 1);
+      c.fillStyle = '#B9BEC7'; c.fillRect(cx - half + 1, y, 2, 1);
+    }
+    c.fillStyle = '#B9BEC7'; c.fillRect(cx - 16, y0 - 1, 33, 1);
+    c.fillStyle = '#5E626B'; c.fillRect(cx - 16, y0, 33, 1);
   }
 
   pipe(c, cx, y0, y1) {
@@ -271,7 +284,6 @@ export class Scene {
     const t = this.t, info = agentInfo(a.agent), theme = themeOf(a.f), outfit = theme.outfit;
     if (a.state === 'sleep') {
       const p = this.spot(a, 'rest');
-      c.fillStyle = '#4A3A2A'; c.fillRect(p.x - 2, p.y + 10 * P, 15 * P, 2);
       drawLying(c, p.x, p.y, a.agent, info.color, a.side === 'R', outfit);
       this.hits.push({ x: p.x - 4, y: p.y - 14, w: 34, h: 36, type: 'agent', a });
       return;
