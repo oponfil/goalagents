@@ -15,11 +15,11 @@ Prototype for U-Hackathon 2026 (Bangkok). It runs on demo data (six example goal
 | On screen | Meaning |
 |---|---|
 | Tank and its number | How many items are at this stage. The fill, left to right, is the share of what this stage needs for the whole goal |
-| Gauge in a zone | Pace: what the zone's current flow would deliver against the goal; the red mark is the goal. Dimmed with `?` when it can't be estimated yet |
+| Gauge in a zone | Will the tank below fill in time: what the zone's current flow brings by the goal's date against what the tank still misses. On the red mark it fills just in time; left of it the tank is behind, right of it ahead. Dimmed with `?` when it can't be estimated yet |
 | Label under the gauge | Flow into the next stage (`+12/d`); click a gauge to switch hours, days, weeks |
 | Agent with a tool | Working on that step |
 | Agent lying with a timer | Waiting for its next scheduled run |
-| Agent with a red `!` | Waiting for you; click to read the question and open its chat. The red badge in the header counts them |
+| Agent with a red `!` | Waiting for you; click to read the question and answer it. The red badge in the header counts them |
 | Bottom zone and items | Results so far, the estimated time to the next one, and the goal |
 
 ## Themes
@@ -32,8 +32,8 @@ Each funnel picks a look; the data and behaviour are the same.
 |---|---|---|---|---|
 | `mine` | miners with pickaxes | ore rock | ore and gems, richer by stage | ore carts |
 | `lab` | chemists pouring reagents | Petri dish | liquid, deeper colour by stage | flasks |
-| `forge` | smiths with hammers | anvil | coins: copper, silver, gold | chests |
-| `love` | cupids with bows | bed | hearts, pink to red | hearts |
+| `forge` | smiths with hammers | anvil | bars laid like bricks: copper, silver, gold | chests |
+| `love` | cupids with bows | bed | flowers, then hearts, then kisses, pink to red | hearts |
 | `code` | hackers on laptops | keyboard | scrolling code | chips |
 | `money` | bankers with stamps | contract | banknotes, gold at the end | money bags |
 

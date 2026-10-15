@@ -16,10 +16,23 @@ const byDepth = (list, j, n) => list[Math.round((n > 1 ? j / (n - 1) : 1) * (lis
 
 function heart(c, x, y, s, col) {
   // 7×6 pixel heart scaled by s.
-  const rows = ['.II.II.', 'IIIIIII', 'IIIIIII', '.IIIII.', '..III..', '...I...'];
-  c.fillStyle = col;
-  rows.forEach((row, r) => { for (let i = 0; i < 7; i++) if (row[i] === 'I') c.fillRect(x + i * s, y + r * s, s, s); });
+  pixmap(c, x, y, s, ['.II.II.', 'IIIIIII', 'IIIIIII', '.IIIII.', '..III..', '...I...'], { I: col });
 }
+
+// Small pixel pictures: one string per row, one letter per pixel, colours by letter; '.' is empty.
+function pixmap(c, x, y, s, rows, colors) {
+  rows.forEach((row, r) => {
+    for (let i = 0; i < row.length; i++) {
+      const col = colors[row[i]];
+      if (col) { c.fillStyle = col; c.fillRect(x + i * s, y + r * s, s, s); }
+    }
+  });
+}
+// Romance from light to close, top stages to bottom: a flower, a heart, a kiss.
+const flower = (c, x, y, s, col) => pixmap(c, x, y, s,
+  ['..PPP..', 'PP.P.PP', 'PPPYPPP', 'PP.P.PP', '..PPP..', '...G...'], { P: col, Y: '#FFD866', G: '#5DBB63' });
+const lips = (c, x, y, s, col) => pixmap(c, x, y, s,
+  ['.......', '.LL.LL.', 'LLLLLLL', 'DDDDDDD', '.LLLLL.', '..LLL..'], { L: col, D: '#5A0A1E' });
 
 
 // --- Column backdrops: (c, x, w, h, r) behind everything in the funnel's column ---
@@ -125,8 +138,9 @@ function tankLab(c, x, y, w, h, j, n, t, seed) {
 function tankForge(c, x, y, w, h, j, n) {
   const [face, rim] = byDepth([['#B87333', '#7A4A20'], ['#C9CED6', '#7F858F'], ['#F2C14E', '#A87A18']], j, n);
   rect(c, x, y, w, h, '#2A1A12');
-  for (let cy = y + h - 4; cy >= y; cy -= 3) {
-    for (let cx = x + ((cy / 3) % 2 ? 0 : 3); cx < x + w - 5; cx += 6) {
+  // Bars laid like bricks: every other row shifted by half a bar, in every tank alike.
+  for (let cy = y + h - 4, row = 0; cy >= y; cy -= 3, row++) {
+    for (let cx = x + (row % 2 ? 3 : 0); cx < x + w - 5; cx += 6) {
       rect(c, cx, cy, 5.5, 2.5, rim); rect(c, cx + 0.5, cy, 4.5, 1.5, face);
     }
   }
@@ -135,8 +149,9 @@ function tankForge(c, x, y, w, h, j, n) {
 function tankLove(c, x, y, w, h, j, n) {
   const col = byDepth(['#F7B8D0', '#F28AB8', '#E85A8C', '#D9345E', '#B8123E'], j, n);
   rect(c, x, y, w, h, '#3A1A30');
+  const draw = byDepth([flower, heart, lips], j, n);
   for (let hy = y + 1, row = 0; hy < y + h - 3; hy += 5, row++) {
-    for (let hx = x + (row % 2 ? 4 : 1); hx < x + w - 6; hx += 8) heart(c, hx, hy, 0.75, col);
+    for (let hx = x + (row % 2 ? 4 : 1); hx < x + w - 6; hx += 8) draw(c, hx, hy, 0.75, col);
   }
 }
 
