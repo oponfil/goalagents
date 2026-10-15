@@ -316,7 +316,7 @@ function zoneCode(c, x0, y, w, h) {
 }
 
 function tankCode(c, x, y, w, h, j, n, t, seed) {
-  const [dim, bright] = byDepth([['#123A22', '#2E8A50'], ['#145A30', '#3CC070'], ['#127050', '#3CF2A0'], ['#107A80', '#5CF0F0'], ['#1A4A9A', '#7CB8FF']], j, n);
+  const [dim, bright] = byDepth([['#123A22', '#2E8A50'], ['#4A4A10', '#D8D83C'], ['#5A3410', '#F29A3C'], ['#107A80', '#5CF0F0'], ['#1A4A9A', '#7CB8FF']], j, n);
   rect(c, x, y, w, h, '#06100A');
   const r = rng(seed);
   for (let col = x + 1; col < x + w - 1; col += 2.5) {
@@ -351,7 +351,7 @@ function zoneMoney(c, x0, y, w, h) {
 }
 
 function tankMoney(c, x, y, w, h, j, n) {
-  const [bill, mark] = byDepth([['#3E7A44', '#8AC28A'], ['#4E9A52', '#A6DCA0'], ['#5FB05A', '#C6F0B0'], ['#2F8A6A', '#9FE0C8'], ['#C9A040', '#FFE38A']], j, n);
+  const [bill, mark] = byDepth([['#6E7C7C', '#C8D2D2'], ['#4E9A52', '#C6F0B0'], ['#2F8A8A', '#9FE0E0'], ['#3A62B8', '#A8C4F5'], ['#C9A040', '#FFE38A']], j, n);
   rect(c, x, y, w, h, '#14201A');
   for (let by = y + h - 3.5; by > y - 1; by -= 3) {
     for (let bx = x + ((by - y) % 6 < 3 ? 0 : 3); bx < x + w - 6; bx += 8) {
