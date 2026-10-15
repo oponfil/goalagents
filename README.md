@@ -79,5 +79,5 @@ To refresh the README pictures, open http://localhost:5173/tools/render-docs.htm
 - `index.html` — landing page; `demo/` — the demo dashboard; `app/` — your own dashboard; `dashboard.css` — their styles
 - `login/` — sign-in with Google or an email link (Supabase Auth); `oauth/consent/` — where you allow an agent to connect; `pricing/` — Free and Pro plans; `privacy/`, `contact/`
 - `src/config.js` — Supabase project address, publishable key, Google client ID and the MCP address (all public)
-- `supabase/migrations/` — tables and row-level security; `supabase/functions/mcp/` — the MCP server
+- `supabase/migrations/` — tables and row-level security; `supabase/functions/mcp/` — the MCP server; `cloudflare/worker.js` — serves it and its sign-in at goalagents.run (routes `/mcp*`, `/auth/*`, `/.well-known/*`)
 - `docs/MCP.md` — the MCP protocol agents use to write to the dashboard
