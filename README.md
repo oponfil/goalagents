@@ -32,8 +32,8 @@ Each funnel picks a look; the data and behaviour are the same.
 |---|---|---|---|---|
 | `mine` | miners with pickaxes | ore rock | ore and gems, richer by stage | ore carts |
 | `lab` | chemists pouring reagents | Petri dish | liquid, deeper colour by stage | flasks |
-| `forge` | smiths with hammers | anvil | bars laid like bricks: copper, silver, gold | chests |
-| `love` | cupids with bows | bed | flowers, then hearts, then kisses, pink to red | hearts |
+| `forge` | smiths with hammers | anvil | bars laid like bricks: iron, copper, silver, gold, platinum | chests |
+| `love` | cupids with bows | bed | flowers, love letters, hearts, kisses, rings: pink to red | hearts |
 | `code` | hackers on laptops | keyboard | scrolling code | chips |
 | `money` | bankers with stamps | contract | banknotes, gold at the end | money bags |
 

@@ -28,7 +28,7 @@ function pixmap(c, x, y, s, rows, colors) {
     }
   });
 }
-// Romance from light to close, top stages to bottom: a flower, a heart, a kiss.
+// Romance from light to close, top stages to bottom: a flower, a love letter, a heart, a kiss, a ring.
 // The flower is seen from above: five round petals around a pale centre, on half-unit pixels.
 function flower(c, x, y, s, col) {
   const cx = x + 2.75, cy = y + 2.5;
@@ -44,6 +44,10 @@ function flower(c, x, y, s, col) {
   }
   disc(cx, cy, 0.6, '#FFF0F6');
 }
+const letter = (c, x, y, s, col) => pixmap(c, x, y + 0.5, s,
+  ['EEEEEEE', 'EDEEEDE', 'EEDEDEE', 'EEEDEEE', 'EEEEEEE'], { E: col, D: '#7A2A48' });
+const ring = (c, x, y, s) => pixmap(c, x, y, s,
+  ['...D...', '..DDD..', '..GGG..', '.G...G.', '.G...G.', '..GGG..'], { G: '#F2C14E', D: '#DFF6FF' });
 const lips = (c, x, y, s, col) => pixmap(c, x, y, s,
   ['.......', '.LL.LL.', 'LLLLLLL', 'DDDDDDD', '.LLLLL.', '..LLL..'], { L: col, D: '#5A0A1E' });
 
@@ -149,7 +153,7 @@ function tankLab(c, x, y, w, h, j, n, t, seed) {
 }
 
 function tankForge(c, x, y, w, h, j, n) {
-  const [face, rim] = byDepth([['#B87333', '#7A4A20'], ['#C9CED6', '#7F858F'], ['#F2C14E', '#A87A18']], j, n);
+  const [face, rim] = byDepth([['#7D828C', '#4A4E56'], ['#B87333', '#7A4A20'], ['#C9CED6', '#7F858F'], ['#F2C14E', '#A87A18'], ['#E6F4FF', '#8FB8D0']], j, n);
   rect(c, x, y, w, h, '#2A1A12');
   // Bars laid like bricks: every other row shifted by half a bar, in every tank alike.
   for (let cy = y + h - 4, row = 0; cy >= y; cy -= 3, row++) {
@@ -162,7 +166,7 @@ function tankForge(c, x, y, w, h, j, n) {
 function tankLove(c, x, y, w, h, j, n) {
   const col = byDepth(['#F7B8D0', '#F28AB8', '#E85A8C', '#D9345E', '#B8123E'], j, n);
   rect(c, x, y, w, h, '#3A1A30');
-  const draw = byDepth([flower, heart, lips], j, n);
+  const draw = byDepth([flower, letter, heart, lips, ring], j, n);
   for (let hy = y + 1, row = 0; hy < y + h - 3; hy += 5, row++) {
     for (let hx = x + (row % 2 ? 4 : 1); hx < x + w - 6; hx += 8) draw(c, hx, hy, 0.75, col);
   }
@@ -312,7 +316,7 @@ function zoneCode(c, x0, y, w, h) {
 }
 
 function tankCode(c, x, y, w, h, j, n, t, seed) {
-  const [dim, bright] = byDepth([['#123A22', '#2E8A50'], ['#145A30', '#3CC070'], ['#127050', '#3CF2A0'], ['#107A80', '#5CF0F0']], j, n);
+  const [dim, bright] = byDepth([['#123A22', '#2E8A50'], ['#145A30', '#3CC070'], ['#127050', '#3CF2A0'], ['#107A80', '#5CF0F0'], ['#1A4A9A', '#7CB8FF']], j, n);
   rect(c, x, y, w, h, '#06100A');
   const r = rng(seed);
   for (let col = x + 1; col < x + w - 1; col += 2.5) {
@@ -347,7 +351,7 @@ function zoneMoney(c, x0, y, w, h) {
 }
 
 function tankMoney(c, x, y, w, h, j, n) {
-  const [bill, mark] = byDepth([['#3E7A44', '#8AC28A'], ['#4E9A52', '#A6DCA0'], ['#5FB05A', '#C6F0B0'], ['#C9A040', '#FFE38A']], j, n);
+  const [bill, mark] = byDepth([['#3E7A44', '#8AC28A'], ['#4E9A52', '#A6DCA0'], ['#5FB05A', '#C6F0B0'], ['#2F8A6A', '#9FE0C8'], ['#C9A040', '#FFE38A']], j, n);
   rect(c, x, y, w, h, '#14201A');
   for (let by = y + h - 3.5; by > y - 1; by -= 3) {
     for (let bx = x + ((by - y) % 6 < 3 ? 0 : 3); bx < x + w - 6; bx += 8) {

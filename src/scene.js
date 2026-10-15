@@ -13,7 +13,9 @@ const tankTop = j => TOP + ZH + j * (LH + ZH);
 const zoneTop = k => (k < 0 ? TOP : tankTop(k) + LH);
 const flasksY = n => zoneTop(n - 1) + ZH + 4;
 export const H = flasksY(MAX_STAGES) + 50;
-const tankW = (j, n) => Math.round((156 - (n > 1 ? j * 60 / (n - 1) : 0)) / 2) * 2;
+// Tanks narrow from 156 at the top to 76 at the bottom whatever their number, so every funnel
+// is the same pyramid; stages in between are spaced evenly.
+const tankW = (j, n) => Math.round((156 - (n > 1 ? j * 80 / (n - 1) : 0)) / 2) * 2;
 const GAUGE_R = 9;
 export const DAY_SECONDS = 2;
 const PER_ROW = 10;  // result items per row under a funnel, the same for every theme

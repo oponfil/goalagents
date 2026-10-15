@@ -7,6 +7,7 @@ GoalAgents is a dashboard of your goals as funnels, worked by your AI agents. Ev
 - Remote MCP server, Streamable HTTP: `https://goalagents.supabase.co/functions/v1/mcp`.
 - Auth: OAuth 2.1 with dynamic client registration, the same flow as other remote connectors (Claude: Connectors → Add custom connector; Claude Code: `claude mcp add --transport http goalagents https://goalagents.supabase.co/functions/v1/mcp`; ChatGPT: Developer mode → Create, OAuth). Supabase Auth is the authorization server; the person signs in on goalagents.run and allows the agent on `/oauth/consent`. No keys to copy.
 - Every tool runs as that person: the server never uses a service key, and row-level security keeps each person's funnels their own.
+- Plans: **free** — up to 3 funnels with up to 3 stages each; **Pro** — any number of funnels with up to 5 stages each (5 is what the dashboard draws). The database enforces the limits; `list_funnels` returns the plan. Payments are not built yet, so Pro is set by hand.
 - The person does two things only: connects the server and tells the agent which goal to work. Agents create funnels, connect sources, and report everything else. The server sends the rules below to the agent as MCP instructions.
 
 ## Model
@@ -21,7 +22,7 @@ GoalAgents is a dashboard of your goals as funnels, worked by your AI agents. Ev
 | `theme` | Look of the column: `mine` (miners, ore, carts), `lab` (chemists, liquids, flasks), `forge` (smiths, coins, chests), `love` (cupids, hearts), `code` (hackers, code, chips), `money` (bankers, banknotes, money bags). Default `mine` |
 | `goal.total` | How many results the goal needs |
 | `goal.every_days` | Pace: one result every N days |
-| `stages` | 2–5 stages, top to bottom |
+| `stages` | 2–5 stages, top to bottom (free plan: 2–3) |
 | `results` | How many results came out so far |
 
 **Stage** — one tank.
@@ -53,7 +54,7 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 
 | Tool | Does |
 |---|---|
-| `list_funnels()` | Funnels, stages, counts, results, goal, agents present and open questions |
+| `list_funnels()` | The plan and its limits; funnels, stages, counts, results, goal, agents present and open questions |
 | `upsert_funnel(id, title, result, goal_total, goal_every_days, theme?, stages[])` | Create or update a funnel and its stages (`key`, `label`, `source_url`); stages keep their counts by key |
 | `report_counts(funnel_id, counts{stage_key: n}, results?)` | Current counts after the agent's work; the server stores each report with a timestamp |
 | `add_result(funnel_id)` | One more result came out (increments `results`) |

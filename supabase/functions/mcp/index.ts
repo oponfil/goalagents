@@ -20,6 +20,7 @@ const INSTRUCTIONS = `GoalAgents shows the person their goals as funnels and the
 A funnel is one goal (e.g. "Job Search") with 2-5 stages top to bottom (jobs found → applied → interview → final round) and a result at the bottom (offer).
 Zones: 0 is the inflow above the first stage, zone k moves stage k-1 into stage k, zone n (below the last stage) turns the last stage into results. At most two agents per zone.
 On every run: set_agent_state(work) in your zone; after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question) and poll get_answer; at the end set_agent_state(sleep, next_run_at) or clear_agent.
+Plans: free has up to 3 funnels with up to 3 stages each; Pro has any number of funnels with up to 5 stages each. list_funnels tells which plan the person has.
 Report only counts, dates and links. Item lists stay in the person's own sources (e.g. a Google Sheet, linked as source_url).`
 
 const text = (v: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(v, null, 1) }] })
@@ -59,19 +60,26 @@ async function funnels(db: Db, key?: string) {
 }
 const one = async (db: Db, key: string) => (await funnels(db, key))[0]
 
+// Free: 3 funnels of up to 3 stages. Pro: any number of funnels of up to 5 stages.
+async function plan(db: Db) {
+  const row = check(await db.from('accounts').select('plan').maybeSingle()) as { plan: string } | null
+  const name = row?.plan ?? 'free'
+  return { plan: name, max_funnels: name === 'pro' ? null : 3, max_stages: name === 'pro' ? 5 : 3 }
+}
+
 function server(db: Db) {
   const s = new McpServer({ name: 'goalagents', version: '0.1.0' }, { instructions: INSTRUCTIONS })
 
   s.registerTool('list_funnels', {
     title: 'List funnels',
-    description: 'The person\'s goal funnels: stages with counts, results, goal, agents present and open questions.',
+    description: 'The person\'s plan with its limits, and their goal funnels: stages with counts, results, goal, agents present and open questions.',
     inputSchema: z.object({}),
     annotations: { readOnlyHint: true },
-  }, async () => text(await funnels(db)))
+  }, async () => text({ ...(await plan(db)), funnels: await funnels(db) }))
 
   s.registerTool('upsert_funnel', {
     title: 'Create or update a funnel',
-    description: 'Create a goal funnel or change its title, result name, goal, theme or stages. Stages keep their counts by key; stages left out are removed.',
+    description: 'Create a goal funnel or change its title, result name, goal, theme or stages. Stages keep their counts by key; stages left out are removed. Free plan: up to 3 funnels of up to 3 stages; Pro: any number of funnels of up to 5 stages.',
     inputSchema: z.object({
       id: funnelId,
       title: z.string().min(1).max(60).describe('Column title, e.g. "Job Search"'),
@@ -89,6 +97,8 @@ function server(db: Db) {
   }, async (a) => {
     const keys = a.stages.map(st => st.key)
     if (new Set(keys).size !== keys.length) fail('Stage keys must be unique')
+    const p = await plan(db)
+    if (a.stages.length > p.max_stages) fail(`The ${p.plan} plan has up to ${p.max_stages} stages per funnel. Merge some stages, or the person can upgrade to Pro for up to 5.`)
     const f = check(await db.from('funnels').upsert({
       key: a.id, title: a.title, result: a.result, theme: a.theme ?? 'mine',
       goal_total: a.goal_total, goal_every_days: a.goal_every_days,
