@@ -11,7 +11,8 @@ const ZW = 164, TOP = 9, ZH = 40, LH = 30, MAX_STAGES = 5;
 const RES = 2;
 const tankTop = j => TOP + ZH + j * (LH + ZH);
 const zoneTop = k => (k < 0 ? TOP : tankTop(k) + LH);
-const flasksY = n => zoneTop(n - 1) + ZH + 4;
+// Result items sit a little below the end of the last pipe.
+const flasksY = n => zoneTop(n - 1) + ZH + 9;
 export const H = flasksY(MAX_STAGES) + 50;
 // Tall enough for the longest column: its tanks, the rows of result items and the two lines under them.
 export const sceneHeight = funnels => Math.max(H, ...funnels.map(f =>
@@ -124,7 +125,7 @@ export class Scene {
         c.fillStyle = theme.frame; c.fillRect(x, y, lw, LH);
         c.fillStyle = '#16314F'; c.fillRect(x + 2, y + 2, lw - 4, LH - 4);
       });
-      c.fillStyle = '#7D828C'; c.fillRect(cx - 4, flasksY(n) - 4, 9, 3);
+      c.fillStyle = '#7D828C'; c.fillRect(cx - 4, zoneTop(n - 1) + ZH, 9, 3);
     });
   }
 
