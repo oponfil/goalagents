@@ -128,7 +128,7 @@ export function mountDashboard(funnels, opts = {}) {
     }
     const a = h.a, info = agentInfo(a.agent), f = a.f;
     const chat = chatLink(info, a.chat || info.chat), paint = agentButton(info);
-    const who = `<span class="chip" style="background:${info.color}"></span>${esc(info.name)}`;
+    const who = esc(info.name);
     const where = `${esc(f.title)}: ${esc(scene.zoneName(a))}`;
     if (h.type === 'ask') {
       const reply = opts.onAnswer

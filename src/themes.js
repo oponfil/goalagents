@@ -29,9 +29,21 @@ function pixmap(c, x, y, s, rows, colors) {
   });
 }
 // Romance from light to close, top stages to bottom: a flower, a heart, a kiss.
-// The flower is seen from above: four round petals around a yellow centre.
-const flower = (c, x, y, s, col) => pixmap(c, x + 0.5, y, 1,
-  ['PP.PP', 'PPYPP', '.YYY.', 'PPYPP', 'PP.PP'], { P: col, Y: '#FFD866' });
+// The flower is seen from above: five round petals around a pale centre, on half-unit pixels.
+function flower(c, x, y, s, col) {
+  const cx = x + 2.75, cy = y + 2.5;
+  const disc = (px, py, r, colour) => {
+    c.fillStyle = colour;
+    for (let dy = -r; dy <= r; dy += 0.5) for (let dx = -r; dx <= r; dx += 0.5) {
+      if (dx * dx + dy * dy <= r * r) c.fillRect(Math.round((px + dx) * 2) / 2, Math.round((py + dy) * 2) / 2, 0.5, 0.5);
+    }
+  };
+  for (let k = 0; k < 5; k++) {
+    const a = -Math.PI / 2 + k * 2 * Math.PI / 5;
+    disc(cx + Math.cos(a) * 1.8, cy + Math.sin(a) * 1.8, 1.05, col);
+  }
+  disc(cx, cy, 0.6, '#FFF0F6');
+}
 const lips = (c, x, y, s, col) => pixmap(c, x, y, s,
   ['.......', '.LL.LL.', 'LLLLLLL', 'DDDDDDD', '.LLLLL.', '..LLL..'], { L: col, D: '#5A0A1E' });
 
