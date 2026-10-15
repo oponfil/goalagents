@@ -64,7 +64,7 @@ python3 serve.py
 
 Open http://localhost:5173. The server turns caching off so a reload always picks up changes.
 
-To refresh the README pictures, open http://localhost:5173/tools/render-docs.html; it redraws `docs/img/agents.png` and `docs/img/themes.png` with the dashboard's own drawing code.
+To refresh the README pictures, open http://localhost:5173/tools/render-docs.html; it redraws `docs/img/overview.png`, `agents.png` and `themes.png` with the dashboard's own drawing code.
 
 ## Code
 

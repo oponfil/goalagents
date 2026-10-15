@@ -1,6 +1,7 @@
 // Renders the README pictures (agents sheet and theme samples) from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
-import { AGENTS } from '../src/data.js';
+import { AGENTS, FUNNELS } from '../src/data.js';
+import { Scene, CW, H } from '../src/scene.js';
 import { THEMES } from '../src/themes.js';
 import { drawStanding, drawPickaxe, drawHammer, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js';
 
@@ -78,12 +79,27 @@ function themesSheet() {
   return c;
 }
 
+// The dashboard itself: the first four funnels after a short run of the demo, so tanks have
+// moved and agents are mid-action.
+function overview() {
+  const scale = 2, cols = 4;
+  const scene = new Scene(document.createElement('canvas'), FUNNELS);
+  scene.resize(scale, 2);
+  for (let i = 0; i < 12 * 30; i++) scene.update(1 / 30);
+  scene.render();
+  const src = scene.canvas, w = Math.round(src.width * cols / scene.funnels.length);
+  const [c, g] = canvas(w, src.height);
+  g.drawImage(src, 0, 0, w, src.height, 0, 0, w, src.height);
+  return c;
+}
+
 const status = document.getElementById('status');
 try {
   await document.fonts.ready;
   await save(agentsSheet(), 'agents.png');
   await save(themesSheet(), 'themes.png');
-  status.textContent = 'Saved docs/img/agents.png and docs/img/themes.png';
+  await save(overview(), 'overview.png');
+  status.textContent = 'Saved docs/img/agents.png, themes.png and overview.png';
 } catch (e) {
   status.textContent = 'Failed: ' + e.message;
 }
