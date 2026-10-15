@@ -1,13 +1,13 @@
 # GoalAgents MCP protocol
 
-GoalAgents is a dashboard of your goals as funnels, worked by your AI agents. It is read-only: everything on it is written by the agents through this MCP server; the person only looks, clicks for details, and jumps to an agent's chat. Status: draft for the U-Hackathon 2026 prototype — the dashboard currently runs on demo data in `src/data.js`, shaped the same way.
+GoalAgents is a dashboard of your goals as funnels, worked by your AI agents. Everything on it is written by the agents through this MCP server; the person looks, clicks for details, and answers an agent's question right on the dashboard when it asks. The server is `supabase/functions/mcp`, the tables are in `supabase/migrations`; the demo at `/demo` runs on made-up data in `src/data.js`, shaped the same way.
 
 ## Connection
 
-- Remote MCP server, Streamable HTTP: `https://goalagents.run/mcp`.
-- Auth: OAuth 2.1 in the browser, the same flow as other remote connectors (Claude: Connectors → Add custom connector; Claude Code: `claude mcp add --transport http goalagents https://goalagents.run/mcp`; ChatGPT: Developer mode → Create app, OAuth). The person signs in once; no keys to copy.
-- Fallback while OAuth is not ready: a personal URL with a secret key, `https://goalagents.run/mcp?key=…`.
-- The person does two things only: connects the server and gives each agent the instruction file (`docs/AGENT.md`, to be written). Agents create funnels, connect sources, and report everything else.
+- Remote MCP server, Streamable HTTP: `https://goalagents.supabase.co/functions/v1/mcp`.
+- Auth: OAuth 2.1 with dynamic client registration, the same flow as other remote connectors (Claude: Connectors → Add custom connector; Claude Code: `claude mcp add --transport http goalagents https://goalagents.supabase.co/functions/v1/mcp`; ChatGPT: Developer mode → Create, OAuth). Supabase Auth is the authorization server; the person signs in on goalagents.run and allows the agent on `/oauth/consent`. No keys to copy.
+- Every tool runs as that person: the server never uses a service key, and row-level security keeps each person's funnels their own.
+- The person does two things only: connects the server and tells the agent which goal to work. Agents create funnels, connect sources, and report everything else. The server sends the rules below to the agent as MCP instructions.
 
 ## Model
 
@@ -46,18 +46,21 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 | `state` | `work` (mining), `sleep` (waiting for its next scheduled run), `ask` (waiting for the person) |
 | `next_run_at` | For `sleep`: when it starts again; shown as a countdown |
 | `question` | For `ask`: what the agent needs from the person |
-| `chat_url` | Link to the agent's chat or session; the person answers there, never on the dashboard |
+| `question_id` | For `ask`: the open question; the person answers it on the dashboard |
+| `chat_url` | Link to the agent's chat or session |
 
 ## Tools
 
 | Tool | Does |
 |---|---|
-| `list_funnels()` | Funnels, stages, counts, results, goal, and agents present |
-| `upsert_funnel(id, title, result, goal_total, goal_every_days, theme?, stages[])` | Create or update a funnel and its stages (`key`, `label`, `source_url`) |
+| `list_funnels()` | Funnels, stages, counts, results, goal, agents present and open questions |
+| `upsert_funnel(id, title, result, goal_total, goal_every_days, theme?, stages[])` | Create or update a funnel and its stages (`key`, `label`, `source_url`); stages keep their counts by key |
 | `report_counts(funnel_id, counts{stage_key: n}, results?)` | Current counts after the agent's work; the server stores each report with a timestamp |
-| `add_result(funnel_id, note?)` | One more result came out (increments `results`) |
-| `set_agent_state(funnel_id, zone, state, next_run_at?, question?, chat_url?)` | Presence of the calling agent; one presence per agent per funnel |
-| `clear_agent(funnel_id)` | The agent leaves the funnel |
+| `add_result(funnel_id)` | One more result came out (increments `results`) |
+| `set_agent_state(funnel_id, agent, zone, state, next_run_at?, question?, chat_url?)` | Presence of an agent; one presence per agent per funnel. With `ask` it returns a `question_id` |
+| `get_answer(question_id, wait_seconds?)` | The person's answer, or null; waits up to 50 s |
+| `clear_agent(funnel_id, agent)` | The agent leaves the funnel |
+| `delete_funnel(funnel_id)` | Delete a funnel and everything in it, only when the person asks |
 
 Write tools return the updated funnel so the agent can check what the person sees.
 
@@ -76,5 +79,5 @@ Agents never report flows, forecasts or gauge readings — the server derives th
 
 1. `set_agent_state(state: "work")` in the zone it works on.
 2. Do its job; after meaningful progress call `report_counts` (and `add_result` when a result appears).
-3. If it needs the person — approval, a missing file, a decision — `set_agent_state(state: "ask", question, chat_url)` and wait in its own chat.
+3. If it needs the person — approval, a missing file, a decision — `set_agent_state(state: "ask", question)` and poll `get_answer(question_id)`; the person answers on the dashboard.
 4. At the end: `set_agent_state(state: "sleep", next_run_at)` until its next scheduled run, or `clear_agent` if it has no schedule.

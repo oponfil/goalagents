@@ -64,6 +64,8 @@ python3 serve.py
 
 Open http://localhost:5173 for the landing page and http://localhost:5173/demo/ for the dashboard. The server turns caching off so a reload always picks up changes.
 
+The MCP server deploys with the Supabase CLI: `supabase db push` for the tables, `supabase functions deploy mcp --use-api` for the server (it needs the secret `MCP_AUTH_ISSUER`, the project's Auth issuer).
+
 To refresh the README pictures, open http://localhost:5173/tools/render-docs.html; it redraws `docs/img/overview.png`, `agents.png` and `themes.png` with the dashboard's own drawing code.
 
 ## Code
@@ -72,7 +74,10 @@ To refresh the README pictures, open http://localhost:5173/tools/render-docs.htm
 - `src/scene.js` — Canvas 2D scene: layout, simulation, gauges, hit areas
 - `src/themes.js` — themes: column backdrop, zone walls, work piece, tank filling, result item
 - `src/sprites.js` — agents (outfits, tools, logos) drawn from shapes on a half-unit grid
-- `src/main.js` — page wiring: scaling, sticky titles, drag to reorder, popups
-- `index.html` — landing page; `demo/` — the dashboard page and its styles
-- `login/`, `app/` — sign-in (Google or an email link via Supabase Auth) and the account page; `src/config.js` holds the Supabase project URL and publishable key
+- `src/dashboard.js` — page wiring: scaling, sticky titles, drag to reorder, popups, answers to agents
+- `src/main.js` — the demo; `src/live.js` — the person's funnels from the database, flows from the count history, live updates
+- `index.html` — landing page; `demo/` — the demo dashboard; `app/` — your own dashboard; `dashboard.css` — their styles
+- `login/` — sign-in with Google or an email link (Supabase Auth); `oauth/consent/` — where you allow an agent to connect
+- `src/config.js` — Supabase project address, publishable key, Google client ID and the MCP address (all public)
+- `supabase/migrations/` — tables and row-level security; `supabase/functions/mcp/` — the MCP server
 - `docs/MCP.md` — the MCP protocol agents use to write to the dashboard

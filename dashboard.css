@@ -119,3 +119,35 @@ body {
 }
 .btn:hover { background: #3A322B; }
 .btn.primary { background: #D97757; border-color: #D97757; color: #fff; }
+#pop textarea {
+  width: 100%;
+  margin: 0 0 8px;
+  padding: 8px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  color: var(--text);
+  font: 14px/1.4 var(--font);
+  resize: vertical;
+}
+#pop textarea:focus { outline: none; border-color: var(--muted); }
+#pop button.btn { font: inherit; cursor: pointer; background: none; }
+#pop button.btn.primary { background: #D97757; }
+#pop button.btn:disabled { opacity: 0.5; cursor: default; }
+.pop-msg { color: var(--alert); margin-top: 6px; }
+#clock .who { margin-left: 4px; }
+#clock button { background: none; border: 0; color: var(--muted); font: inherit; cursor: pointer; padding: 0 0 0 10px; text-decoration: underline; }
+#clock button:hover { color: var(--text); }
+
+/* No funnels yet: how to connect an agent. */
+.connect { margin: 48px auto; max-width: 620px; padding: 0 20px; line-height: 1.55; }
+.connect h1 { font-size: 30px; margin: 0 0 8px; }
+.connect p { color: var(--muted); margin: 0 0 14px; }
+.connect h2 { font-size: 17px; margin: 22px 0 6px; }
+.connect code, .connect pre {
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--panel);
+  border: 2px solid var(--border);
+}
+.connect code { padding: 1px 6px; }
+.connect pre { padding: 10px 12px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin: 0 0 8px; }
+.connect a { color: #F2C14E; }

@@ -26,7 +26,9 @@ function rng(seed) {
 }
 
 export class Scene {
-  constructor(canvas, funnels) {
+  // live: the agents report counts and states; nothing is simulated, agents keep their state.
+  constructor(canvas, funnels, { live = false } = {}) {
+    this.live = live;
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.funnels = funnels.map(f => ({ ...f, stages: f.stages.map(s => ({ ...s })) }));
@@ -50,7 +52,7 @@ export class Scene {
       taken.set(key, n + 1);
       const a = { ...w, f, side: n ? 'R' : 'L', rand: r, hitAt: 1 + r() * 3, phase: r() };
       if (w.state === 'sleep') a.wakeAt = w.wakeIn;
-      if (w.state === 'work') a.workUntil = 20 + r() * 25;
+      if (w.state === 'work' && !live) a.workUntil = 20 + r() * 25;
       this.agents.push(a);
     }));
   }
@@ -127,7 +129,7 @@ export class Scene {
     this.t += dt;
     const t = this.t;
     for (const a of this.agents) {
-      if (a.state === 'sleep' && t >= a.wakeAt) { a.state = 'walk'; a.to = 'work'; a.x = this.spot(a, 'rest').x; }
+      if (a.state === 'sleep' && t >= a.wakeAt && !this.live) { a.state = 'walk'; a.to = 'work'; a.x = this.spot(a, 'rest').x; }
       if (a.state === 'work' && a.workUntil && t >= a.workUntil) { a.state = 'walk'; a.to = 'rest'; a.x = this.spot(a, 'work').x; }
       if (a.state === 'walk') {
         const target = this.spot(a, a.to).x;
@@ -150,6 +152,7 @@ export class Scene {
   flow(dt) {
     const t = this.t;
     this.days += dt / DAY_SECONDS;
+    if (this.live) return;
     this.funnels.forEach(f => {
       const n = f.stages.length, cx = this.cx(this.fi(f));
       f.acc ??= new Array(n + 1).fill(0);
@@ -372,7 +375,7 @@ export class Scene {
     for (const a of this.agents) {
       if (a.state !== 'sleep') continue;
       const p = this.spot(a, 'rest');
-      shadowed(() => T(fmtTimer(a.wakeAt - t), p.x + 14, p.y - 8, 8.5, '#F4EDE1', 'center', 700));
+      if (a.wakeAt != null) shadowed(() => T(fmtTimer(a.wakeAt - t), p.x + 14, p.y - 8, 8.5, '#F4EDE1', 'center', 700));
       for (let i = 0; i < 2; i++) {
         const q = ((t * 0.6 + i * 0.5) % 1);
         g.globalAlpha = 1 - q;

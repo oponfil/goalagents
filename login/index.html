@@ -34,7 +34,7 @@
   </div>
 
   <script type="module">
-    import { supabase, appUrl } from '../src/auth.js';
+    import { supabase, afterSignIn } from '../src/auth.js';
     import { GOOGLE_CLIENT_ID } from '../src/config.js';
 
     const msg = document.getElementById('msg');
@@ -42,7 +42,7 @@
 
     // Already signed in: go straight to the account page.
     const { data: { session } } = await supabase.auth.getSession();
-    if (session) location.replace(appUrl());
+    if (session) location.replace(afterSignIn());
 
     // Google's own button: the account picker names our site, not the Supabase host.
     // Google gets the hashed nonce, Supabase checks the token against the raw one.
@@ -60,7 +60,7 @@
           say('Signing in…');
           const { error } = await supabase.auth.signInWithIdToken({ provider: 'google', token: credential, nonce });
           if (error) say(error.message, 'error');
-          else location.replace(appUrl());
+          else location.replace(afterSignIn());
         },
       });
       const box = document.getElementById('google');
@@ -75,7 +75,7 @@
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
       say('Sending…');
-      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: appUrl() } });
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: afterSignIn() } });
       if (error) say(error.message, 'error');
       else say(`Check ${email} for a sign-in link.`, 'ok');
     });

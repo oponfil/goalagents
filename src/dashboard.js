@@ -1,0 +1,187 @@
+// The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
+// Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
+import { agentInfo, plural } from './data.js';
+import { Scene, CW, H, fmtCount } from './scene.js';
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+
+// opts.live: counts come from the agents, not the demo simulation.
+// opts.clock(scene): text for the right corner of the header.
+// opts.onAnswer(agent, text): the person answered an agent's question (live only).
+export function mountDashboard(funnels, opts = {}) {
+  const canvas = document.getElementById('scene');
+  const scroller = document.getElementById('scroller');
+  const track = document.getElementById('titles-track');
+  const clock = document.getElementById('day');
+  const pop = document.getElementById('pop');
+  let scene = new Scene(canvas, funnels, { live: opts.live });
+
+  // Funnel order is the viewer's own arrangement, kept in this browser only.
+  const ORDER_KEY = opts.orderKey || 'goalagents-order';
+  const loadOrder = () => {
+    try { const saved = JSON.parse(localStorage.getItem(ORDER_KEY)); if (Array.isArray(saved)) scene.applyOrder(saved); } catch {}
+  };
+  const saveOrder = () => { try { localStorage.setItem(ORDER_KEY, JSON.stringify(scene.order())); } catch {} };
+  loadOrder();
+
+  // Scene size is fixed at load: about four funnels across the screen, but not much taller than
+  // the screen (a little vertical scroll is fine for the tallest funnel). Resizing the window
+  // only changes how many funnels are visible; the rest are reached with horizontal scroll.
+  const byH = (scroller.clientHeight - 20) / H;
+  const scale = Math.max(1, Math.min(scroller.clientWidth / (4.2 * CW), byH * 1.35));
+  function layout() {
+    if (scene.dpr !== (window.devicePixelRatio || 1)) scene.resize(scale, window.devicePixelRatio || 1);
+    scroller.classList.toggle('fits', scene.funnels.length * CW * scale <= scroller.clientWidth);
+  }
+  window.addEventListener('resize', layout);
+  document.fonts?.ready.then(() => scene.resize(scale, window.devicePixelRatio || 1));
+  layout();
+
+  // Sticky header: one title per funnel column, kept aligned with the scene while it scrolls.
+  // A red badge shows how many agents in that funnel are waiting for you.
+  function buildTitles() {
+    track.innerHTML = scene.funnels.map((f, fi) =>
+      `<div class="col-title" data-fi="${fi}" style="left:${fi * CW * scale}px;width:${CW * scale}px">
+        <span class="name">${esc(f.title)}</span><span class="badge" hidden></span></div>`).join('');
+  }
+  function syncTitles() {
+    track.style.transform = `translateX(${canvas.getBoundingClientRect().left - track.parentElement.getBoundingClientRect().left}px)`;
+    track.querySelectorAll('.col-title').forEach(el => {
+      const n = scene.waitingFor(scene.funnels[+el.dataset.fi]), badge = el.querySelector('.badge');
+      badge.hidden = !n;
+      badge.textContent = n;
+      badge.title = n ? `${n} ${plural(n, ['agent is', 'agents are'])} waiting for you` : '';
+    });
+  }
+  buildTitles();
+
+  let last = performance.now();
+  function frame(now) {
+    scene.update(Math.min(0.1, (now - last) / 1000));
+    last = now;
+    scene.render();
+    syncTitles();
+    if (opts.clock) clock.textContent = opts.clock(scene);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  function toLogical(e) {
+    const r = canvas.getBoundingClientRect();
+    return [(e.clientX - r.left) / scene.scale, (e.clientY - r.top) / scene.scale];
+  }
+
+  // Drag a funnel by its title in the header to reorder.
+  let drag = null;
+  track.addEventListener('pointerdown', e => {
+    const el = e.target.closest('.col-title');
+    if (!el) return;
+    drag = { from: +el.dataset.fi, x0: e.clientX, moved: false };
+    track.setPointerCapture(e.pointerId);
+  });
+  track.addEventListener('pointermove', e => {
+    if (!drag) return;
+    if (Math.abs(e.clientX - drag.x0) > 6) drag.moved = true;
+    if (drag.moved) {
+      scene.dropAt = Math.max(0, Math.min(scene.funnels.length, Math.round(toLogical(e)[0] / CW)));
+      track.classList.add('dragging');
+      hidePop();
+    }
+  });
+  track.addEventListener('pointerup', () => {
+    if (!drag) return;
+    if (drag.moved && scene.dropAt !== null) { scene.moveFunnel(drag.from, scene.dropAt); saveOrder(); buildTitles(); }
+    scene.dropAt = null; drag = null;
+    track.classList.remove('dragging');
+  });
+
+  canvas.addEventListener('pointermove', e => {
+    canvas.style.cursor = scene.hitTest(...toLogical(e)) ? 'pointer' : 'default';
+  });
+
+  canvas.addEventListener('click', e => {
+    const h = scene.hitTest(...toLogical(e));
+    if (!h) return hidePop();
+    if (h.type === 'gauge') { scene.cyclePeriod(); return hidePop(); }
+    showPop(e, content(h));
+    if (h.type === 'ask' && opts.onAnswer) bindAnswer(h.a);
+  });
+
+  function content(h) {
+    if (h.type === 'stage') {
+      const f = scene.funnels[h.fi], s = f.stages[h.j], need = scene.stageNeed(h.fi, h.j);
+      const needText = need
+        ? `The goal (${f.goal.total} ${plural(f.goal.total, f.result)}) needs about ${fmtCount(Math.ceil(need))} ${plural(Math.ceil(need), s.forms)} here; now ${fmtCount(s.count)}.`
+        : 'Not enough data yet to estimate how many are needed here for the goal.';
+      const source = opts.live
+        ? (s.source_url ? `<a class="btn" href="${esc(s.source_url)}" target="_blank" rel="noopener">Open the list</a>` : '<p>No list linked yet.</p>')
+        : `<p>The list lives in a Google Sheet the agent connected.</p>
+          <a class="btn" href="https://docs.google.com/spreadsheets" target="_blank" rel="noopener">Open spreadsheet</a>`;
+      return `<div class="pop-title">${esc(f.title)}: ${fmtCount(s.count)} ${esc(plural(s.count, s.forms))}</div>
+        <p>${esc(needText)}</p>${source}`;
+    }
+    const a = h.a, info = agentInfo(a.agent), f = a.f;
+    const chat = a.chat || info.chat;
+    const who = `<span class="chip" style="background:${info.color}"></span>${esc(info.name)}`;
+    const where = `${esc(f.title)}: ${esc(scene.zoneName(a))}`;
+    if (h.type === 'ask') {
+      const reply = opts.onAnswer
+        ? `<textarea class="answer" rows="3" maxlength="2000" placeholder="Your answer"></textarea>
+          <button class="btn primary send">Send answer</button>
+          ${chat ? `<a class="btn" href="${esc(chat)}" target="_blank" rel="noopener">Open ${esc(info.name)}</a>` : ''}
+          <div class="pop-msg"></div>`
+        : `<a class="btn primary" href="${esc(chat)}" target="_blank" rel="noopener">Reply in ${esc(info.name)}</a>`;
+      return `<div class="pop-title">${who} is waiting for you</div>
+        <div class="pop-sub">${where}</div>
+        <p>${esc(a.question)}</p>${reply}`;
+    }
+    const state = a.state === 'sleep' ? 'is resting until the next run'
+      : a.state === 'walk' ? (a.to === 'work' ? 'is starting a shift' : 'finished a shift')
+        : 'is working';
+    return `<div class="pop-title">${who} ${state}</div>
+      <div class="pop-sub">${where}</div>
+      ${chat ? `<a class="btn" href="${esc(chat)}" target="_blank" rel="noopener">Open ${esc(info.name)}</a>` : ''}`;
+  }
+
+  function bindAnswer(a) {
+    const box = pop.querySelector('.answer'), send = pop.querySelector('.send'), msg = pop.querySelector('.pop-msg');
+    box.focus();
+    send.addEventListener('click', async () => {
+      const text = box.value.trim();
+      if (!text) return box.focus();
+      send.disabled = true;
+      const error = await opts.onAnswer(a, text);
+      if (error) { msg.textContent = error; send.disabled = false; return; }
+      a.state = 'work'; // the agent picks the answer up on its next check
+      hidePop();
+    });
+  }
+
+  function showPop(e, html) {
+    pop.innerHTML = `<button class="close" aria-label="Close">×</button>` + html;
+    pop.querySelector('.close').addEventListener('click', hidePop);
+    pop.hidden = false;
+    const pw = pop.offsetWidth, ph = pop.offsetHeight;
+    pop.style.left = Math.max(8, Math.min(window.innerWidth - pw - 8, e.clientX - pw / 2)) + 'px';
+    pop.style.top = Math.max(8, Math.min(window.innerHeight - ph - 8, e.clientY + 14)) + 'px';
+  }
+  function hidePop() { pop.hidden = true; }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hidePop(); });
+  document.addEventListener('pointerdown', e => {
+    if (!pop.hidden && !pop.contains(e.target) && e.target !== canvas) hidePop();
+  });
+  scroller.addEventListener('scroll', hidePop);
+
+  return {
+    // New data from the agents: rebuild the scene, keep the viewer's order and scroll.
+    setFunnels(next) {
+      if (!pop.hidden && pop.contains(document.activeElement)) return false; // typing an answer
+      scene = new Scene(canvas, next, { live: opts.live });
+      loadOrder();
+      scene.resize(scale, window.devicePixelRatio || 1);
+      layout();
+      buildTitles();
+      return true;
+    },
+  };
+}

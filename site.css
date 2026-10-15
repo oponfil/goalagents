@@ -59,3 +59,7 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 .doc p, .doc li { color: var(--muted); line-height: 1.6; }
 .doc a { color: var(--accent); }
 .gbtn { min-height: 44px; display: flex; justify-content: center; }
+.perm { margin: 0 0 14px; padding-left: 20px; color: var(--text); font-size: 15px; }
+.perm li { margin: 4px 0; }
+.note { color: var(--muted); font-size: 13px; margin: 0 0 18px; }
+.card .btn:disabled { opacity: 0.5; cursor: default; }

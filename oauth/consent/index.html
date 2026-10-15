@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connect an agent — GoalAgents</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../site.css">
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="../../">Goal<span>Agents</span></a>
+    </nav>
+
+    <div class="card" id="card">
+      <p class="sub">Loading…</p>
+    </div>
+  </div>
+
+  <script type="module">
+    // OAuth consent: Supabase Auth sends the person here with ?authorization_id= when an agent
+    // (Claude, ChatGPT, Cursor…) asks to connect to their GoalAgents.
+    import { supabase, siteUrl } from '../../src/auth.js';
+
+    const card = document.getElementById('card');
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+    const show = html => { card.innerHTML = html; };
+    const problem = text => show(`<h1>Can't connect</h1><p class="sub">${esc(text)}</p>
+      <a class="btn" href="${siteUrl('app/')}">Go to your goals</a>`);
+
+    const id = new URLSearchParams(location.search).get('authorization_id');
+    if (!id) problem('This link has no authorization request. Start connecting from your agent again.');
+    else {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        location.replace(siteUrl('login/') + '?next=' + encodeURIComponent(location.pathname + location.search));
+      } else {
+        const { data, error } = await supabase.auth.oauth.getAuthorizationDetails(id);
+        if (error) problem(error.message);
+        else if (data.redirect_url) location.replace(data.redirect_url); // already allowed before
+        else ask(data, session.user.email);
+      }
+    }
+
+    function ask(d, email) {
+      const name = d.client?.name || 'An app';
+      let host = '';
+      try { host = new URL(d.redirect_uri).host; } catch {}
+      show(`
+        <h1>Connect ${esc(name)}?</h1>
+        <p class="sub">${esc(name)} wants to work with your GoalAgents as ${esc(email)}.</p>
+        <ul class="perm">
+          <li>See your goal funnels, counts and agents</li>
+          <li>Create and change funnels, report progress and results</li>
+          <li>Show itself at work and ask you questions</li>
+        </ul>
+        <p class="note">After you allow it, you go back to ${esc(host || 'the app')}. Only allow apps you started connecting yourself.</p>
+        <button class="btn primary" id="allow">Allow</button>
+        <button class="btn" id="deny" style="margin-top:10px">Deny</button>
+        <div class="msg" id="msg"></div>`);
+      const decide = approve => async () => {
+        card.querySelectorAll('button').forEach(b => { b.disabled = true; });
+        const { data, error } = approve
+          ? await supabase.auth.oauth.approveAuthorization(d.authorization_id)
+          : await supabase.auth.oauth.denyAuthorization(d.authorization_id);
+        if (error) {
+          const msg = document.getElementById('msg');
+          msg.textContent = error.message; msg.className = 'msg error';
+          card.querySelectorAll('button').forEach(b => { b.disabled = false; });
+        } else location.replace(data.redirect_url);
+      };
+      document.getElementById('allow').addEventListener('click', decide(true));
+      document.getElementById('deny').addEventListener('click', decide(false));
+    }
+  </script>
+</body>
+</html>

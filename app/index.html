@@ -7,47 +7,79 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="../dashboard.css">
 </head>
 <body>
-  <div class="wrap">
-    <nav>
-      <a class="logo" href="../">Goal<span>Agents</span></a>
-      <div class="links">
-        <span id="who"></span>
-        <a href="#" id="signout">Sign out</a>
-      </div>
-    </nav>
+  <header id="titles">
+    <div id="titles-track"></div>
+    <div id="clock"><a href="../">GoalAgents</a><span class="who" id="day"></span><button id="signout">Sign out</button></div>
+  </header>
+  <main id="scroller">
+    <canvas id="scene" hidden></canvas>
+    <section class="connect" id="connect" hidden>
+      <h1>Connect your agents</h1>
+      <p>Your agents create your goal funnels and report progress here. Add GoalAgents to an agent once; it asks you to sign in and allow access.</p>
+      <pre id="mcp-url"></pre>
 
-    <section class="hero" id="content" hidden>
-      <h1>Your goals</h1>
-      <div class="empty">
-        <h2>No funnels yet</h2>
-        <p>Connect your agents and they will create your goal funnels and report progress here. Agent connection is coming next.</p>
-        <span class="code">https://goalagents.run/mcp</span>
-        <p><a href="../demo/">See what it will look like →</a></p>
-      </div>
+      <h2>Claude</h2>
+      <p>Settings → Connectors → Add custom connector, paste the address above.</p>
+      <h2>Claude Code</h2>
+      <pre id="cc"></pre>
+      <p>Then run <code>/mcp</code> and choose goalagents to sign in.</p>
+      <h2>ChatGPT</h2>
+      <p>Settings → Apps &amp; Connectors → Advanced → Developer mode, then Create: paste the address, authentication OAuth.</p>
+      <h2>Cursor and others</h2>
+      <p>Add a remote MCP server with this address (Streamable HTTP, OAuth).</p>
+
+      <h2>Then tell your agent</h2>
+      <pre>Make a GoalAgents funnel for my job search and keep it updated on every run.</pre>
+      <p>Not sure what it will look like? <a href="../demo/">See the demo</a>.</p>
     </section>
-  </div>
+  </main>
+  <div id="pop" hidden></div>
 
   <script type="module">
     import { supabase } from '../src/auth.js';
+    import { MCP_URL } from '../src/config.js';
+    import { loadFunnels, answer, watch } from '../src/live.js';
+    import { mountDashboard } from '../src/dashboard.js';
 
-    // Coming back from Google or an email link, supabase-js reads the session from the URL.
+    // Coming back from an email link, supabase-js reads the session from the URL.
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) location.replace('../login/');
     else {
       // Drop the leftover '#' from the sign-in redirect.
       if (location.hash || location.search) history.replaceState(null, '', location.pathname);
-      document.getElementById('who').textContent = session.user.email;
-      document.getElementById('content').hidden = false;
+      document.getElementById('signout').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        location.replace('../');
+      });
+      document.getElementById('mcp-url').textContent = MCP_URL;
+      document.getElementById('cc').textContent = `claude mcp add --transport http goalagents ${MCP_URL}`;
+      start(session.user.email);
     }
 
-    document.getElementById('signout').addEventListener('click', async e => {
-      e.preventDefault();
-      await supabase.auth.signOut();
-      location.replace('../');
-    });
+    // The person's funnels, redrawn whenever an agent writes.
+    async function start(email) {
+      const canvas = document.getElementById('scene'), connect = document.getElementById('connect');
+      let board = null, pending = false;
+      const show = funnels => {
+        const empty = !funnels.length;
+        connect.hidden = !empty;
+        canvas.hidden = empty;
+        if (empty) return;
+        if (!board) board = mountDashboard(funnels, { live: true, clock: () => email, onAnswer: answer, orderKey: 'goalagents-order-live' });
+        else if (!board.setFunnels(funnels)) pending = true; // the person is typing an answer
+      };
+      const refresh = async () => {
+        try { pending = false; show(await loadFunnels()); } catch (e) { console.error(e); }
+      };
+      await refresh();
+      watch(refresh);
+      // Flows and timers move with time even when nobody writes.
+      setInterval(refresh, 60e3);
+      document.addEventListener('focusout', () => { if (pending) refresh(); });
+    }
   </script>
 </body>
 </html>
