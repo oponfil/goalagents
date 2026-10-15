@@ -113,7 +113,8 @@ export class Scene {
       for (let k = -1; k < n; k++) {
         // No room around a zone: agents work in the open, on top of the tank below.
         const y = zoneTop(k);
-        this.pipe(c, cx, y + 4, y + ZH);
+        // The pipe runs from the tank above (or the hopper on top) down to the tank below.
+        this.pipe(c, cx, k < 0 ? y + 4 : y, y + ZH);
         // On top: a small funnel at the very top of the column and a short pipe down to the gauge.
         if (k < 0) { this.pipe(c, cx, y + 1, y + 4); this.hopper(c, cx, y - 8, y + 1); }
         gaugeRim(c, cx, y + 4 + GAUGE_R + 2);
