@@ -43,7 +43,7 @@ function agentsSheet() {
   return c;
 }
 
-// One tile per theme: zone with a working agent and its work piece, a tank, results.
+// One tile per theme: a working agent and its work piece in the open, a tank, results.
 function themesSheet() {
   const names = Object.keys(THEMES), K = 4, W = 180, Hh = 112, cols = 3;
   const [c, g] = canvas(cols * W * K, Math.ceil(names.length / cols) * Hh * K);
@@ -52,7 +52,6 @@ function themesSheet() {
     const th = THEMES[name], ox = (i % cols) * W, oy = Math.floor(i / cols) * Hh, r = rng(7 + i);
     g.setTransform(K, 0, 0, K, ox * K, oy * K);
     th.backdrop(g, 0, W, Hh, r);
-    th.zone(g, 8, 8, 164, 40, r);
     g.fillStyle = '#5E626B'; g.fillRect(86, 12, 9, 36);
     g.fillStyle = '#8E939D'; g.fillRect(88, 12, 5, 36);
     th.plate(g, 72, 33, 36, 11);

@@ -72,7 +72,7 @@ To refresh the README pictures, open http://localhost:5173/tools/render-docs.htm
 
 - `src/data.js` — demo funnels and the agent list
 - `src/scene.js` — Canvas 2D scene: layout, simulation, gauges, hit areas
-- `src/themes.js` — themes: column backdrop, zone walls, work piece, tank filling, result item
+- `src/themes.js` — themes: column backdrop, work piece, tank filling, result item
 - `src/sprites.js` — agents (outfits, tools, logos) drawn from shapes on a half-unit grid
 - `src/dashboard.js` — page wiring: scaling, sticky titles, drag to reorder, popups, answers to agents
 - `src/main.js` — the demo; `src/live.js` — the person's funnels from the database, flows from the count history, live updates
