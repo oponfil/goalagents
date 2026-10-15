@@ -18,9 +18,9 @@ const agent = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,31}$/)
 
 const INSTRUCTIONS = `GoalAgents shows the person their goals as funnels and the agents working them.
 A funnel is one goal (e.g. "Job Search") with 2-5 stages top to bottom (jobs found → applied → interview → final round) and a result at the bottom (offer).
-Zones: 0 is the inflow above the first stage, zone k moves stage k-1 into stage k, zone n (below the last stage) turns the last stage into results. At most two agents per zone.
+Zones: 0 is the inflow above the first stage, zone k moves stage k-1 into stage k, zone n (below the last stage) turns the last stage into results. At most two agents per zone on Pro, one on the free plan.
 On every run: set_agent_state(work) in your zone; after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question) and poll get_answer; at the end set_agent_state(sleep, next_run_at) or clear_agent.
-Plans: free has up to 3 funnels with up to 3 stages each; Pro has up to 10 funnels with up to 5 stages each. list_funnels tells which plan the person has.
+Plans: free has up to 3 funnels with up to 3 stages each and one agent per zone; Pro has up to 10 funnels with up to 5 stages each and two agents per zone. list_funnels tells which plan the person has.
 Report only counts, dates and links. Item lists stay in the person's own sources (e.g. a Google Sheet, linked as source_url).`
 
 const text = (v: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(v, null, 1) }] })
@@ -60,11 +60,12 @@ async function funnels(db: Db, key?: string) {
 }
 const one = async (db: Db, key: string) => (await funnels(db, key))[0]
 
-// Free: 3 funnels of up to 3 stages. Pro: 10 funnels of up to 5 stages (everyone is on Pro during the launch).
+// Free: 3 funnels of up to 3 stages, one agent per zone. Pro: 10 funnels of up to 5 stages, two agents per zone
+// (everyone is on Pro during the launch).
 async function plan(db: Db) {
   const row = check(await db.from('accounts').select('plan').maybeSingle()) as { plan: string } | null
   const name = row?.plan ?? 'pro'
-  return { plan: name, max_funnels: name === 'pro' ? 10 : 3, max_stages: name === 'pro' ? 5 : 3 }
+  return { plan: name, max_funnels: name === 'pro' ? 10 : 3, max_stages: name === 'pro' ? 5 : 3, max_agents_per_zone: name === 'pro' ? 2 : 1 }
 }
 
 function server(db: Db) {

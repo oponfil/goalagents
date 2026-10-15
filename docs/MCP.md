@@ -8,7 +8,7 @@ GoalAgents is a dashboard of your goals as funnels, worked by your AI agents. Ev
 - Auth: OAuth 2.1 with dynamic client registration, the same flow as other remote connectors (Claude: Connectors → Add custom connector; Claude Code: `claude mcp add --transport http goalagents https://goalagents.run/mcp`; ChatGPT: Developer mode → Create, OAuth). Supabase Auth is the authorization server; the person signs in on goalagents.run and allows the agent on `/oauth/consent`. No keys to copy.
 - Everything an agent sees is on goalagents.run: a Cloudflare Worker (`cloudflare/worker.js`) serves the discovery documents and passes `/mcp` to the Supabase Edge Function and `/auth/*` to Supabase Auth.
 - Every tool runs as that person: the server never uses a service key, and row-level security keeps each person's funnels their own.
-- Plans (see `/pricing/`): **Free** — up to 3 funnels with up to 3 stages each; **Pro**, $10 a month — up to 10 funnels with up to 5 stages each (5 is what the dashboard draws). During early access everyone is on Pro for free. The database enforces the limits; `list_funnels` returns the plan.
+- Plans (see `/pricing/`): **Free** — up to 3 funnels with up to 3 stages each and one agent per zone; **Pro**, $10 a month — up to 10 funnels with up to 5 stages each and two agents per zone (5 is what the dashboard draws). During early access everyone is on Pro for free. The database enforces the limits; `list_funnels` returns the plan.
 - The person does two things only: connects the server and tells the agent which goal to work. Agents create funnels, connect sources, and report everything else. The server sends the rules below to the agent as MCP instructions.
 
 ## Model
@@ -37,7 +37,7 @@ GoalAgents is a dashboard of your goals as funnels, worked by your AI agents. Ev
 
 Only counts, dates and links are stored. Item lists (vacancies, people, papers) stay in the person's own sources.
 
-**Zone** — the mining area around a tank where agents work. Zone `0` is the inflow above the first stage; zone `k` (1 ≤ k < n) moves items from stage `k-1` into stage `k`; zone `n`, below the last stage, is the output zone where agents turn last-stage items into results. A zone holds **at most two agents** (left and right of the pipe); the server rejects a third.
+**Zone** — the mining area around a tank where agents work. Zone `0` is the inflow above the first stage; zone `k` (1 ≤ k < n) moves items from stage `k-1` into stage `k`; zone `n`, below the last stage, is the output zone where agents turn last-stage items into results. A zone holds **at most two agents** on Pro (left and right of the pipe) and one on the free plan; the server rejects more.
 
 **Agent presence** — what an agent is doing right now.
 
