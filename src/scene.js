@@ -119,6 +119,18 @@ export class Scene {
     });
   }
 
+  // The column's backdrop for a strip h logical units tall: the funnel's title sits on it in the
+  // page header, so the column's look reaches up behind its name.
+  titleStrip(fi, h) {
+    const strip = document.createElement('canvas');
+    strip.width = CW * RES; strip.height = Math.ceil(h * RES);
+    const c = strip.getContext('2d');
+    c.setTransform(RES, 0, 0, RES, 0, 0);
+    c.fillStyle = '#1B1714'; c.fillRect(0, 0, CW, h);
+    themeOf(this.funnels[fi]).backdrop(c, 0, CW, h, rng(42 + fi));
+    return strip;
+  }
+
   pipe(c, cx, y0, y1) {
     c.fillStyle = '#5E626B'; c.fillRect(cx - 4, y0, 9, y1 - y0);
     c.fillStyle = '#8E939D'; c.fillRect(cx - 2, y0, 5, y1 - y0);

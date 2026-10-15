@@ -22,7 +22,6 @@ body {
   position: relative;
   height: 44px;
   overflow: hidden;
-  border-bottom: 2px solid var(--border);
   background: var(--bg);
 }
 #titles-track { position: absolute; inset: 0 auto 0 0; }
@@ -53,6 +52,9 @@ body {
   cursor: grab;
   user-select: none;
   touch-action: none;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+  text-shadow: 0 1px 0 #000, 0 0 6px rgba(0, 0, 0, 0.8);
 }
 #titles-track.dragging .col-title { cursor: grabbing; }
 .badge {

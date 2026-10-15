@@ -43,6 +43,10 @@ export function mountDashboard(funnels, opts = {}) {
     track.innerHTML = scene.funnels.map((f, fi) =>
       `<div class="col-title" data-fi="${fi}" style="left:${fi * CW * scale}px;width:${CW * scale}px">
         <span class="name">${esc(f.title)}</span><span class="badge" hidden></span></div>`).join('');
+    const h = track.parentElement.clientHeight / scale;
+    track.querySelectorAll('.col-title').forEach(el => {
+      el.style.backgroundImage = `url(${scene.titleStrip(+el.dataset.fi, h).toDataURL()})`;
+    });
   }
   function syncTitles() {
     track.style.transform = `translateX(${canvas.getBoundingClientRect().left - track.parentElement.getBoundingClientRect().left}px)`;
