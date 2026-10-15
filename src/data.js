@@ -1,7 +1,8 @@
 // Demo data shown on the landing page. In the product this comes from agents via MCP.
 
 export const AGENTS = {
-  claude: { name: 'Claude', color: '#D97757', chat: 'https://claude.ai' },
+  // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
+  claude: { name: 'Claude', color: '#D97757', chat: 'https://claude.ai', app: url => url.replace(/^https:\/\/claude\.ai/, 'claude://claude.ai') },
   chatgpt: { name: 'ChatGPT', color: '#10A37F', chat: 'https://chatgpt.com' },
   grok: { name: 'Grok', color: '#1A1A1A', chat: 'https://grok.com' },
   gemini: { name: 'Gemini', color: '#4285F4', chat: 'https://gemini.google.com' },
@@ -15,6 +16,18 @@ export const AGENTS = {
 
 // Any other agent name gets a plain grey shirt without a logo.
 export const agentInfo = id => AGENTS[id] || { name: id, color: '#8A8F98', chat: '' };
+
+// Where "Open" and "Reply" go: the agent's desktop app when it has a link scheme (Claude),
+// otherwise its chat in the browser.
+export const chatLink = (info, url) => (url && info.app ? info.app(url) : url);
+
+// A button in the agent's own colour, with text that stays readable on it.
+export function agentButton(info) {
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(info.color.slice(i, i + 2), 16));
+  const light = 0.299 * r + 0.587 * g + 0.114 * b > 150;
+  const dark = 0.299 * r + 0.587 * g + 0.114 * b < 50;
+  return `background:${info.color};border-color:${dark ? '#6B6B70' : info.color};color:${light ? '#1B1714' : '#FFFFFF'}`;
+}
 
 // Label forms: [singular, plural]. A funnel has n = 2-5 stages; flows (per day) has n + 1 entries:
 // flows[0] is the inflow above the first tank, flows[k + 1] the zone below stage k, and

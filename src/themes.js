@@ -29,8 +29,9 @@ function pixmap(c, x, y, s, rows, colors) {
   });
 }
 // Romance from light to close, top stages to bottom: a flower, a heart, a kiss.
-const flower = (c, x, y, s, col) => pixmap(c, x, y, s,
-  ['..PPP..', 'PP.P.PP', 'PPPYPPP', 'PP.P.PP', '..PPP..', '...G...'], { P: col, Y: '#FFD866', G: '#5DBB63' });
+// The flower is seen from above: four round petals around a yellow centre.
+const flower = (c, x, y, s, col) => pixmap(c, x + 0.5, y, 1,
+  ['PP.PP', 'PPYPP', '.YYY.', 'PPYPP', 'PP.PP'], { P: col, Y: '#FFD866' });
 const lips = (c, x, y, s, col) => pixmap(c, x, y, s,
   ['.......', '.LL.LL.', 'LLLLLLL', 'DDDDDDD', '.LLLLL.', '..LLL..'], { L: col, D: '#5A0A1E' });
 
