@@ -184,3 +184,11 @@ body {
 .copybox .copy:hover { border-color: var(--muted); color: var(--text); }
 /* A plain scrolling page inside the dashboard layout (connect). */
 .page { flex: 1; overflow: auto; }
+#clock .refresh {
+  display: inline-flex; align-items: center; gap: 6px; margin-left: 12px; padding: 4px 10px;
+  background: none; border: 2px solid var(--border); color: var(--text); font: 500 13px var(--font); text-decoration: none; cursor: pointer;
+}
+#clock .refresh:hover { border-color: var(--muted); }
+#clock .refresh:disabled { opacity: 0.5; cursor: default; }
+#clock .refresh:disabled svg { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

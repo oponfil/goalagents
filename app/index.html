@@ -25,7 +25,7 @@
   </nav>
   <header id="titles">
     <div id="titles-track"></div>
-    <div id="clock"><span id="day"></span></div>
+    <div id="clock"><span id="day"></span><button id="refresh" class="refresh" title="Refresh now"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>Refresh</button></div>
   </header>
   <main id="scroller">
     <canvas id="scene" hidden></canvas>
@@ -67,9 +67,22 @@
         if (!board) board = mountDashboard(funnels, { live: true, onAnswer: answer, orderKey: 'goalagents-order-live' });
         else if (!board.setFunnels(funnels)) pending = true; // the person is typing an answer
       };
-      const refresh = async () => {
-        try { pending = false; show(await loadFunnels()); } catch (e) { console.error(e); }
+      // "Updated 12s ago" next to a Refresh button, like a live dashboard.
+      const day = document.getElementById('day'), button = document.getElementById('refresh');
+      let loadedAt = null;
+      const ago = () => {
+        if (!loadedAt) return;
+        const sec = Math.round((Date.now() - loadedAt) / 1000);
+        day.textContent = 'Updated ' + (sec < 60 ? `${sec}s` : sec < 3600 ? `${Math.floor(sec / 60)} min` : `${Math.floor(sec / 3600)} h`) + ' ago';
       };
+      setInterval(ago, 1000);
+      const refresh = async () => {
+        button.disabled = true;
+        try { pending = false; show(await loadFunnels()); loadedAt = Date.now(); ago(); }
+        catch (e) { console.error(e); day.textContent = 'Could not update'; }
+        button.disabled = false;
+      };
+      button.addEventListener('click', refresh);
       await refresh();
       watch(refresh);
       // Flows and timers move with time even when nobody writes.
