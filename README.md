@@ -77,7 +77,7 @@ To refresh the README pictures, open http://localhost:5173/tools/render-docs.htm
 - `src/dashboard.js` — page wiring: scaling, sticky titles, drag to reorder, popups, answers to agents
 - `src/main.js` — the demo; `src/live.js` — the person's funnels from the database, flows from the count history, live updates
 - `index.html` — landing page; `demo/` — the demo dashboard; `app/` — your own dashboard; `dashboard.css` — their styles
-- `login/` — sign-in with Google or an email link (Supabase Auth); `oauth/consent/` — where you allow an agent to connect; `pricing/` — Free and Pro plans
+- `login/` — sign-in with Google or an email link (Supabase Auth); `oauth/consent/` — where you allow an agent to connect; `pricing/` — Free and Pro plans; `privacy/`, `contact/`
 - `src/config.js` — Supabase project address, publishable key, Google client ID and the MCP address (all public)
 - `supabase/migrations/` — tables and row-level security; `supabase/functions/mcp/` — the MCP server
 - `docs/MCP.md` — the MCP protocol agents use to write to the dashboard
