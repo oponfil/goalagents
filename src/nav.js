@@ -19,4 +19,6 @@ if (signin && session) {
     location.replace(siteUrl(''));
   });
   signin.before(out);
+  // On a phone there is no room for both: signed-in people keep Sign out, Pricing goes.
+  document.querySelector('.links a[href$="pricing/"]')?.classList.add('wide');
 }

@@ -78,3 +78,4 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 .plan .btn { text-align: center; }
 .plan .tag { position: absolute; top: -13px; right: 18px; background: var(--accent); color: #1B1714; font-size: 13px; font-weight: 700; padding: 2px 10px; }
 .fineprint { text-align: center; color: var(--muted); font-size: 14px; margin: 24px auto 40px; max-width: 560px; }
+.links a.gh { display: flex; }
