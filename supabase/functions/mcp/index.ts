@@ -38,8 +38,8 @@ async function funnelRow(db: Db, key: string) {
 // What the person sees, in the shape the tools take.
 async function funnels(db: Db, key?: string) {
   let q = db.from('funnels')
-    .select(`key, title, theme, result, goal_total, goal_every_days, results, updated_at,
-      stages (key, position, label, count, source_url),
+    .select(`key, title, theme, result, goal_total, goal_every_days, results, output_pace, updated_at,
+      stages (key, position, label, count, source_url, fill_percent, pace),
       presence (agent, zone, state, next_run_at, chat_url, question_id, updated_at),
       questions (id, agent, question, answer, asked_at, answered_at)`)
     .order('created_at')
@@ -53,7 +53,8 @@ async function funnels(db: Db, key?: string) {
     goal: { total: f.goal_total, every_days: f.goal_every_days },
     results: f.results,
     stages: f.stages.sort((a: any, b: any) => a.position - b.position)
-      .map(({ key, label, count, source_url }: any) => ({ key, label, count, source_url })),
+      .map(({ key, label, count, source_url, fill_percent, pace }: any) => ({ key, label, count, source_url, fill_percent, pace })),
+    output_pace: f.output_pace,
     agents: f.presence,
     open_questions: f.questions.filter((q: any) => !q.answered_at),
   }))
@@ -113,21 +114,38 @@ function server(db: Db) {
 
   s.registerTool('report_counts', {
     title: 'Report counts',
-    description: 'Current counts after your work: how many items are at each stage (cumulative is fine), and optionally the results so far. Flows on the dashboard are computed from these reports.',
+    description: 'Current counts after your work: how many items are at each stage (cumulative is fine), and optionally the results so far. ' +
+      'The dashboard computes flows, tank fill and gauges from these reports (automatic). Optionally set them yourself (manual): ' +
+      'fill_percent per stage and pace per zone; null switches that one back to automatic.',
     inputSchema: z.object({
       funnel_id: funnelId,
-      counts: z.record(z.string(), z.number().int().nonnegative()).describe('{ stage_key: count }'),
+      counts: z.record(z.string(), z.number().int().nonnegative()).default({}).describe('{ stage_key: count }'),
       results: z.number().int().nonnegative().optional().describe('Results so far'),
+      fill_percent: z.record(z.string(), z.number().min(0).max(100).nullable()).optional()
+        .describe('Manual tank fill, { stage_key: 0-100 }: how much of what this stage needs for the whole goal is there. null = automatic'),
+      pace: z.record(z.string(), z.number().min(0).max(1000).nullable()).optional()
+        .describe('Manual gauge, { zone: pace } with zones as in set_agent_state ("0" above the first stage … "n" below the last). Pace against the goal: 1 = just in time (red mark), 0.5 = half the pace needed, 2 = twice. null = automatic'),
     }),
-  }, async ({ funnel_id, counts, results }) => {
+  }, async ({ funnel_id, counts, results, fill_percent, pace }) => {
     const f = await funnelRow(db, funnel_id)
-    const known = (check(await db.from('stages').select('key').eq('funnel_id', f.id)) as { key: string }[]).map(s => s.key)
-    const unknown = Object.keys(counts).filter(k => !known.includes(k))
+    const stages = check(await db.from('stages').select('key, position').eq('funnel_id', f.id).order('position')) as { key: string, position: number }[]
+    const known = stages.map(s => s.key), n = stages.length
+    const unknown = [...Object.keys(counts), ...Object.keys(fill_percent ?? {})].filter(k => !known.includes(k))
     if (unknown.length) fail(`Unknown stage keys: ${unknown.join(', ')}. Stages: ${known.join(', ')}`)
-    for (const [key, count] of Object.entries(counts)) {
-      check(await db.from('stages').update({ count }).eq('funnel_id', f.id).eq('key', key))
+    const badZones = Object.keys(pace ?? {}).filter(z => !/^\d+$/.test(z) || +z > n)
+    if (badZones.length) fail(`Unknown zones: ${badZones.join(', ')}. This funnel has zones 0-${n}`)
+    for (const key of known) {
+      const patch: Record<string, unknown> = {}
+      if (key in counts) patch.count = counts[key]
+      if (fill_percent && key in fill_percent) patch.fill_percent = fill_percent[key]
+      const zone = String(stages.find(s => s.key === key)!.position)
+      if (pace && zone in pace) patch.pace = pace[zone]
+      if (Object.keys(patch).length) check(await db.from('stages').update(patch).eq('funnel_id', f.id).eq('key', key))
     }
-    if (results != null) check(await db.from('funnels').update({ results }).eq('id', f.id))
+    const funnelPatch: Record<string, unknown> = {}
+    if (results != null) funnelPatch.results = results
+    if (pace && String(n) in pace) funnelPatch.output_pace = pace[String(n)]
+    if (Object.keys(funnelPatch).length) check(await db.from('funnels').update(funnelPatch).eq('id', f.id))
     const rows = Object.entries(counts).map(([stage_key, value]) => ({ funnel_id: f.id, stage_key, value }))
     if (results != null) rows.push({ funnel_id: f.id, stage_key: null as unknown as string, value: results })
     if (rows.length) check(await db.from('count_reports').insert(rows))

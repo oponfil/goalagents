@@ -463,7 +463,8 @@ function project(f) {
     const y = c.reduce((p, v) => p * v, 1);
     return y > 0 ? total / y : null;
   });
-  const fill = st.map((s, j) => (need[j] ? Math.min(1, s.count / need[j]) : null));
+  // A reading an agent set by hand wins over the computed one.
+  const fill = st.map((s, j) => f.manualFill?.[j] ?? (need[j] ? Math.min(1, s.count / need[j]) : null));
   const days = total > 0 && every > 0 ? Math.max(0, total - f.cubes) * every : null;
   const reading = (flow, i) => {
     const want = i < n ? need[i] : total, have = i < n ? st[i].count : f.cubes;
@@ -471,7 +472,7 @@ function project(f) {
     if (have >= want || days === 0) return 1e3; // already enough: the needle rests far right
     return flow * days / (want - have);
   };
-  const zones = fl.map(reading);
+  const zones = fl.map((flow, i) => f.manualPace?.[i] ?? reading(flow, i));
   return { zones, out: zones[n], eta: fl[n] > 0 ? 1 / fl[n] : null, fill, need };
 }
 const SWEEP0 = 0.75 * Math.PI, SWEEP = 1.5 * Math.PI;

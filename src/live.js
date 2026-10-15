@@ -28,6 +28,9 @@ function toScene(f, reports, now) {
     result: f.result,
     stages: stages.map(s => ({ key: s.key, count: Number(s.count), forms: s.label, source_url: s.source_url })),
     flows: [...stages.map(s => flowOf(series(s.key), now)), flowOf(series(null), now)],
+    // Readings an agent set by hand (null = computed): tank fill 0-1 and gauge pace per zone.
+    manualFill: stages.map(s => (s.fill_percent == null ? null : Number(s.fill_percent) / 100)),
+    manualPace: [...stages.map(s => (s.pace == null ? null : Number(s.pace))), f.output_pace == null ? null : Number(f.output_pace)],
     cubes: f.results,
     goal: { total: f.goal_total, every: Number(f.goal_every_days) },
     workers: f.presence.map(p => {
@@ -51,8 +54,8 @@ export async function loadFunnels() {
   const now = Date.now();
   const [funnels, reports] = await Promise.all([
     supabase.from('funnels')
-      .select(`id, title, theme, result, goal_total, goal_every_days, results,
-        stages (key, position, label, count, source_url),
+      .select(`id, title, theme, result, goal_total, goal_every_days, results, output_pace,
+        stages (key, position, label, count, source_url, fill_percent, pace),
         presence (agent, zone, state, next_run_at, question_id, chat_url),
         questions (id, question, answered_at)`)
       .order('created_at'),
