@@ -175,3 +175,11 @@ body {
 .sitebar .links a.gh { display: flex; }
 .sitebar .logo { display: inline-flex; align-items: center; }
 .sitebar .logo .mark { image-rendering: pixelated; margin-right: 8px; }
+.copybox { position: relative; margin: 0 0 8px; }
+.copybox pre { margin: 0; padding-right: 76px; }
+.copybox .copy {
+  position: absolute; top: 6px; right: 6px;
+  background: var(--panel); border: 2px solid var(--border); color: var(--text);
+  font: 500 13px var(--font); padding: 3px 10px; cursor: pointer;
+}
+.copybox .copy:hover { border-color: var(--muted); }

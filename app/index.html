@@ -64,6 +64,17 @@
       if (location.hash || location.search) history.replaceState(null, '', location.pathname);
       document.getElementById('mcp-url').textContent = MCP_URL;
       document.getElementById('cc').textContent = `claude mcp add --transport http goalagents ${MCP_URL}`;
+      // A copy button on every code block of the connect instructions.
+      document.querySelectorAll('.connect pre').forEach(pre => {
+        const box = document.createElement('div'), btn = document.createElement('button');
+        box.className = 'copybox'; btn.className = 'copy'; btn.textContent = 'Copy';
+        pre.replaceWith(box); box.append(pre, btn);
+        btn.addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(pre.textContent.trim()); btn.textContent = 'Copied'; }
+          catch { btn.textContent = 'Select and copy'; }
+          setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+        });
+      });
       start();
     }
 
