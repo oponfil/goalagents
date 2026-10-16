@@ -451,12 +451,15 @@ const pieceLove = {
     byDepth([flower, letter, heart, lips, ring], j, n)(c, x, y, 0.75, col);
   },
 };
-// Code: ones and zeros, each stage in its own colour, so the heap reads as binary pouring in.
+// Code: little snippets, a dark block with two or three coloured lines like highlighted source;
+// the line colours change by stage.
 const pieceCode = {
-  w: 4, h: 5.5,
+  w: 6, h: 4.5,
   draw(c, x, y, j, n, i = 0) {
-    const col = byDepth(['#3CF27A', '#F0F05C', '#FFB866', '#5CF0F0', '#7CB8FF'], j, n);
-    pixmap(c, x + 0.5, y, 1, i % 3 ? ['.B.', 'BB.', '.B.', '.B.', 'BBB'] : ['BBB', 'B.B', 'B.B', 'B.B', 'BBB'], { B: col });
+    const [a, b] = byDepth([['#3CF27A', '#2E8A50'], ['#F0F05C', '#8A8A20'], ['#FFB866', '#A85A18'], ['#5CF0F0', '#18A0A8'], ['#7CB8FF', '#2A6AD0']], j, n);
+    rect(c, x, y, 5.5, 4, '#1E4A2E'); rect(c, x + 0.25, y + 0.25, 5, 3.5, '#10261A');
+    const l = [3.5, 2, 3, 4, 2.5][i % 5], m = [2, 3.5, 1.5, 2.5, 3][i % 5];
+    rect(c, x + 0.5, y + 0.5, l, 0.5, a); rect(c, x + 1.5, y + 1.75, m, 0.5, b); rect(c, x + 0.5, y + 3, Math.min(4.5, l + 0.5), 0.5, a);
   },
 };
 const pieceMoney = {

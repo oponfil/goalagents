@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=cef56275';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=cef56275';
-import { t, lang } from './i18n.js?v=cef56275';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=ee44647d';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=ee44647d';
+import { t, lang } from './i18n.js?v=ee44647d';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -50,11 +50,12 @@ export function mountDashboard(funnels, opts = {}) {
 
   // Scene size is fixed at load: about four funnels across the screen, but not much taller than
   // the screen (a little vertical scroll is fine for the tallest funnel). Resizing the window
-  // only changes how many funnels are visible; the rest are reached with horizontal scroll.
+  // only changes how many funnels are visible; the rest are reached with horizontal scroll. The
+  // funnel tanks are tall, so a bit more vertical scroll is allowed than the screen's height.
   const byH = (scroller.clientHeight - 20) / scene.H;
   // On a phone the pixel scene would be too small at 1:1, so it starts 30% larger there.
   const minScale = scroller.clientWidth < 600 ? 1.3 : 1;
-  const scale = Math.max(minScale, Math.min(scroller.clientWidth / (4.2 * CW), byH * 1.35));
+  const scale = Math.max(minScale, Math.min(scroller.clientWidth / (4.2 * CW), byH * 1.6));
   function layout() {
     if (scene.dpr !== (window.devicePixelRatio || 1)) scene.resize(scale, window.devicePixelRatio || 1);
     scroller.classList.toggle('fits', scene.funnels.length * CW * scale <= scroller.clientWidth);

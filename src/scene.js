@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=cef56275';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=cef56275';
-import { themeOf } from './themes.js?v=cef56275';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=cef56275';
+import { agentInfo, plural } from './data.js?v=ee44647d';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=ee44647d';
+import { themeOf } from './themes.js?v=ee44647d';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=ee44647d';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -21,10 +21,11 @@ export const sceneHeight = funnels => Math.max(H, ...funnels.map(f =>
 // Result items under a funnel: one per result the goal needs, and more once agents go past it.
 const slots = f => Math.max(f.goal?.total || 0, f.cubes || 0);
 // The tanks make one funnel: each is a trapezoid from its own width at the top to the next one's
-// at the bottom, 184 wide at the top of the funnel and 52 at the last tank, whatever their number.
-const tankW = (j, n) => Math.round((184 - (n > 1 ? j * 132 / (n - 1) : 0)) / 2) * 2;
+// at the bottom, 184 wide at the top of the funnel and 72 at the last tank, whatever their number.
+// The last one narrows to 34, a little wider than the work piece under it.
+const tankW = (j, n) => Math.round((184 - (n > 1 ? j * 112 / (n - 1) : 0)) / 2) * 2;
 const tankHalf = (j, n, r) => {
-  const top = tankW(j, n) / 2, bot = j + 1 < n ? tankW(j + 1, n) / 2 : top - (tankW(0, n) - tankW(1, n)) / 2;
+  const top = tankW(j, n) / 2, bot = j + 1 < n ? tankW(j + 1, n) / 2 : 17;
   return Math.round(top + (bot - top) * r / (LH - 1));
 };
 const GAUGE_R = 9;
