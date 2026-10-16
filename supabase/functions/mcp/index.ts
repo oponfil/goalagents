@@ -124,8 +124,6 @@ function server(db: Db) {
       stages: z.array(z.object({
         key: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/).describe('Stable key, e.g. "applied"'),
         label: forms.describe('[singular, plural], e.g. ["interview", "interviews"]'),
-        // Older clients still send a link per stage; the first one becomes the funnel's link.
-        source_url: z.string().url().optional().describe('Deprecated: give the funnel\'s source_url instead'),
       })).min(2).max(5).describe('Stages top to bottom'),
     }),
     annotations: { idempotentHint: true },
@@ -137,9 +135,7 @@ function server(db: Db) {
     const f = check(await db.from('funnels').upsert({
       key: a.id, title: a.title, result: a.result, theme: a.theme ?? 'mine',
       goal_total: a.goal_total, goal_every_days: a.goal_every_days,
-      ...(a.source_url !== undefined
-        ? { source_url: a.source_url }
-        : a.stages.some(st => st.source_url) && { source_url: a.stages.find(st => st.source_url)!.source_url }),
+      ...(a.source_url !== undefined && { source_url: a.source_url }),
     }, { onConflict: 'user_id,key' }).select('id').single()) as { id: string }
     check(await db.from('stages').delete().eq('funnel_id', f.id).not('key', 'in', `(${keys.join(',')})`))
     check(await db.from('stages').upsert(a.stages.map((st, i) => ({
@@ -163,12 +159,10 @@ function server(db: Db) {
         .describe('Manual gauge, { zone: pace } with zones as in set_agent_state ("0" above the first stage … "n" below the last). Pace against the goal: 1 = just in time (red mark), 0.5 = half the pace needed, 2 = twice. null = automatic'),
       flow_per_day: z.record(z.string(), z.number().min(0).max(1e9).nullable()).optional()
         .describe('Manual flow, { zone: items per day } shown under the gauge (zone "n": results per day). null = automatic, from the count reports'),
-      // Older clients send { stage_key: url }; the first link is taken as the funnel's.
-      source_url: z.union([z.string().url().regex(/^https?:\/\//), z.record(z.string(), z.string().url().nullable())]).nullable().optional()
+      source_url: z.string().url().regex(/^https?:\/\//).nullable().optional()
         .describe('Link to the table or list with this funnel\'s items: give it whenever it opens by a URL (Google Sheet, Notion…); null removes it'),
     }),
-  }, async ({ funnel_id, counts, results, fill_percent, pace, flow_per_day, source_url: link }) => {
-    const source_url = link && typeof link === 'object' ? Object.values(link).find(Boolean) : link
+  }, async ({ funnel_id, counts, results, fill_percent, pace, flow_per_day, source_url }) => {
     const f = await funnelRow(db, funnel_id)
     const stages = check(await db.from('stages').select('key, position').eq('funnel_id', f.id).order('position')) as { key: string, position: number }[]
     const known = stages.map(s => s.key), n = stages.length
