@@ -17,7 +17,7 @@ h2 { font-size: clamp(28px, 4vw, 44px); line-height: 1.15; margin: 0 0 22px; }
 .lead { font-size: clamp(22px, 3vw, 30px); margin: 0 0 22px; }
 .meta { color: var(--muted); margin: 0; font-size: 18px; }
 .meta.by { margin-top: 10px; color: var(--text); font-weight: 600; }
-.logo-mark { image-rendering: pixelated; }
+.logo-mark { image-rendering: pixelated; height: 0.86em; width: auto; vertical-align: -0.06em; margin-right: 0.18em; }
 ul.big { margin: 0; padding-left: 1.1em; font-size: clamp(19px, 2.2vw, 24px); }
 ul.big li { margin: 10px 0; }
 ul.big b { color: var(--accent); }
