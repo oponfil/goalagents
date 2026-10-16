@@ -21,11 +21,11 @@ export const sceneHeight = funnels => Math.max(H, ...funnels.map(f =>
 // is the same pyramid; stages in between are spaced evenly.
 const tankW = (j, n) => Math.round((156 - (n > 1 ? j * 80 / (n - 1) : 0)) / 2) * 2;
 const GAUGE_R = 9;
-// The work piece under each gauge (anvil, flower bed…) sits right on the tank below, and the gauge
-// right on it; agents stand on the tank's top edge as on a floor.
+// The work piece under each gauge (anvil, flower bed…) sits right on the tank below, with a bit of
+// pipe between it and the gauge; agents stand on the tank's top edge as on a floor.
 const PLATE_H = 11;
 const plateTop = k => zoneTop(k) + ZH - PLATE_H;
-const gaugeY = k => plateTop(k) - GAUGE_R - 1;
+const gaugeY = k => zoneTop(k) + 4 + GAUGE_R + 2;
 export const DAY_SECONDS = 2;
 const PER_ROW = 10;  // result items per row under a funnel, the same for every theme
 const FONT = '"Rubik", system-ui, sans-serif';

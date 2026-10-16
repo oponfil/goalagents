@@ -4,7 +4,7 @@
 //   lab   — chemists pouring into a Petri dish, tanks of liquid, flasks
 //   garden — gardeners snipping a flower bed with shears, tanks of sprouts, buds and flowers, flower pots
 //   love  — cupids shooting at a bed, tanks of hearts, big hearts
-//   code  — hackers in hoodies typing on laptops over a keyboard, tanks of code, chips
+//   code  — hackers in hoodies typing on laptops by a server rack, tanks of code, chips
 //   money — bankers stamping a contract, tanks of coins, banknotes, silver and gold bars, bitcoins; money bags
 
 function rng(seed) {
@@ -161,15 +161,15 @@ function blob(c, cx, y, h, halfWidth, col) {
 }
 
 function plateMine(c, x, y, w, h) {
-  // A lump of rock with veins of gold and a crystal.
-  const cx = x + w / 2;
-  blob(c, cx, y, h, t => w / 2 * Math.sqrt(Math.max(0, 1 - (2 * t - 1.1) ** 2)) + (t > 0.3 ? 1 : 0), '#3E352E');
-  blob(c, cx - 0.5, y + 0.5, h - 1.5, t => (w / 2 - 1.5) * Math.sqrt(Math.max(0, 1 - (2 * t - 1.1) ** 2)), '#5C5047');
-  rect(c, cx - 9, y + 1.5, 10, 1, '#7A6C60'); rect(c, cx + 3, y + 2.5, 5, 0.5, '#7A6C60');
-  [[-12, 5, 3], [-5, 7, 2], [2, 4.5, 2.5], [9, 6.5, 3]].forEach(([dx, dy, l]) => {
+  // A heap of rock with veins of gold and a crystal: rounded on top, flat where it lies on the tank.
+  const cx = x + w / 2, dome = t => Math.sqrt(Math.max(0, 1 - (1 - t) ** 2));
+  blob(c, cx, y, h, t => (w / 2) * dome(t), '#3E352E');
+  blob(c, cx - 0.5, y + 0.5, h - 0.5, t => (w / 2 - 1.5) * dome(t), '#5C5047');
+  rect(c, cx - 6, y + 2.5, 7, 1, '#7A6C60'); rect(c, cx + 2, y + 3.5, 4, 0.5, '#7A6C60');
+  [[-9, 8, 3], [-4, 6, 2], [2, 7.5, 2.5], [6, 9, 3]].forEach(([dx, dy, l]) => {
     rect(c, cx + dx, y + dy, l, 1, '#D9A520'); rect(c, cx + dx, y + dy, 1, 0.5, '#FFE38A');
   });
-  rect(c, cx + 13, y + 3, 2, 3, '#3FC7DA'); rect(c, cx + 13.5, y + 3, 1, 1, '#B8F4FF');
+  rect(c, cx + 4, y + 4, 2, 3, '#3FC7DA'); rect(c, cx + 4.5, y + 4, 1, 1, '#B8F4FF');
 }
 
 function plateLab(c, x, y, w, h) {
@@ -195,14 +195,14 @@ function plateLove(c, x, y, w, h) {
 }
 
 function plateCode(c, x, y, w, h) {
-  // A keyboard: dark case, three rows of grey keycaps, a space bar.
-  rect(c, x, y + 1, w, h - 1, '#1E2228'); rect(c, x, y + 1, w, 0.5, '#4A525C');
-  const keys = Math.floor((w - 4) / 3);  // as many keys as the case holds
-  for (let r = 0; r < 3; r++) for (let k = 0; k < keys; k++) {
-    rect(c, x + 1.5 + k * 3 + r * 0.5, y + 2.5 + r * 2.3, 2.5, 1.8, '#5E6670');
-    rect(c, x + 1.5 + k * 3 + r * 0.5, y + 2.5 + r * 2.3, 2.5, 0.5, '#8A929C');
+  // A small server rack: three units stacked in a dark case, each with status lights and vents.
+  rect(c, x + 1, y, w - 2, h, '#14181E'); rect(c, x + 1, y, w - 2, 0.5, '#4A525C');
+  for (let u = 0; u < 3; u++) {
+    const uy = y + 1 + u * 3.3;
+    rect(c, x + 2, uy, w - 4, 2.8, '#2A323C'); rect(c, x + 2, uy, w - 4, 0.5, '#3E4852');
+    rect(c, x + 3, uy + 1, 1, 1, '#3CF27A'); rect(c, x + 5, uy + 1, 1, 1, u === 1 ? '#F2C14E' : '#3CF27A');
+    for (let vx = x + 9; vx < x + w - 3; vx += 2) rect(c, vx, uy + 1, 1, 1.3, '#151A20');
   }
-  rect(c, x + w / 2 - 5, y + 9.5, 10, 1, '#5E6670');
 }
 
 function plateMoney(c, x, y, w, h) {
