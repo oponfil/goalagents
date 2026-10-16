@@ -520,7 +520,8 @@ function gaugeFace(c, cx, gy, r, wobble) {
   const known = r != null;
   fcircle(c, cx, gy, GAUGE_R - 0.5, known ? '#F1ECDD' : '#9C968A');
   c.fillStyle = known ? '#D0362B' : '#7A5650';
-  for (let a = 0.89; a <= 1.0001; a += 0.01) {
+  // The red zone ends where the needle stops at its highest (1.06), so a maxed needle sits on its edge.
+  for (let a = 0.95; a <= 1.0601; a += 0.01) {
     const ang = SWEEP0 + SWEEP * a;
     for (let d = GAUGE_R - 3; d <= GAUGE_R - 1; d += 0.5) {
       c.fillRect(snap(cx + Math.cos(ang) * d), snap(gy + Math.sin(ang) * d), 0.5, 0.5);
