@@ -5,7 +5,7 @@
 //   garden — gardeners snipping a flower bed with shears, tanks of sprouts, buds and flowers, flower pots
 //   love  — cupids shooting at a bed, tanks of hearts, big hearts
 //   code  — hackers in hoodies typing on laptops by a server rack, tanks of code, chips
-//   money — bankers stamping a contract, tanks of coins, banknotes, silver and gold bars, bitcoins; money bags
+//   money — bankers stamping a contract, tanks of pennies, banknotes, silver and gold bars, bitcoins; money bags
 
 function rng(seed) {
   return () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
@@ -321,7 +321,7 @@ function zoneMoney(c, x0, y, w, h) {
   rect(c, x0 - 2, y + h - 2, w + 4, 2, '#3A1A10');
 }
 
-// Money from small to big, top stages to bottom: silver coins, banknotes, silver bars, gold bars, bitcoins.
+// Money from small to big, top stages to bottom: copper pennies, banknotes, silver bars, gold bars, bitcoins.
 function tankMoney(c, x, y, w, h, j, n) {
   rect(c, x, y, w, h, '#14201A');
   const kind = byDepth(['coin', 'note', 'silver', 'gold', 'btc'], j, n);
@@ -341,13 +341,13 @@ function tankMoney(c, x, y, w, h, j, n) {
       }
     }
   } else {
-    // Round coins; bitcoins are orange with the ₿ sign.
-    const btc = kind === 'btc', [face, rim] = btc ? ['#F7931A', '#A85E08'] : ['#8E959F', '#4E535C'];
+    // Round coins: copper pennies, or orange bitcoins with the ₿ sign.
+    const btc = kind === 'btc', [face, rim] = btc ? ['#F7931A', '#A85E08'] : ['#B8693A', '#6E3A1C'];
     for (let cy = y + h - 6, row = 0; cy > y - 4; cy -= 5.5, row++) {
       for (let cx = x + (row % 2 ? 3 : 0); cx < x + w - 5; cx += 6) {
         disc(c, cx + 2.75, cy + 2.75, 2.75, rim); disc(c, cx + 2.75, cy + 2.5, 2.25, face);
         if (btc) pixmap(c, cx + 1.5, cy + 0.75, 0.5, ['.I.I.', 'IIII.', 'I...I', 'IIII.', 'I...I', 'IIII.', '.I.I.'], { I: '#FFFFFF' });
-        else rect(c, cx + 1.5, cy + 1, 1, 1, '#C4CAD2');
+        else rect(c, cx + 1.5, cy + 1, 1, 1, '#E09A6A');
       }
     }
   }
