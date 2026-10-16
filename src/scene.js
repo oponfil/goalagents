@@ -490,7 +490,12 @@ export class Scene {
     for (const a of this.agents) {
       if (a.state !== 'sleep') continue;
       const p = this.spot(a, 'rest');
-      if (a.wakeAt != null) shadowed(() => T(fmtTimer(a.wakeAt - t), p.x + 14, p.y - 8, 8.5, '#F4EDE1', 'center', 700));
+      // Past its next run and still no word from it: an amber "!" with how late it is, instead of the timer.
+      if (this.overdue(a)) {
+        const late = fmtDuration(t - a.wakeAt), w = late.length * 4.6 + 13, x0 = p.x + 14 - w / 2;
+        g.fillStyle = '#F2A33C'; g.fillRect(x0 * S, (p.y - 13) * S, w * S, 10 * S);
+        T('! ' + late, p.x + 14, p.y - 7.6, 7.5, '#1B1714', 'center', 700);
+      } else if (a.wakeAt != null) shadowed(() => T(fmtTimer(a.wakeAt - t), p.x + 14, p.y - 8, 8.5, '#F4EDE1', 'center', 700));
       for (let i = 0; i < 2; i++) {
         const q = ((t * 0.6 + i * 0.5) % 1);
         g.globalAlpha = 1 - q;
@@ -524,6 +529,9 @@ export class Scene {
   }
 
   stageNeed(fi, j) { return project(this.funnels[fi]).need[j]; }
+  // A sleeping agent that should have run more than half an hour ago and has not reported since.
+  // Only a sign to check on it: its schedule may have slipped, or it may have stopped.
+  overdue(a) { return this.live && a.state === 'sleep' && a.wakeAt != null && this.t - a.wakeAt > OVERDUE; }
   // Seconds until a sleeping agent's next run, or null.
   sleepLeft(a) { return a.state === 'sleep' && a.wakeAt != null ? a.wakeAt - this.t : null; }
   waitingFor(f) { return this.agents.filter(a => a.f === f && (a.state === 'ask' || (a.state === 'sleep' && a.question))).length; }
@@ -642,6 +650,8 @@ function fmtEta(days) {
 }
 
 // A duration in seconds, rounded: "2 h", "15 min" (at least a minute).
+const OVERDUE = 30 * 60;
+
 export const fmtDuration = sec => (sec >= 3600 ? tr('time.h', Math.round(sec / 3600)) : tr('time.min', Math.max(1, Math.round(sec / 60))));
 
 function fmtTimer(sec) {

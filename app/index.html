@@ -42,7 +42,7 @@
   <script type="module">
     import { supabase } from '../src/auth.js';
     import { setUpConnect } from '../src/connect.js';
-    import { loadFunnels, answer, watch } from '../src/live.js';
+    import { loadFunnels, answer, watch, runs } from '../src/live.js';
     import { mountDashboard } from '../src/dashboard.js';
     import { t } from '../src/i18n.js';
 
@@ -68,7 +68,7 @@
         canvas.hidden = empty;
         document.getElementById('titles').hidden = empty;
         if (empty) return;
-        if (!board) board = mountDashboard(funnels, { live: true, onAnswer: answer, orderKey: 'goalagents-order-live' });
+        if (!board) board = mountDashboard(funnels, { live: true, onAnswer: answer, runs, orderKey: 'goalagents-order-live' });
         else if (!board.setFunnels(funnels)) pending = true; // the person is typing an answer
       };
       // "Updated 12s ago" next to a Refresh button, like a live dashboard.

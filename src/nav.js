@@ -46,6 +46,23 @@ if (signin && session) {
     location.replace(siteUrl(''));
   });
   signin.before(out);
+
+  // Email when an agent asks a question: a checkbox with a bell, kept in the account so the MCP
+  // server sees it when an agent asks.
+  const notify = document.createElement('label');
+  notify.className = 'notify';
+  notify.title = t('nav.notifyTitle', session.user.email);
+  notify.innerHTML = `<input type="checkbox"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="wide"></span>`;
+  notify.querySelector('span').textContent = t('nav.notify');
+  const box = notify.querySelector('input');
+  box.checked = !!session.user.user_metadata?.notify_email;
+  box.addEventListener('change', async () => {
+    box.disabled = true;
+    const { error } = await supabase.auth.updateUser({ data: { notify_email: box.checked } });
+    if (error) box.checked = !box.checked;
+    box.disabled = false;
+  });
+  out.before(notify);
   // On a phone there is no room for both: signed-in people keep Sign out, Pricing goes.
   document.querySelector('.links a[href$="pricing/"]')?.classList.add('wide');
 }

@@ -48,6 +48,8 @@ function toScene(f, reports, now) {
         zone: p.zone - 1,
         state,
         wakeIn: p.state === 'sleep' && p.next_run_at ? (Date.parse(p.next_run_at) - now) / 1000 : null,
+        // Seconds since the agent last changed its state (its last word, for an overdue one).
+        seenAgo: (now - Date.parse(p.updated_at)) / 1000,
         question: q?.question,
         question_id: q?.id,
         chat: p.chat_url,
@@ -64,7 +66,7 @@ export async function loadFunnels() {
     supabase.from('funnels')
       .select(`id, title, theme, source_url, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day,
         stages (key, position, label, count, fill_percent, pace, flow_per_day),
-        presence (agent, zone, state, next_run_at, question_id, chat_url, run_added),
+        presence (agent, zone, state, next_run_at, question_id, chat_url, run_added, updated_at),
         questions (id, agent, question, asked_at, answered_at)`)
       .order('created_at'),
     supabase.from('count_reports')
@@ -82,6 +84,16 @@ export async function answer(agent, text) {
     .update({ answer: text, answered_at: new Date().toISOString() })
     .eq('id', agent.question_id);
   return error?.message;
+}
+
+// An agent's last runs in a funnel, newest first, for its card.
+export async function runs(funnelId, agent, limit = 10) {
+  const { data, error } = await supabase.from('agent_runs')
+    .select('zone, started_at, ended_at, added')
+    .eq('funnel_id', funnelId).eq('agent', agent)
+    .order('started_at', { ascending: false }).limit(limit);
+  if (error) throw error;
+  return data;
 }
 
 // Calls onChange (debounced) whenever an agent writes to this person's funnels.

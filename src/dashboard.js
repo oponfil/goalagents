@@ -2,7 +2,7 @@
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
 import { agentInfo, agentButton, chatLink, plural } from './data.js';
 import { Scene, CW, fmtCount, fmtDuration } from './scene.js';
-import { t } from './i18n.js';
+import { t, lang } from './i18n.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -154,6 +154,7 @@ export function mountDashboard(funnels, opts = {}) {
     // The sheets on top open the funnel's list straight away.
     if (h.type === 'source') { hidePop(); return window.open(h.url, '_blank', 'noopener'); }
     showPop(e, content(h));
+    bindRuns(h.a);
     if (h.type === 'ask' && opts.onAnswer) bindAnswer(h.a);
   });
 
@@ -166,6 +167,11 @@ export function mountDashboard(funnels, opts = {}) {
     const st = f.stages, n = a.added || 0, from = a.zone < 0 ? '' : `${esc(plural(5, st[a.zone].forms))} → `;
     const into = a.zone === st.length - 1 ? f.result : st[a.zone + 1].forms;
     const where = `${esc(f.title)}: ${from}<b class="run">+${fmtCount(n)}</b> ${esc(plural(n, into))}`;
+    // Live only: the agent's last runs, loaded when the person opens them.
+    const history = opts.runs ? `<details class="runs"><summary>${esc(t('board.runs'))}</summary><div class="runs-list"></div></details>` : '';
+    // Overdue: it should have run by now and has not been heard from.
+    const missed = scene.overdue(a)
+      ? `<p class="pop-note warn">${esc(t('board.missed', fmtDuration(scene.t - a.wakeAt), fmtDuration(scene.t + (a.seenAgo || 0))))}</p>` : '';
     if (h.type === 'ask') {
       const reply = opts.onAnswer
         ? `<textarea class="answer" rows="3" maxlength="2000" placeholder="${esc(t('board.answer'))}"></textarea>
@@ -179,14 +185,38 @@ export function mountDashboard(funnels, opts = {}) {
       return `<div class="pop-title">${t(asleep ? 'board.askedAsleep' : 'board.asking', who)}</div>
         <div class="pop-sub">${where}</div>
         <p>${esc(a.question)}</p>
-        ${asleep ? `<p class="pop-note">${esc(t('board.nextRun', when))}</p>` : ''}${reply}`;
+        ${asleep && !missed ? `<p class="pop-note">${esc(t('board.nextRun', when))}</p>` : ''}${missed}${reply}${history}`;
     }
-    const state = a.state === 'sleep' ? 'board.resting'
+    const state = scene.overdue(a) ? 'board.overdue' : a.state === 'sleep' ? 'board.resting'
       : a.state === 'walk' ? (a.to === 'work' ? 'board.starting' : 'board.finished')
         : 'board.working';
     return `<div class="pop-title">${t(state, who)}</div>
-      <div class="pop-sub">${where}</div>
-      ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.product || info.name))}</a>` : ''}`;
+      <div class="pop-sub">${where}</div>${missed}
+      ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.product || info.name))}</a>` : ''}${history}`;
+  }
+
+  // The runs list: when each run started, how long it took (or that it is still going) and what it
+  // added to the items its zone works into.
+  function bindRuns(a) {
+    const box = pop.querySelector('details.runs');
+    if (!box) return;
+    box.addEventListener('toggle', async () => {
+      const list = box.querySelector('.runs-list');
+      if (!box.open || list.dataset.loaded) return;
+      list.dataset.loaded = 1;
+      list.textContent = '…';
+      try {
+        const rows = await opts.runs(a.f.id, a.agent);
+        const st = a.f.stages, when = new Intl.DateTimeFormat(lang, { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+        list.innerHTML = rows.length ? rows.map(r => {
+          const into = r.zone < st.length ? st[r.zone].forms : a.f.result;
+          const took = r.ended_at ? fmtDuration((Date.parse(r.ended_at) - Date.parse(r.started_at)) / 1000) : t('board.runNow');
+          return `<div class="run-row"><span class="at">${esc(when.format(new Date(r.started_at)))}</span><span class="took">${esc(took)}</span>
+            <span><b class="run">+${fmtCount(r.added)}</b> ${esc(plural(r.added, into))}</span></div>`;
+        }).join('') : `<div class="pop-note">${esc(t('board.noRuns'))}</div>`;
+        pop.style.top = Math.max(8, Math.min(window.innerHeight - pop.offsetHeight - 8, pop.offsetTop)) + 'px';
+      } catch { list.textContent = t('board.runsFailed'); delete list.dataset.loaded; }
+    });
   }
 
   function bindAnswer(a) {

@@ -7,8 +7,11 @@ import { createMcpHandler, McpServer } from 'npm:@modelcontextprotocol/server@2.
 import { pipeline } from 'npm:@supabase/middleware@1.0.0'
 import { withOAuthProtectedResource, withSupabase } from 'npm:@supabase/server@1.9.0'
 import { z } from 'npm:zod@4.6.5'
+import { emailQuestion } from './notify.ts'
 
 type Db = any // the Supabase client scoped to the caller
+// Who is calling, and an admin client to read their current settings (for question emails).
+type Caller = { id: string, admin: Db }
 
 const THEMES = ['mine', 'lab', 'garden', 'love', 'code', 'money'] as const
 const forms = z.array(z.string().min(1).max(40)).min(1).max(3)
@@ -56,9 +59,18 @@ async function updateRuns(db: Db, funnelId: string) {
   for (const p of agents) {
     if (p.state === 'sleep' || p.run_manual || p.run_base == null) continue
     const added = Math.max(0, Math.round(target(p.zone) - Number(p.run_base)))
-    if (added !== p.run_added) check(await db.from('presence').update({ run_added: added }).eq('funnel_id', funnelId).eq('agent', p.agent))
+    if (added === p.run_added) continue
+    check(await db.from('presence').update({ run_added: added }).eq('funnel_id', funnelId).eq('agent', p.agent))
+    check(await openRun(db, funnelId, p.agent).update({ added }))
   }
 }
+
+// The agent's run in progress in agent_runs (the history in its card), as a filter to update.
+const openRun = (db: Db, funnelId: string, agent: string) => ({
+  update: (patch: Record<string, unknown>) =>
+    db.from('agent_runs').update(patch).eq('funnel_id', funnelId).eq('agent', agent).is('ended_at', null),
+})
+const endRun = (db: Db, funnelId: string, agent: string) => openRun(db, funnelId, agent).update({ ended_at: new Date().toISOString() })
 
 // What the person sees, in the shape the tools take.
 async function funnels(db: Db, key?: string) {
@@ -96,7 +108,20 @@ async function plan(db: Db) {
   return { plan: name, max_funnels: name === 'pro' ? 10 : 3, max_stages: name === 'pro' ? 5 : 3, max_agents_per_zone: name === 'pro' ? 2 : 1 }
 }
 
-function server(db: Db) {
+// Emails the person about a new question if they asked for it, after the reply has gone out to the
+// agent. Settings are read fresh: the checkbox may have changed since the agent's token was issued.
+function notify(caller: Caller, funnelId: string, agent: string, question: string) {
+  const send = async () => {
+    const { data: { user } } = await caller.admin.auth.admin.getUserById(caller.id)
+    if (!user?.email || !user.user_metadata?.notify_email) return
+    const { data: f } = await caller.admin.from('funnels').select('title').eq('id', funnelId).single()
+    await emailQuestion(user.email, user.user_metadata.lang, agent, f?.title ?? '', question)
+  }
+  const job = send().catch(e => console.error('question email failed:', e?.message ?? e))
+  ;(globalThis as any).EdgeRuntime?.waitUntil?.(job)
+}
+
+function server(db: Db, caller: Caller) {
   const s = new McpServer({
     name: 'goalagents',
     title: 'GoalAgents',
@@ -231,15 +256,26 @@ function server(db: Db) {
     if (a.state === 'ask' && !a.question) fail('state "ask" needs a question')
     let question_id: string | null = null
     if (a.state === 'ask') {
+      // The same question asked again while still unanswered (say, on the agent's next run) is not
+      // news: no second email for it.
+      const again = check(await db.from('questions').select('id').eq('funnel_id', f.id).eq('agent', a.agent)
+        .eq('question', a.question).is('answered_at', null).limit(1)) as unknown[]
       const q = check(await db.from('questions').insert({ funnel_id: f.id, agent: a.agent, question: a.question })
         .select('id').single()) as { id: string }
       question_id = q.id
+      if (!again.length) notify(caller, f.id, a.agent, a.question!)
     }
     // A run starts when the agent comes to work from sleep (or to another zone): its counter starts at 0
     // and is kept through the next sleep, so the person sees what the last run added.
     const prev = check(await db.from('presence').select('zone, state').eq('funnel_id', f.id).eq('agent', a.agent).maybeSingle()) as any
     const newRun = a.state === 'work' && (!prev || prev.state === 'sleep' || prev.zone !== a.zone)
     const run = newRun ? { run_base: (await zoneTargets(db, f.id))(a.zone), run_added: 0, run_manual: false } : {}
+    if (newRun) {
+      check(await endRun(db, f.id, a.agent))
+      check(await db.from('agent_runs').insert({ funnel_id: f.id, agent: a.agent, zone: a.zone }))
+    }
+    if (a.added != null) check(await openRun(db, f.id, a.agent).update({ added: a.added }))
+    if (a.state === 'sleep') check(await endRun(db, f.id, a.agent))
     check(await db.from('presence').upsert({
       funnel_id: f.id, agent: a.agent, zone: a.zone, state: a.state,
       next_run_at: a.state === 'sleep' ? a.next_run_at ?? null : null,
@@ -275,6 +311,7 @@ function server(db: Db) {
     annotations: { idempotentHint: true },
   }, async ({ funnel_id, agent }) => {
     const f = await funnelRow(db, funnel_id)
+    check(await endRun(db, f.id, agent))
     check(await db.from('presence').delete().eq('funnel_id', f.id).eq('agent', agent))
     return text(await one(db, funnel_id))
   })
@@ -300,6 +337,7 @@ Deno.serve(
       withOAuthProtectedResource({ authorizationServer: Deno.env.get('MCP_AUTH_ISSUER') }),
       withSupabase({ auth: 'user' }),
     ],
-    (req: Request, { supabase }: { supabase: Db }) => createMcpHandler(() => server(supabase)).fetch(req),
+    (req: Request, { supabase, supabaseAdmin, userClaims }: { supabase: Db, supabaseAdmin: Db, userClaims: { id: string } }) =>
+      createMcpHandler(() => server(supabase, { id: userClaims.id, admin: supabaseAdmin })).fetch(req),
   ),
 )

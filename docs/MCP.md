@@ -58,7 +58,7 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 | `agent` | `claude`, `chatgpt`, `grok`, `gemini`, `deepseek`, `kimi`, `qwen`, `mistral`, `perplexity`, `hermes`; sets shirt colour and logo. Any other name gets a plain grey shirt |
 | `funnel_id`, `zone` | Where the agent stands |
 | `state` | `work` (mining), `sleep` (waiting for its next scheduled run), `ask` (waiting for the person) |
-| `next_run_at` | For `sleep`: when it starts again; shown as a countdown |
+| `next_run_at` | For `sleep`: when it starts again; shown as a countdown. More than 30 minutes past it with no new state from the agent, the dashboard marks it as not woken up |
 | `question` | For `ask`: what the agent needs from the person |
 | `question_id` | For `ask`: the open question; the person answers it on the dashboard |
 | `chat_url` | Link to the agent's chat or session |
@@ -71,7 +71,7 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 | `upsert_funnel(id, title, result, goal_total, goal_every_days, source_url?, theme?, stages[])` | Create or update a funnel and its stages (`key`, `label`); stages keep their counts by key |
 | `report_counts(funnel_id, counts{stage_key: n}, results?, fill_percent?{stage_key: 0–100}, pace?{zone: x}, flow_per_day?{stage_key or "results": n}, source_url?)` | Counts after the agent's work, cumulative (everything that ever reached a stage); the server stores each report with a timestamp. `source_url` sets the funnel's list link (`null` removes it). Optional manual readings: tank fill in %, gauge pace (1 = just in time) and the flow written on a tank (`+N/d`) in items per day, by stage key or `results`; `null` returns one to automatic |
 | `add_result(funnel_id)` | One more result came out (increments `results`) |
-| `set_agent_state(funnel_id, agent, zone, state, next_run_at?, question?, chat_url?, added?)` | Presence of an agent; one presence per agent per funnel. With `ask` it returns a `question_id`. Coming to `work` from sleep starts a run: the dashboard shows by the agent how much the run added (the count it works into minus that count at the start), kept while it sleeps; `added` sets the number by hand |
+| `set_agent_state(funnel_id, agent, zone, state, next_run_at?, question?, chat_url?, added?)` | Presence of an agent; one presence per agent per funnel. With `ask` it returns a `question_id`. Coming to `work` from sleep starts a run: the dashboard shows by the agent how much the run added (the count it works into minus that count at the start), kept while it sleeps; `added` sets the number by hand. Each run is kept with its start, end (going to sleep or `clear_agent`), zone and what it added, for the agent's history on the dashboard. A new question emails the person if they turned emails on |
 | `get_answer(question_id, wait_seconds?)` | The person's answer, or null; waits up to 50 s |
 | `clear_agent(funnel_id, agent)` | The agent leaves the funnel |
 | `delete_funnel(funnel_id)` | Delete a funnel and everything in it, only when the person asks |

@@ -87,3 +87,6 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 .links select.lang { width: 3.9em; background: transparent; color: inherit; border: 1px solid var(--border); font: inherit; font-size: 14px; padding: 3px 2px; cursor: pointer; }
 .links select.lang option { background: #241F1B; color: #F4EDE1; }
 @media (max-width: 560px) { .links a.gh { display: none; } }
+.links label.notify { display: flex; align-items: center; gap: 5px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.links label.notify:hover, .links label.notify:has(input:checked) { color: var(--text); }
+.links label.notify input { margin: 0; accent-color: #F2C14E; cursor: pointer; }
