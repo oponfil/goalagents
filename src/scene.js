@@ -570,7 +570,7 @@ export const fmtCount = n => n.toLocaleString('en-US');
 
 function fmtFlow(perDay, key) {
   if (perDay == null) return '—';
-  if (!perDay) return '0';
+  if (!perDay) return `+0/${key}`;
   let i = UNITS.findIndex(u => u[0] === key);
   while (i < UNITS.length - 1 && perDay * UNITS[i][1] < 0.95) i++;
   const v = perDay * UNITS[i][1];
