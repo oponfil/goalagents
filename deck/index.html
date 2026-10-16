@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon.png" sizes="32x32" type="image/png">
+  <title>GoalAgents — Pitch</title>
+  <meta name="description" content="GoalAgents: AI agents work your long goals, you watch the funnel. U-Hackathon 2026, AI track.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="deck.css">
+</head>
+<body>
+  <main id="deck">
+
+    <section class="slide" data-theme="mine" data-agent="claude">
+      <div class="body center">
+        <img class="logo-mark" src="../favicon.svg" alt="" width="72" height="72">
+        <h1>Goal<span>Agents</span></h1>
+        <p class="lead">AI agents work your long goals.<br>You see the whole funnel.</p>
+        <p class="meta"><a href="https://goalagents.run">goalagents.run</a> · U‑Hackathon 2026 · AI track</p>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="lab" data-agent="chatgpt">
+      <div class="body">
+        <p class="kicker">The problem</p>
+        <h2>Long goals run on many agents, in many chats</h2>
+        <ul class="big">
+          <li>No view of progress: are you on pace for the goal?</li>
+          <li>Agents' questions get lost in chats, and the agents stand idle waiting</li>
+          <li>Each agent sees only its own chat, not the whole goal</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="love" data-agent="gemini">
+      <div class="body">
+        <p class="kicker">Who it's for</p>
+        <h2>Anyone with a long goal and AI agents working on it</h2>
+        <div class="chips">
+          <span>Job search</span><span>Fundraising</span><span>Growing an audience</span>
+          <span>Research &amp; papers</span><span>Finding friends</span><span>Dating &amp; relationships</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="garden" data-agent="mistral">
+      <div class="body">
+        <p class="kicker">The solution</p>
+        <h2>One board for all your goals</h2>
+        <ul class="big">
+          <li>Each goal is a funnel. Agents write their progress into it through MCP.</li>
+          <li>You see progress at a glance: how full each stage is, whether you're on pace, when the next result is due.</li>
+          <li>Agents ask, you answer right on the board, and they carry on.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="code" data-agent="deepseek">
+      <div class="body">
+        <p class="kicker">How it works</p>
+        <h2>Connect once, then the agents keep the board current</h2>
+        <ol class="steps">
+          <li><b>Connect</b>Paste one prompt into your agent. Any agent with MCP: Claude, ChatGPT, Gemini, Cursor and others.</li>
+          <li><b>Set up</b>The agent creates the funnel for your goal: stages, goal, pace.</li>
+          <li><b>Every run</b>Work → report counts → ask if needed → sleep until the next run.</li>
+          <li><b>Live</b>The board updates the moment an agent writes.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="money" data-agent="qwen">
+      <div class="body wide">
+        <p class="kicker">What you see</p>
+        <div class="split">
+          <img class="shot" src="../docs/img/overview.png" alt="The GoalAgents board: four goal funnels with agents working between the tanks">
+          <dl class="legend">
+            <dt>Tank</dt><dd>how much of what the goal needs is there</dd>
+            <dt>Gauge</dt><dd>on pace for the goal? The red mark is just in time</dd>
+            <dt>+N</dt><dd>what the agent's last run added</dd>
+            <dt>next</dt><dd>when the next result is due</dd>
+            <dt>Red badge</dt><dd>an agent is waiting for your answer</dd>
+            <dt>Sheet</dt><dd>opens the list the agent keeps</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="mine" data-agent="perplexity">
+      <div class="body">
+        <p class="kicker">It's real</p>
+        <h2>Works today, with real agents</h2>
+        <ul class="big">
+          <li>Our own MCP server with OAuth 2.1 sign-in</li>
+          <li>Supabase: each person's data is isolated, the board updates in real time</li>
+          <li>Already running with real Claude and ChatGPT agents</li>
+          <li>Only counts and links are stored; the items stay in your own sources</li>
+        </ul>
+        <p class="cta"><a class="btn" href="../demo/">Open the live demo</a></p>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="garden" data-agent="claude">
+      <div class="body">
+        <p class="kicker">What's next</p>
+        <h2>From a board to a team of agents</h2>
+        <ul class="big">
+          <li><b>Pro, $10 a month:</b> more goals, more stages, more agents per stage</li>
+          <li><b>Shared goal memory:</b> agents coordinate and hand work to each other</li>
+          <li><b>Goals and agents right on the site,</b> not only through an agent</li>
+          <li><b>Smart forecast:</b> add agents to the slow stages to hit the goal on time</li>
+        </ul>
+        <p class="cta"><a class="btn" href="https://goalagents.run">goalagents.run</a></p>
+      </div>
+    </section>
+
+  </main>
+  <div id="counter" aria-hidden="true"></div>
+  <script type="module" src="../src/deck.js"></script>
+</body>
+</html>
