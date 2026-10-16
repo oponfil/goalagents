@@ -78,13 +78,14 @@ function themesSheet() {
   return c;
 }
 
-// The dashboard itself: the first four funnels after a short run of the demo, so tanks have
+// The dashboard itself: the first four funnels (without Dating) after a short run of the demo, so tanks have
 // moved and agents are mid-action.
 // The first columns of the demo as the dashboard shows them: titles on their column's backdrop
 // (with the red badge of agents waiting), then the scene after 12 seconds of simulated time.
 function overview() {
   const scale = 2, dpr = 2, cols = 4, K = scale * dpr, TH = 22;
-  const scene = new Scene(document.createElement('canvas'), FUNNELS);
+  // The Dating funnel stays in the live demo but out of the pictures.
+  const scene = new Scene(document.createElement('canvas'), FUNNELS.filter(f => f.theme !== 'love'));
   scene.resize(scale, dpr);
   for (let i = 0; i < 12 * 30; i++) scene.update(1 / 30);
   scene.render();
@@ -109,26 +110,28 @@ function overview() {
   return c;
 }
 
-// The link preview card (Open Graph, 1200×630): name and tagline on the left, the top of the
+// The link preview card (Open Graph, 1200×630): name and tagline on the left, three funnels of the
 // board on the right.
 async function ogCard(board) {
   const [c, g] = canvas(1200, 630);
   g.fillStyle = '#1B1714'; g.fillRect(0, 0, 1200, 630);
-  g.drawImage(board, 0, 0, 1600, 1680, 600, 0, 600, 630);
-  g.fillStyle = '#4A3F35'; g.fillRect(596, 0, 4, 630);
+  // Three whole funnels, top to bottom, on the right.
+  const sw = board.width * 3 / 4, sh = board.height, dh = 630, dw = Math.round(sw * dh / sh);
+  g.drawImage(board, 0, 0, sw, sh, 1200 - dw, 0, dw, dh);
+  g.fillStyle = '#4A3F35'; g.fillRect(1200 - dw - 4, 0, 4, 630);
   const logo = new Image();
   await new Promise(r => { logo.onload = r; logo.src = '/favicon.svg'; });
   g.imageSmoothingEnabled = false;
-  g.drawImage(logo, 56, 196, 76, 76);
+  g.drawImage(logo, 46, 210, 62, 62);
   g.textBaseline = 'alphabetic'; g.textAlign = 'left';
-  g.font = `700 72px ${FONT}`;
-  g.fillStyle = '#F4EDE1'; g.fillText('Goal', 146, 262);
-  g.fillStyle = '#F2C14E'; g.fillText('Agents', 146 + g.measureText('Goal').width, 262);
-  g.font = `500 32px ${FONT}`; g.fillStyle = '#F4EDE1';
-  g.fillText('AI agents work your long goals.', 58, 340);
-  g.fillText('You see the whole funnel.', 58, 384);
+  g.font = `700 60px ${FONT}`;
+  g.fillStyle = '#F4EDE1'; g.fillText('Goal', 120, 264);
+  g.fillStyle = '#F2C14E'; g.fillText('Agents', 120 + g.measureText('Goal').width, 264);
+  g.font = `500 28px ${FONT}`; g.fillStyle = '#F4EDE1';
+  g.fillText('AI agents work your long goals.', 48, 336);
+  g.fillText('You see the whole funnel.', 48, 374);
   g.font = `600 26px ${FONT}`; g.fillStyle = '#F2C14E';
-  g.fillText('goalagents.run', 58, 460);
+  g.fillText('goalagents.run', 48, 446);
   return c;
 }
 
