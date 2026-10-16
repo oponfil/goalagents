@@ -1,5 +1,5 @@
 import { agentInfo, plural } from './data.js';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, line, P, MINER_H } from './sprites.js';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js';
 import { themeOf } from './themes.js';
 import { t as tr } from './i18n.js';
 
@@ -91,6 +91,8 @@ export class Scene {
     place.forEach(([f, w, side]) => {
       this.sides.set(`${f.id ?? f.title}|${w.agent}`, side);
       const a = { ...w, f, side, rand: r, hitAt: 1 + r() * 3, phase: r() };
+      // Open questions, oldest first (the demo gives one as a plain string).
+      a.questions = w.questions ?? (w.question ? [{ id: w.question_id, question: w.question }] : []);
       if (w.state === 'sleep') a.wakeAt = w.wakeIn;
       if (w.state === 'work' && !live) a.workUntil = 20 + r() * 25;
       // The demo makes up what each agent's last run added; it then counts the items it adds.
@@ -358,10 +360,11 @@ export class Scene {
       const p = this.spot(a, 'rest');
       drawLying(c, p.x, p.y, a.agent, info.color, a.side === 'R', outfit);
       // Asleep with a question still open: its bubble stays, on the side toward the pipe.
-      if (a.question) {
-        const bx = a.side === 'R' ? p.x - 16 : p.x + 30;
-        drawBubble(c, bx, p.y - 14);
-        this.hits.push({ x: Math.min(p.x, bx) - 4, y: p.y - 16, w: 52, h: 38, type: 'ask', a });
+      if (a.questions.length) {
+        const extra = (Math.min(4, a.questions.length) - 1) * BUBBLE_STEP;
+        const bx = a.side === 'R' ? p.x - 16 - extra : p.x + 30;
+        drawBubble(c, bx, p.y - 14, a.questions.length);
+        this.hits.push({ x: Math.min(p.x, bx) - 4, y: p.y - 16, w: 52 + extra, h: 38, type: 'ask', a });
       } else this.hits.push({ x: p.x - 4, y: p.y - 14, w: 34, h: 36, type: 'agent', a });
       return;
     }
@@ -375,8 +378,9 @@ export class Scene {
       const p = this.spot(a, 'ask');
       const R = a.side === 'R';
       drawStanding(c, p.x, p.y, a.agent, info.color, -1, R, false, outfit);
-      drawBubble(c, R ? p.x + 11 * P : p.x - 9 * P, p.y - 2 - Math.round(Math.abs(Math.sin(t * 4)) * 2) * P);
-      this.hits.push({ x: R ? p.x - 2 : p.x - 20, y: p.y - 6, w: 44, h: 36, type: 'ask', a });
+      const extra = (Math.min(4, a.questions.length) - 1) * BUBBLE_STEP;
+      drawBubble(c, R ? p.x + 11 * P : p.x - 9 * P - extra, p.y - 2 - Math.round(Math.abs(Math.sin(t * 4)) * 2) * P, a.questions.length);
+      this.hits.push({ x: R ? p.x - 2 : p.x - 20 - extra, y: p.y - 6, w: 44 + extra, h: 36, type: 'ask', a });
       return;
     }
     // Working agents face the pipe. The tool is drawn as for the left side (facing right) and
@@ -534,7 +538,10 @@ export class Scene {
   overdue(a) { return this.live && a.state === 'sleep' && a.wakeAt != null && this.t - a.wakeAt > OVERDUE; }
   // Seconds until a sleeping agent's next run, or null.
   sleepLeft(a) { return a.state === 'sleep' && a.wakeAt != null ? a.wakeAt - this.t : null; }
-  waitingFor(f) { return this.agents.filter(a => a.f === f && (a.state === 'ask' || (a.state === 'sleep' && a.question))).length; }
+  // Open questions in a funnel: from agents asking and agents that asked and went to sleep.
+  waitingFor(f) {
+    return this.agents.filter(a => a.f === f && (a.state === 'ask' || a.state === 'sleep')).reduce((n, a) => n + a.questions.length, 0);
+  }
 }
 
 // Rough projection for the gauges and tanks, from the funnel's own numbers (visual only, not a

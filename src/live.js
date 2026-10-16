@@ -37,12 +37,12 @@ function toScene(f, reports, now) {
     cubes: f.results,
     goal: { total: f.goal_total, every: Number(f.goal_every_days) },
     workers: f.presence.map(p => {
-      // The agent's latest unanswered question. An agent asking stands and waits for the answer; one
-      // that went to sleep keeps its question in a bubble and picks the answer up on its next run.
-      // Once answered, an asking agent is shown back at work.
-      const q = f.questions.filter(q => q.agent === p.agent && !q.answered_at)
-        .sort((a, b) => Date.parse(a.asked_at) - Date.parse(b.asked_at)).pop();
-      const state = p.state === 'ask' && !q ? 'work' : p.state;
+      // The agent's unanswered questions, oldest first. An agent asking stands and waits for the
+      // answers; one that went to sleep keeps them in a bubble and picks them up on its next run.
+      // Once all are answered, an asking agent is shown back at work.
+      const qs = f.questions.filter(q => q.agent === p.agent && !q.answered_at)
+        .sort((a, b) => Date.parse(a.asked_at) - Date.parse(b.asked_at));
+      const state = p.state === 'ask' && !qs.length ? 'work' : p.state;
       return {
         agent: p.agent,
         zone: p.zone - 1,
@@ -50,8 +50,7 @@ function toScene(f, reports, now) {
         wakeIn: p.state === 'sleep' && p.next_run_at ? (Date.parse(p.next_run_at) - now) / 1000 : null,
         // Seconds since the agent last changed its state (its last word, for an overdue one).
         seenAgo: (now - Date.parse(p.updated_at)) / 1000,
-        question: q?.question,
-        question_id: q?.id,
+        questions: qs.map(q => ({ id: q.id, question: q.question })),
         chat: p.chat_url,
         // What this run added (the last run's, while the agent sleeps); null = not known.
         added: p.run_added,
@@ -79,10 +78,10 @@ export async function loadFunnels() {
   return funnels.data.map(f => toScene(f, reports.data, now));
 }
 
-export async function answer(agent, text) {
+export async function answer(questionId, text) {
   const { error } = await supabase.from('questions')
     .update({ answer: text, answered_at: new Date().toISOString() })
-    .eq('id', agent.question_id);
+    .eq('id', questionId);
   return error?.message;
 }
 

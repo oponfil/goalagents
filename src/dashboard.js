@@ -28,7 +28,7 @@ function openApp(e) {
 
 // opts.live: counts come from the agents, not the demo simulation.
 // opts.clock(scene): text for the right corner of the header.
-// opts.onAnswer(agent, text): the person answered an agent's question (live only).
+// opts.onAnswer(questionId, text): the person answered one of an agent's questions (live only).
 export function mountDashboard(funnels, opts = {}) {
   const canvas = document.getElementById('scene');
   const scroller = document.getElementById('scroller');
@@ -173,19 +173,19 @@ export function mountDashboard(funnels, opts = {}) {
     const missed = scene.overdue(a)
       ? `<p class="pop-note warn">${esc(t('board.missed', fmtDuration(scene.t - a.wakeAt), fmtDuration(scene.t + (a.seenAgo || 0))))}</p>` : '';
     if (h.type === 'ask') {
-      const reply = opts.onAnswer
+      // Each open question with its own answer box (the demo links to the agent's chat instead).
+      const open = chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.product || info.name))}</a>` : '';
+      const asks = a.questions.map(q => `<div class="ask" data-qid="${esc(q.id)}"><p>${esc(q.question)}</p>${opts.onAnswer
         ? `<textarea class="answer" rows="3" maxlength="2000" placeholder="${esc(t('board.answer'))}"></textarea>
-          <button class="btn primary send" style="${paint}">${esc(t('board.send'))}</button>
-          ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.product || info.name))}</a>` : ''}
-          <div class="pop-msg"></div>`
+          <button class="btn primary send" style="${paint}">${esc(t('board.send'))}</button><div class="pop-msg"></div>` : ''}</div>`).join('');
+      const reply = opts.onAnswer ? open
         : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.replyIn', info.product || info.name))}</a>`;
       // Standing, the agent is waiting and takes the answer at once; asleep, only on its next run.
       const asleep = a.state === 'sleep', left = scene.sleepLeft(a);
       const when = left > 0 ? t('board.inTime', fmtDuration(left)) : t('board.whenRuns');
       return `<div class="pop-title">${t(asleep ? 'board.askedAsleep' : 'board.asking', who)}</div>
         <div class="pop-sub">${where}</div>
-        <p>${esc(a.question)}</p>
-        ${asleep && !missed ? `<p class="pop-note">${esc(t('board.nextRun', when))}</p>` : ''}${missed}${reply}${history}`;
+        ${asleep && !missed ? `<p class="pop-note">${esc(t('board.nextRun', when))}</p>` : ''}${missed}${asks}${reply}${history}`;
     }
     const state = scene.overdue(a) ? 'board.overdue' : a.state === 'sleep' ? 'board.resting'
       : a.state === 'walk' ? (a.to === 'work' ? 'board.starting' : 'board.finished')
@@ -220,17 +220,23 @@ export function mountDashboard(funnels, opts = {}) {
   }
 
   function bindAnswer(a) {
-    const box = pop.querySelector('.answer'), send = pop.querySelector('.send'), msg = pop.querySelector('.pop-msg');
-    box.focus();
-    send.addEventListener('click', async () => {
-      const text = box.value.trim();
-      if (!text) return box.focus();
-      send.disabled = true;
-      const error = await opts.onAnswer(a, text);
-      if (error) { msg.textContent = error; send.disabled = false; return; }
-      // A waiting agent takes the answer at once; a sleeping one keeps sleeping, its bubble gone.
-      if (a.state === 'sleep') a.question = null; else a.state = 'work';
-      hidePop();
+    pop.querySelector('.answer')?.focus();
+    pop.querySelectorAll('.ask[data-qid]').forEach(block => {
+      const box = block.querySelector('.answer'), send = block.querySelector('.send'), msg = block.querySelector('.pop-msg');
+      send.addEventListener('click', async () => {
+        const text = box.value.trim();
+        if (!text) return box.focus();
+        send.disabled = true;
+        const error = await opts.onAnswer(block.dataset.qid, text);
+        if (error) { msg.textContent = error; send.disabled = false; return; }
+        // Answered: that question goes. With none left, a waiting agent takes the answers at once
+        // (back at work); a sleeping one keeps sleeping, its bubble gone.
+        a.questions = a.questions.filter(q => q.id !== block.dataset.qid);
+        block.remove();
+        if (a.questions.length) return pop.querySelector('.answer')?.focus();
+        if (a.state !== 'sleep') a.state = 'work';
+        hidePop();
+      });
     });
   }
 

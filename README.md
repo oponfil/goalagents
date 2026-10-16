@@ -19,7 +19,7 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 | Agent with a tool | Working on that step |
 | Agent lying with a timer | Waiting for its next scheduled run |
 | Agent lying with an amber `! 2 h` | Did not wake up on time: its run was due more than half an hour ago and it has not reported since. Click it for when it was due and when it was last heard from, and check on the agent |
-| Agent with a red `!` | Waiting for you; click to read the question and answer it. Lying with a `!` bubble: it asked, then went to sleep, and takes your answer on its next run. The red badge in the header counts them |
+| Agent with a red `!` | Waiting for you; click to read the question and answer it. One `!` per open question (`!!` for two), each answered on its own. Lying with a `!` bubble: it asked, then went to sleep, and takes your answer on its next run. The red badge in the header counts them |
 | `+N` by an agent | What its current run added (its last run's while it sleeps). Click the agent and open "Last runs" for its last 10 runs: when each started, how long it took and what it added |
 | Bottom zone and items | Results so far with their flow, when the next one is due, and the goal |
 

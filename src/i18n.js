@@ -122,10 +122,10 @@ const STRINGS = {
 
   // Board: popups and badges
   'board.waiting': L(
-    (n) => `${n} ${n === 1 ? 'agent is' : 'agents are'} waiting for you`,
-    (n) => `${n} ${({ one: 'агент ждёт', few: 'агента ждут' })[pluralOf(n)] || 'агентов ждут'} вашего ответа`,
-    (n) => `${n} 个智能体在等你回复`,
-    (n) => `เอเจนต์ ${n} ตัวกำลังรอคุณ`),
+    (n) => `${n} ${n === 1 ? 'question waits' : 'questions wait'} for your answer`,
+    (n) => `${n} ${({ one: 'вопрос ждёт', few: 'вопроса ждут' })[pluralOf(n)] || 'вопросов ждут'} вашего ответа`,
+    (n) => `${n} 个问题在等你回复`,
+    (n) => `${n} คำถามรอคำตอบจากคุณ`),
   'board.asking': L((who) => `${who} is waiting for you`, (who) => `${who} ждёт вашего ответа`, (who) => `${who} 在等你回复`, (who) => `${who} กำลังรอคุณ`),
   'board.askedAsleep': L((who) => `${who} asked you, then went to sleep`, (who) => `${who} задал вопрос и уснул`, (who) => `${who} 提了问题，然后睡着了`, (who) => `${who} ถามคุณแล้วเข้านอน`),
   'board.nextRun': L((when) => `It will pick your answer up on its next run, ${when}.`, (when) => `Он заберёт ответ при следующем запуске, ${when}.`, (when) => `它会在下次运行时取走你的回复（${when}）。`, (when) => `มันจะรับคำตอบของคุณในรอบถัดไป ${when}`),
