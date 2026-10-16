@@ -85,6 +85,8 @@ To refresh the README pictures, open http://localhost:5173/tools/render-docs.htm
 
 ## Code
 
+Scripts and stylesheets are loaded with a version in the address (`i18n.js?v=3f2a1c9e`), so a browser that still holds yesterday's files never runs a new page with an old script. Before committing a change to `src/`, a page or the CSS, run `python3 tools/stamp.py`: it sets the version, a hash of all the scripts and styles, in every reference.
+
 - `src/i18n.js` — interface languages: detection, the picker's choice, every text in English, Russian, Chinese and Thai; `src/lang/` — Spanish, Vietnamese and Japanese, merged in by key
 - `src/data.js` — demo funnels (with their translations) and the agent list
 - `src/scene.js` — Canvas 2D scene: layout, simulation, gauges, hit areas
