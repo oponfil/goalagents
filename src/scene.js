@@ -1,7 +1,7 @@
 import { agentInfo, plural } from './data.js';
 import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js';
 import { themeOf } from './themes.js';
-import { t as tr, lang } from './i18n.js';
+import { t as tr, lang, fmtDuration } from './i18n.js';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -652,34 +652,29 @@ function circle(c, cx, cy, r, col) {
   }
 }
 
-// Per-day flow shown in the chosen unit; slow flows step up to a longer unit so the number stays ≥ 1.
-const UNITS = [['h', 1 / 24], ['d', 1], ['w', 7], ['mo', 30]];
+// Per-day flow shown in the chosen unit; slow flows step up to a longer unit (up to a week) so the
+// number stays ≥ 1 where it can.
+const UNITS = [['h', 1 / 24], ['d', 1], ['w', 7]];
 export const fmtCount = n => n.toLocaleString('en-US');
 
 function fmtFlow(perDay, key) {
+  const u = tr('units');
   if (perDay == null) return '—';
-  if (!perDay) return `+0/${tr('unit.' + key)}`;
-  let i = UNITS.findIndex(u => u[0] === key);
+  if (!perDay) return `+0/${u[key]}`;
+  let i = UNITS.findIndex(x => x[0] === key);
   while (i < UNITS.length - 1 && perDay * UNITS[i][1] < 0.95) i++;
   const v = perDay * UNITS[i][1];
-  return `+${v >= 10 ? Math.round(v) : Math.round(v * 10) / 10}/${tr('unit.' + UNITS[i][0])}`;
+  return `+${v >= 10 ? Math.round(v) : Math.round(v * 10) / 10}/${u[UNITS[i][0]]}`;
 }
 
-function fmtEta(days) {
-  if (days == null || !isFinite(days)) return '—';
-  if (days < 1) return '≈' + tr('dur.h', Math.round(days * 24));
-  if (days < 60) return '≈' + tr('dur.d', Math.round(days));
-  return '≈' + tr('dur.mo', Math.round(days / 30));
-}
+const fmtEta = days => (days == null || !isFinite(days) ? '—' : '≈' + fmtDuration(days * 86400));
 
-// A duration in seconds, rounded: "2 h", "15 min" (at least a minute).
 const OVERDUE = 5 * 60;
 
-export const fmtDuration = sec => (sec >= 3600 ? tr('time.h', Math.round(sec / 3600)) : tr('time.min', Math.max(1, Math.round(sec / 60))));
+export { fmtDuration };
 
+// A sleeping agent's countdown: 0:45 in its last minute, then as a duration (15m, 8h).
 function fmtTimer(sec) {
   sec = Math.max(0, Math.ceil(sec));
-  if (sec >= 3600) return tr('time.h', Math.round(sec / 3600));
-  if (sec >= 60) return tr('time.min', Math.round(sec / 60));
-  return `0:${String(sec).padStart(2, '0')}`;
+  return sec >= 60 ? fmtDuration(sec) : `0:${String(sec).padStart(2, '0')}`;
 }

@@ -138,9 +138,10 @@ const STRINGS = {
   'app.failed': L('Could not update', 'Не удалось обновить', '更新失败', 'อัปเดตไม่สำเร็จ'),
   'app.refresh': L('Refresh', 'Обновить', '刷新', 'รีเฟรช'),
   'app.refreshTitle': L('Refresh now', 'Обновить сейчас', '立即刷新', 'รีเฟรชตอนนี้'),
-  'time.s': L((n) => `${n}s`, (n) => `${n} с`, (n) => `${n} 秒`, (n) => `${n} วิ`),
-  'time.min': L((n) => `${n} min`, (n) => `${n} мин`, (n) => `${n} 分钟`, (n) => `${n} นาที`),
-  'time.h': L((n) => `${n} h`, (n) => `${n} ч`, (n) => `${n} 小时`, (n) => `${n} ชม.`),
+  // One short unit each, written right after the number: 30s, 15m, 8h, 21d, 2w; flows +8/d. No
+  // months, so "m" is always minutes.
+  'units': L({ s: 's', m: 'm', h: 'h', d: 'd', w: 'w' }, { s: 'с', m: 'м', h: 'ч', d: 'д', w: 'н' },
+    { s: '秒', m: '分', h: '时', d: '天', w: '周' }, { s: 'วิ', m: 'น.', h: 'ชม.', d: 'ว.', w: 'สป.' }),
   'demo.clock': L((d) => `Demo · day ${d}`, (d) => `Демо · день ${d}`, (d) => `演示 · 第 ${d} 天`, (d) => `เดโม · วันที่ ${d}`),
   'demo.clockTitle': L('Demo time runs fast: one day every two seconds', 'В демо время идёт быстро: день за две секунды', '演示中时间过得很快：两秒一天', 'ในเดโมเวลาเดินเร็ว: สองวินาทีเท่ากับหนึ่งวัน'),
 
@@ -177,14 +178,6 @@ const STRINGS = {
   'board.goalReached': L('goal reached ✓', 'цель достигнута ✓', '目标已达成 ✓', 'ถึงเป้าหมายแล้ว ✓'),
   'board.goal': L((total, every) => `goal: ${total}, 1 per ${every}`, (total, every) => `цель: ${total}, 1 за ${every}`, (total, every) => `目标：${total}，每 ${every} 1 个`, (total, every) => `เป้าหมาย: ${total}, 1 ต่อ ${every}`),
   'board.next': L((eta) => `next ${eta}`, (eta) => `следующий ${eta}`, (eta) => `下一个 ${eta}`, (eta) => `ถัดไป ${eta}`),
-  // Units: per hour, day, week, month (flows "+8/d") and durations ("≈21 d").
-  'unit.h': L('h', 'ч', '时', 'ชม.'),
-  'unit.d': L('d', 'д', '天', 'วัน'),
-  'unit.w': L('w', 'нед', '周', 'สัปดาห์'),
-  'unit.mo': L('mo', 'мес', '月', 'เดือน'),
-  'dur.h': L((n) => `${n} h`, (n) => `${n} ч`, (n) => `${n} 小时`, (n) => `${n} ชม.`),
-  'dur.d': L((n) => `${n} d`, (n) => `${n} д`, (n) => `${n} 天`, (n) => `${n} วัน`),
-  'dur.mo': L((n) => `${n} mo`, (n) => `${n} мес`, (n) => `${n} 个月`, (n) => `${n} เดือน`),
 
   // Pricing
   'pricing.h1': L('Pricing', 'Тарифы', '价格', 'ราคา'),
@@ -292,6 +285,17 @@ const STRINGS = {
 
 for (const [code, table] of Object.entries({ es, vi, ja })) {
   for (const [key, text] of Object.entries(table)) if (STRINGS[key]) STRINGS[key][code] = text;
+}
+
+// A duration in seconds as one number and unit: 45s, 15m, 8h (to two days), 3d (to two weeks), 2w.
+export function fmtDuration(sec) {
+  const u = t('units');
+  sec = Math.max(0, sec);
+  if (sec < 60) return Math.round(sec) + u.s;
+  if (sec < 3600) return Math.round(sec / 60) + u.m;
+  if (sec < 2 * 86400) return Math.round(sec / 3600) + u.h;
+  if (sec < 14 * 86400) return Math.round(sec / 86400) + u.d;
+  return Math.round(sec / 604800) + u.w;
 }
 
 // The text for key in the current language (English if missing); functions take args.

@@ -40,7 +40,7 @@
     import { setUpConnect } from '../src/connect.js';
     import { loadFunnels, answer, watch, runs } from '../src/live.js';
     import { mountDashboard } from '../src/dashboard.js';
-    import { t } from '../src/i18n.js';
+    import { t, fmtDuration } from '../src/i18n.js';
 
     // Coming back from an email link, supabase-js reads the session from the URL.
     const { data: { session } } = await supabase.auth.getSession();
@@ -73,7 +73,7 @@
       const ago = () => {
         if (!loadedAt) return;
         const sec = Math.round((Date.now() - loadedAt) / 1000);
-        day.textContent = t('app.updated', sec < 60 ? t('time.s', sec) : sec < 3600 ? t('time.min', Math.floor(sec / 60)) : t('time.h', Math.floor(sec / 3600)));
+        day.textContent = t('app.updated', fmtDuration(sec));
       };
       setInterval(ago, 1000);
       const refresh = async () => {
