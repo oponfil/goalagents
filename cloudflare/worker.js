@@ -65,12 +65,8 @@ export default {
     }
     if (path.startsWith('/.well-known/oauth-protected-resource')) return resourceMetadata();
     if (path.startsWith('/.well-known/oauth-authorization-server') || path.startsWith('/.well-known/openid-configuration')) return authMetadata();
-    // Someone opening /mcp in a browser gets the page on connecting an agent, not the server's
-    // "no credentials" error; agents never ask for HTML.
-    if (path === '/mcp' && request.method === 'GET' && !request.headers.has('authorization') &&
-        (request.headers.get('accept') || '').includes('text/html')) {
-      return Response.redirect(`${SITE}/connect/`, 302);
-    }
+    // A person opening /mcp in a browser goes to the connect page; agents never ask for HTML.
+    if (path === '/mcp' && request.method === 'GET' && !request.headers.has('authorization') && (request.headers.get('accept') || '').includes('text/html')) return Response.redirect(SITE + '/connect/', 302);
     if (path === '/mcp' || path.startsWith('/mcp/')) return forward(request, MCP + path.slice(4) + url.search);
     if (path.startsWith('/auth/')) return forward(request, SUPABASE + path + url.search);
     return fetch(request); // anything else: the site on GitHub Pages
