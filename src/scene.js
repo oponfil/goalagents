@@ -293,7 +293,6 @@ export class Scene {
             c.restore();
           }
         }
-        c.fillStyle = 'rgba(205,235,255,0.5)'; c.fillRect(x + 4, y + 4, 1, LH - 8);
         this.hits.push({ x, y, w: lw, h: LH, type: 'stage', fi, j });
       });
       // One result item per result the goal needs (chests, flasks, pots…): filled ones are done,
