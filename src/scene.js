@@ -78,7 +78,9 @@ export class Scene {
   fi(f) { return this.funnels.indexOf(f); }
   cx(fi) { return fi * CW + CW / 2; }
   spot(a, kind) {
-    const cx = this.cx(this.fi(a.f)), floor = zoneTop(a.zone) + ZH, R = a.side === 'R';
+        // Agents stand level with the bottom of the plate, also in the output zone where it is lifted.
+    const out = a.zone === a.f.stages.length - 1;
+    const cx = this.cx(this.fi(a.f)), floor = zoneTop(a.zone) + ZH - (out ? OUT_LIFT : 0), R = a.side === 'R';
     if (kind === 'work') return { x: R ? cx + 18 : cx - 38, y: floor - MINER_H };
     if (kind === 'ask') return { x: R ? cx + 26 : cx - 46, y: floor - MINER_H };
     return { x: R ? cx + 14 : cx - 42, y: floor - 10 * P };
