@@ -15,7 +15,8 @@ if (signin && session) {
   out.textContent = 'Sign out';
   out.addEventListener('click', async e => {
     e.preventDefault();
-    await supabase.auth.signOut();
+    // Only this browser: a global sign-out would also cut off the agents connected by OAuth.
+    await supabase.auth.signOut({ scope: 'local' });
     location.replace(siteUrl(''));
   });
   signin.before(out);
