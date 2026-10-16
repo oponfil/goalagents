@@ -150,5 +150,7 @@ export default {
   'consent.p3': 'Mostrarse trabajando y hacerte preguntas',
   'consent.note': (host) => `Después de permitirlo, volverás a ${host}. Permite solo aplicaciones que tú mismo empezaste a conectar.`,
   'consent.allow': 'Permitir',
+  'consent.done': 'Acceso permitido. Vuelve a la aplicación; puedes cerrar esta pestaña.',
+  'consent.denied': 'Acceso rechazado. Puedes cerrar esta pestaña.',
   'consent.deny': 'Rechazar',
 };

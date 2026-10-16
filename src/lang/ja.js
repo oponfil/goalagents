@@ -151,5 +151,7 @@ export default {
   'consent.p3': '作業中の姿を表示し、あなたに質問する',
   'consent.note': (host) => `許可すると ${host} に戻ります。自分で接続を始めたアプリだけを許可してください。`,
   'consent.allow': '許可',
+  'consent.done': 'アクセスを許可しました。アプリに戻ってください。このタブは閉じてかまいません。',
+  'consent.denied': 'アクセスを拒否しました。このタブは閉じてかまいません。',
   'consent.deny': '拒否',
 };

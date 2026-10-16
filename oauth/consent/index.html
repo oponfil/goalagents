@@ -75,7 +75,16 @@
           const msg = document.getElementById('msg');
           msg.textContent = error.message; msg.className = 'msg error';
           card.querySelectorAll('button').forEach(b => { b.disabled = false; });
-        } else location.replace(data.redirect_url);
+        } else {
+          location.replace(data.redirect_url);
+          // Apps often take the redirect over (claude://, a local callback), so the browser stays on
+          // this page: after a moment, say it is done instead of leaving the buttons greyed out.
+          setTimeout(() => {
+            card.querySelectorAll('button').forEach(b => b.remove());
+            const msg = document.getElementById('msg');
+            msg.textContent = t(approve ? 'consent.done' : 'consent.denied'); msg.className = 'msg ok';
+          }, 2500);
+        }
       };
       document.getElementById('allow').addEventListener('click', decide(true));
       document.getElementById('deny').addEventListener('click', decide(false));

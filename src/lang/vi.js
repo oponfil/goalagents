@@ -151,5 +151,7 @@ export default {
   'consent.p3': 'Hiển thị mình đang làm việc và đặt câu hỏi cho bạn',
   'consent.note': (host) => `Sau khi cho phép, bạn sẽ quay lại ${host}. Chỉ cho phép những ứng dụng mà chính bạn bắt đầu kết nối.`,
   'consent.allow': 'Cho phép',
+  'consent.done': 'Đã cho phép truy cập. Hãy quay lại ứng dụng; bạn có thể đóng thẻ này.',
+  'consent.denied': 'Đã từ chối truy cập. Bạn có thể đóng thẻ này.',
   'consent.deny': 'Từ chối',
 };

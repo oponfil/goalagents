@@ -280,6 +280,8 @@ const STRINGS = {
   'consent.p3': L('Show itself at work and ask you questions', 'Показывать себя за работой и задавать вам вопросы', '展示自己的工作并向你提问', 'แสดงตัวขณะทำงานและถามคำถามคุณ'),
   'consent.note': L((host) => `After you allow it, you go back to ${host}. Only allow apps you started connecting yourself.`, (host) => `После разрешения вы вернётесь в ${host}. Разрешайте только приложения, которые подключаете сами.`, (host) => `授权后你会回到 ${host}。只授权你自己发起连接的应用。`, (host) => `หลังอนุญาต คุณจะกลับไปที่ ${host} อนุญาตเฉพาะแอปที่คุณเริ่มเชื่อมต่อเองเท่านั้น`),
   'consent.allow': L('Allow', 'Разрешить', '允许', 'อนุญาต'),
+  'consent.done': L('Access allowed. Go back to the app; you can close this tab.', 'Доступ разрешён. Вернитесь в приложение, эту вкладку можно закрыть.', '已允许访问。请回到应用，可以关闭此标签页。', 'อนุญาตแล้ว กลับไปที่แอป ปิดแท็บนี้ได้เลย'),
+  'consent.denied': L('Access denied. You can close this tab.', 'Доступ отклонён. Эту вкладку можно закрыть.', '已拒绝访问。可以关闭此标签页。', 'ปฏิเสธแล้ว ปิดแท็บนี้ได้เลย'),
   'consent.deny': L('Deny', 'Отклонить', '拒绝', 'ปฏิเสธ'),
 };
 
