@@ -92,6 +92,9 @@
       // One request at a time: a second click while the first is sending races it to create the
       // same new user, and the loser fails with a database error.
       if (button.disabled) return;
+      // The browser lets through "name@gmail" and Supabase "name@gmail.c": ask for a domain with a
+      // dot and a top-level part of two or more characters.
+      if (!/^[^\s@]+@[^\s@]+\.[a-z][a-z0-9-]*[a-z0-9]$/i.test(email)) return say(t('login.badEmail'), 'error');
       button.disabled = true;
       say(t('login.sending'));
       const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: afterSignIn() } });
