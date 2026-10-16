@@ -40,7 +40,7 @@ ol.steps b::before { content: counter(step) ". "; color: var(--accent); }
 .callout[data-side="right"] { text-align: left; }
 .callout[data-side="left"] { text-align: right; }
 .shot { border: 2px solid var(--border); display: block; }
-.cta { margin: 26px 0 0; text-align: center; }
+.cta { margin: 26px 0 0; }
 /* It's real: the text beside a phone showing the live demo (an iframe at 375×771, scaled down to fill the frame). */
 .body.wide-real { max-width: 1120px; }
 .real { display: flex; gap: 36px; align-items: center; }
