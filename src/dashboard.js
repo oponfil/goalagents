@@ -1,7 +1,7 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
 import { agentInfo, agentButton, chatLink, plural } from './data.js';
-import { Scene, CW } from './scene.js';
+import { Scene, CW, fmtCount } from './scene.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -175,8 +175,12 @@ export function mountDashboard(funnels, opts = {}) {
     const state = a.state === 'sleep' ? 'is resting until the next run'
       : a.state === 'walk' ? (a.to === 'work' ? 'is starting a shift' : 'finished a shift')
         : 'is working';
+    // What this run added (the last run's while the agent sleeps), in the items it works into.
+    const st = f.stages, n = a.added || 0;
+    const forms = a.zone === st.length - 1 ? f.result : st[a.zone + 1].forms;
+    const run = `<p class="pop-run">+${fmtCount(n)} ${esc(plural(n, forms))} ${a.state === 'sleep' ? 'in the last run' : 'this run so far'}</p>`;
     return `<div class="pop-title">${who} ${state}</div>
-      <div class="pop-sub">${where}</div>
+      <div class="pop-sub">${where}</div>${run}
       ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>Open ${esc(info.name)}</a>` : ''}`;
   }
 
