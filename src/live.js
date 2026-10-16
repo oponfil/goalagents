@@ -20,7 +20,6 @@ function flowOf(reports, now) {
 function toScene(f, reports, now) {
   const stages = [...f.stages].sort((a, b) => a.position - b.position);
   const series = key => reports.filter(r => r.funnel_id === f.id && r.stage_key === key);
-  const answered = new Set(f.questions.filter(q => q.answered_at).map(q => q.id));
   return {
     id: f.id,
     title: f.title,
@@ -37,9 +36,11 @@ function toScene(f, reports, now) {
     cubes: f.results,
     goal: { total: f.goal_total, every: Number(f.goal_every_days) },
     workers: f.presence.map(p => {
-      const q = f.questions.find(q => q.id === p.question_id);
-      // Once the person answered, the agent is shown back at work until it reports again.
-      const state = p.state === 'ask' && (!q || answered.has(q.id)) ? 'work' : p.state;
+      // An agent with a question still unanswered is shown asking, even if it went to sleep: for the
+      // person it is still waiting. Once answered, an asking agent is shown back at work.
+      const q = f.questions.filter(q => q.agent === p.agent && !q.answered_at)
+        .sort((a, b) => Date.parse(a.asked_at) - Date.parse(b.asked_at)).pop();
+      const state = q ? 'ask' : p.state === 'ask' ? 'work' : p.state;
       return {
         agent: p.agent,
         zone: p.zone - 1,
@@ -62,7 +63,7 @@ export async function loadFunnels() {
       .select(`id, title, theme, source_url, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day,
         stages (key, position, label, count, fill_percent, pace, flow_per_day),
         presence (agent, zone, state, next_run_at, question_id, chat_url, run_added),
-        questions (id, question, answered_at)`)
+        questions (id, agent, question, asked_at, answered_at)`)
       .order('created_at'),
     supabase.from('count_reports')
       .select('funnel_id, stage_key, value, at')
