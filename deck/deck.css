@@ -40,7 +40,7 @@ ol.steps b::before { content: counter(step) ". "; color: var(--accent); }
 .callout[data-side="right"] { text-align: left; }
 .callout[data-side="left"] { text-align: right; }
 .shot { border: 2px solid var(--border); display: block; }
-.cta { margin: 26px 0 0; }
+.cta { margin: 26px 0 0; text-align: center; }
 .btn { display: inline-block; background: var(--accent); color: #1B1714; font-weight: 700; text-decoration: none; padding: 12px 24px; border: 2px solid var(--accent); }
 .btn:hover { background: #FFD866; }
 #counter { position: fixed; right: 16px; bottom: 12px; color: var(--muted); font-size: 14px; z-index: 2; text-shadow: 0 1px 2px #000; }
