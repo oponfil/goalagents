@@ -471,11 +471,6 @@ export class Scene {
 
   stageNeed(fi, j) { return project(this.funnels[fi]).need[j]; }
   waitingFor(f) { return this.agents.filter(a => a.f === f && a.state === 'ask').length; }
-  // The step an agent works on: "applied → interviews"; above the first tank, just its stage.
-  zoneName(a) {
-    const st = a.f.stages, out = a.zone === st.length - 1, to = plural(5, out ? a.f.result : st[a.zone + 1].forms);
-    return a.zone < 0 ? to : `${plural(5, st[a.zone].forms)} → ${to}`;
-  }
 }
 
 // Rough projection for the gauges and tanks, from the funnel's own numbers (visual only, not a

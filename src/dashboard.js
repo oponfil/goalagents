@@ -160,7 +160,11 @@ export function mountDashboard(funnels, opts = {}) {
     const a = h.a, info = agentInfo(a.agent), f = a.f;
     const web = a.chat || info.chat, chat = chatLink(info, web), paint = agentButton(info);
     const who = esc(info.name);
-    const where = `${esc(f.title)}: ${esc(scene.zoneName(a))}`;
+    // The step it works on, with what this run added (the last run's while it sleeps) to the items
+    // it works into: "Job Search: jobs found → +4 applied".
+    const st = f.stages, n = a.added || 0, from = a.zone < 0 ? '' : `${esc(plural(5, st[a.zone].forms))} → `;
+    const into = a.zone === st.length - 1 ? f.result : st[a.zone + 1].forms;
+    const where = `${esc(f.title)}: ${from}<b class="run">+${fmtCount(n)}</b> ${esc(plural(n, into))}`;
     if (h.type === 'ask') {
       const reply = opts.onAnswer
         ? `<textarea class="answer" rows="3" maxlength="2000" placeholder="Your answer"></textarea>
@@ -175,12 +179,8 @@ export function mountDashboard(funnels, opts = {}) {
     const state = a.state === 'sleep' ? 'is resting until the next run'
       : a.state === 'walk' ? (a.to === 'work' ? 'is starting a shift' : 'finished a shift')
         : 'is working';
-    // What this run added (the last run's while the agent sleeps), in the items it works into.
-    const st = f.stages, n = a.added || 0;
-    const forms = a.zone === st.length - 1 ? f.result : st[a.zone + 1].forms;
-    const run = `<p class="pop-run">+${fmtCount(n)} ${esc(plural(n, forms))} ${a.state === 'sleep' ? 'in the last run' : 'this run so far'}</p>`;
     return `<div class="pop-title">${who} ${state}</div>
-      <div class="pop-sub">${where}</div>${run}
+      <div class="pop-sub">${where}</div>
       ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>Open ${esc(info.name)}</a>` : ''}`;
   }
 
