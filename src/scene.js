@@ -6,7 +6,7 @@ import { themeOf } from './themes.js';
 // each tank and one more below the last (the output zone, where results come out into flasks).
 // The scene is tall enough for 5 tanks; shorter funnels end higher up. Titles live in the page header.
 export const CW = 200;
-const ZW = 164, TOP = 26, ZH = 40, LH = 30, MAX_STAGES = 5;
+const ZW = 164, TOP = 27, ZH = 40, LH = 30, MAX_STAGES = 5;
 // The pixel layer is drawn at RES× the logical grid: scenery stays blocky, gauges get finer pixels.
 const RES = 2;
 const tankTop = j => TOP + ZH + j * (LH + ZH);
@@ -119,7 +119,7 @@ export class Scene {
         // On top: a small funnel at the very top of the column and a short pipe down to the gauge.
         if (k < 0) {
           this.pipe(c, cx, y + 1, y + 4);
-          if (f.source_url) this.sheets(c, cx, y - 24);
+          if (f.source_url) this.sheets(c, cx, y - 26);
           this.hopper(c, cx, y - 8, y + 1);
         }
         gaugeRim(c, cx, y + 4 + GAUGE_R + 2);
@@ -158,24 +158,21 @@ export class Scene {
     c.fillStyle = '#5E626B'; c.fillRect(cx - 10, y0, 21, 1);
   }
 
-  // A funnel whose agent keeps its list behind a link: a stack of spreadsheet sheets pours into
-  // the hopper (green header, grid). Clicking it opens the list.
-  sheets(c, cx, y0) {
-    const sheet = (x, y, paper) => {
-      c.fillStyle = '#2E3238'; c.fillRect(x - 1, y - 1, 24, 19);
-      c.fillStyle = paper; c.fillRect(x, y, 22, 17);
-      c.fillStyle = '#1E8E4E'; c.fillRect(x, y, 22, 4);
-      c.fillStyle = '#DCE3DF'; c.fillRect(x, y + 4, 4, 13);
-      c.fillStyle = '#AEBBB3';
-      for (let gy = y + 7; gy < y + 17; gy += 3) c.fillRect(x, gy, 22, 1);
-      for (const gx of [4, 10, 16]) c.fillRect(x + gx, y + 4, 1, 13);
-    };
-    sheet(cx - 5, y0, '#C9D2CC');
-    sheet(cx - 15, y0 + 4, '#F7FAF8');
+  // A funnel whose agent keeps its list behind a link: a spreadsheet file (folded corner, white
+  // table) stands in the hopper. Clicking it opens the list.
+  sheets(c, cx, y) {
+    const x = cx - 8, R = (col, ...r) => { c.fillStyle = col; c.fillRect(...r); };
+    R('#0F5130', x - 1, y - 1, 13, 23); R('#0F5130', x - 1, y + 4, 18, 18);
+    R('#1E9E58', x, y, 11, 21); R('#1E9E58', x, y + 5, 16, 16);
+    // The folded corner: a light triangle with its diagonal edge.
+    for (let i = 0; i < 5; i++) { R('#7FD3A4', x + 11, y + i, i + 1, 1); R('#0F5130', x + 12 + i, y + i, 1, 1); }
+    R('#FFFFFF', x + 3, y + 6, 10, 10);
+    R('#1E9E58', x + 4, y + 7, 8, 1); R('#1E9E58', x + 4, y + 10, 8, 1); R('#1E9E58', x + 4, y + 13, 8, 1);
+    R('#1E9E58', x + 7, y + 7, 1, 8);
   }
   sourceHit(fi) {
-    const cx = this.cx(fi), y = TOP - 24;
-    return { x: cx - 16, y: y - 1, w: 34, h: 34, type: 'source', url: this.funnels[fi].source_url };
+    const cx = this.cx(fi), y = TOP - 26;
+    return { x: cx - 12, y, w: 26, h: 34, type: 'source', url: this.funnels[fi].source_url };
   }
 
   pipe(c, cx, y0, y1) {
