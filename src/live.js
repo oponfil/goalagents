@@ -26,7 +26,8 @@ function toScene(f, reports, now) {
     title: f.title,
     theme: f.theme,
     result: f.result,
-    stages: stages.map(s => ({ key: s.key, count: Number(s.count), forms: s.label, source_url: s.source_url })),
+    source_url: f.source_url,
+    stages: stages.map(s => ({ key: s.key, count: Number(s.count), forms: s.label })),
     // Flow per day: set by the agent, or the growth between its reports.
     flows: [...stages.map(s => (s.flow_per_day != null ? Number(s.flow_per_day) : flowOf(series(s.key), now))),
       f.output_flow_per_day != null ? Number(f.output_flow_per_day) : flowOf(series(null), now)],
@@ -56,8 +57,8 @@ export async function loadFunnels() {
   const now = Date.now();
   const [funnels, reports] = await Promise.all([
     supabase.from('funnels')
-      .select(`id, title, theme, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day,
-        stages (key, position, label, count, source_url, fill_percent, pace, flow_per_day),
+      .select(`id, title, theme, source_url, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day,
+        stages (key, position, label, count, fill_percent, pace, flow_per_day),
         presence (agent, zone, state, next_run_at, question_id, chat_url),
         questions (id, question, answered_at)`)
       .order('created_at'),

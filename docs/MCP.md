@@ -31,6 +31,7 @@ The agent adds the server or tells you how; you sign in on goalagents.run and al
 | `title` | Column title (`Job Search`) |
 | `result` | Name of one result: `[singular, plural]` (`offer, offers`); Russian uses three forms `[1, 2–4, 5+]` |
 | `theme` | Look of the column: `mine` (miners, ore, carts), `lab` (chemists, liquids, flasks), `forge` (smiths, coins, chests), `love` (cupids, hearts), `code` (hackers, code, chips), `money` (bankers, banknotes, money bags). Default `mine` |
+| `source_url` | Link to the table or list with the funnel's items (Google Sheet, Notion, Airtable…). One per funnel. Optional, but an agent gives it whenever its list opens by a URL; the dashboard then draws spreadsheet sheets in the hopper on top, and a click opens the link |
 | `goal.total` | How many results the goal needs |
 | `goal.every_days` | Pace: one result every N days |
 | `stages` | 2–5 stages, top to bottom (free plan: 2–3) |
@@ -43,7 +44,6 @@ The agent adds the server or tells you how; you sign in on goalagents.run and al
 | `key` | Stable key inside the funnel (`applied`) |
 | `label` | `[singular, plural]` (`interview, interviews`), shown next to the count; Russian uses three forms |
 | `count` | How many items are at this stage now (cumulative is fine) |
-| `source_url` | Link to the stage's list (Google Sheet, Notion, Airtable…). Optional, but an agent gives it whenever its list opens by a URL; the dashboard opens it from the tank |
 
 Only counts, dates and links are stored. Item lists (vacancies, people, papers) stay in the person's own sources.
 
@@ -66,8 +66,8 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 | Tool | Does |
 |---|---|
 | `list_funnels()` | The plan and its limits; funnels, stages, counts, results, goal, agents present and open questions |
-| `upsert_funnel(id, title, result, goal_total, goal_every_days, theme?, stages[])` | Create or update a funnel and its stages (`key`, `label`, `source_url`); stages keep their counts by key |
-| `report_counts(funnel_id, counts{stage_key: n}, results?, fill_percent?{stage_key: 0–100}, pace?{zone: x}, flow_per_day?{zone: n}, source_url?{stage_key: url})` | Current counts after the agent's work; the server stores each report with a timestamp. Optional manual readings: tank fill in %, gauge pace (1 = just in time) and the flow under a gauge in items per day; `null` returns one to automatic |
+| `upsert_funnel(id, title, result, goal_total, goal_every_days, source_url?, theme?, stages[])` | Create or update a funnel and its stages (`key`, `label`); stages keep their counts by key |
+| `report_counts(funnel_id, counts{stage_key: n}, results?, fill_percent?{stage_key: 0–100}, pace?{zone: x}, flow_per_day?{zone: n}, source_url?)` | Current counts after the agent's work; the server stores each report with a timestamp. `source_url` sets the funnel's list link (`null` removes it). Optional manual readings: tank fill in %, gauge pace (1 = just in time) and the flow under a gauge in items per day; `null` returns one to automatic |
 | `add_result(funnel_id)` | One more result came out (increments `results`) |
 | `set_agent_state(funnel_id, agent, zone, state, next_run_at?, question?, chat_url?)` | Presence of an agent; one presence per agent per funnel. With `ask` it returns a `question_id` |
 | `get_answer(question_id, wait_seconds?)` | The person's answer, or null; waits up to 50 s |

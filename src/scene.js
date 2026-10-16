@@ -6,7 +6,7 @@ import { themeOf } from './themes.js';
 // each tank and one more below the last (the output zone, where results come out into flasks).
 // The scene is tall enough for 5 tanks; shorter funnels end higher up. Titles live in the page header.
 export const CW = 200;
-const ZW = 164, TOP = 9, ZH = 40, LH = 30, MAX_STAGES = 5;
+const ZW = 164, TOP = 26, ZH = 40, LH = 30, MAX_STAGES = 5;
 // The pixel layer is drawn at RES× the logical grid: scenery stays blocky, gauges get finer pixels.
 const RES = 2;
 const tankTop = j => TOP + ZH + j * (LH + ZH);
@@ -117,7 +117,11 @@ export class Scene {
         // The pipe runs from the tank above (or the hopper on top) down to the tank below.
         this.pipe(c, cx, k < 0 ? y + 4 : y, y + ZH);
         // On top: a small funnel at the very top of the column and a short pipe down to the gauge.
-        if (k < 0) { this.pipe(c, cx, y + 1, y + 4); this.hopper(c, cx, y - 8, y + 1); }
+        if (k < 0) {
+          this.pipe(c, cx, y + 1, y + 4);
+          if (f.source_url) this.sheets(c, cx, y - 24);
+          this.hopper(c, cx, y - 8, y + 1);
+        }
         gaugeRim(c, cx, y + 4 + GAUGE_R + 2);
       }
       f.stages.forEach((s, j) => {
@@ -152,6 +156,26 @@ export class Scene {
     }
     c.fillStyle = '#B9BEC7'; c.fillRect(cx - 10, y0 - 1, 21, 1);
     c.fillStyle = '#5E626B'; c.fillRect(cx - 10, y0, 21, 1);
+  }
+
+  // A funnel whose agent keeps its list behind a link: a stack of spreadsheet sheets pours into
+  // the hopper (green header, grid). Clicking it opens the list.
+  sheets(c, cx, y0) {
+    const sheet = (x, y, paper) => {
+      c.fillStyle = '#2E3238'; c.fillRect(x - 1, y - 1, 24, 19);
+      c.fillStyle = paper; c.fillRect(x, y, 22, 17);
+      c.fillStyle = '#1E8E4E'; c.fillRect(x, y, 22, 4);
+      c.fillStyle = '#DCE3DF'; c.fillRect(x, y + 4, 4, 13);
+      c.fillStyle = '#AEBBB3';
+      for (let gy = y + 7; gy < y + 17; gy += 3) c.fillRect(x, gy, 22, 1);
+      for (const gx of [4, 10, 16]) c.fillRect(x + gx, y + 4, 1, 13);
+    };
+    sheet(cx - 5, y0, '#C9D2CC');
+    sheet(cx - 15, y0 + 4, '#F7FAF8');
+  }
+  sourceHit(fi) {
+    const cx = this.cx(fi), y = TOP - 24;
+    return { x: cx - 16, y: y - 1, w: 34, h: 34, type: 'source', url: this.funnels[fi].source_url };
   }
 
   pipe(c, cx, y0, y1) {
@@ -222,6 +246,7 @@ export class Scene {
     c.setTransform(RES, 0, 0, RES, 0, 0);
     this.hits = [];
     this.funnels.forEach((f, fi) => {
+      if (f.source_url) this.hits.push(this.sourceHit(fi));
       const cx = this.cx(fi), n = f.stages.length, theme = themeOf(f);
       for (let k = -1; k < n; k++) {
         const y = zoneTop(k), fl = f.flows[k + 1], gy = y + 4 + GAUGE_R + 2;
@@ -252,7 +277,6 @@ export class Scene {
           }
         }
         c.fillStyle = 'rgba(205,235,255,0.5)'; c.fillRect(x + 4, y + 4, 1, LH - 8);
-        this.hits.push({ x, y, w: lw, h: LH, type: 'stage', fi, j });
       });
       // One result item per result the goal needs (carts, flasks, chests…): filled ones are done,
       // empty ones are still to come.

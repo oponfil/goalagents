@@ -22,7 +22,7 @@ Zones: 0 is the inflow above the first stage, zone k moves stage k-1 into stage 
 On every run: set_agent_state(work) in your zone; after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question) and poll get_answer; at the end set_agent_state(sleep, next_run_at) or clear_agent.
 Plans: free has up to 3 funnels with up to 3 stages each and one agent per zone; Pro has up to 10 funnels with up to 5 stages each and two agents per zone. list_funnels tells which plan the person has.
 Report only counts, dates and links: the items themselves stay in the person's own sources.
-Links to the lists: whenever a stage's items are kept in a list that opens by a URL (Google Sheets, Notion, Airtable, a GitHub file…), give that URL as the stage's source_url (in upsert_funnel or report_counts) — the dashboard opens it when the person clicks the tank. Keep the lists where a link can open them when you can. If a list only exists on your machine or you have no such place, leave source_url empty and say so to the person; it is optional.`
+Link to the list: whenever the funnel's items are kept in a table or list that opens by a URL (Google Sheets, Notion, Airtable, a GitHub file…), give that URL as the funnel's source_url (in upsert_funnel or report_counts) — the dashboard shows it as a sheet on top of the funnel and opens it on click. One link per funnel. Keep the list where a link can open it when you can. If it only exists on your machine or you have no such place, leave source_url empty and say so to the person; it is optional.`
 
 const text = (v: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(v, null, 1) }] })
 const fail = (msg: string) => { throw new Error(msg) }
@@ -39,8 +39,8 @@ async function funnelRow(db: Db, key: string) {
 // What the person sees, in the shape the tools take.
 async function funnels(db: Db, key?: string) {
   let q = db.from('funnels')
-    .select(`key, title, theme, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day, updated_at,
-      stages (key, position, label, count, source_url, fill_percent, pace, flow_per_day),
+    .select(`key, title, theme, source_url, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day, updated_at,
+      stages (key, position, label, count, fill_percent, pace, flow_per_day),
       presence (agent, zone, state, next_run_at, chat_url, question_id, updated_at),
       questions (id, agent, question, answer, asked_at, answered_at)`)
     .order('created_at')
@@ -50,11 +50,12 @@ async function funnels(db: Db, key?: string) {
     id: f.key,
     title: f.title,
     theme: f.theme,
+    source_url: f.source_url,
     result: f.result,
     goal: { total: f.goal_total, every_days: f.goal_every_days },
     results: f.results,
     stages: f.stages.sort((a: any, b: any) => a.position - b.position)
-      .map(({ key, label, count, source_url, fill_percent, pace, flow_per_day }: any) => ({ key, label, count, source_url, fill_percent, pace, flow_per_day })),
+      .map(({ key, label, count, fill_percent, pace, flow_per_day }: any) => ({ key, label, count, fill_percent, pace, flow_per_day })),
     output_pace: f.output_pace,
     output_flow_per_day: f.output_flow_per_day,
     agents: f.presence,
@@ -99,11 +100,11 @@ function server(db: Db) {
       result: forms.describe('Name of one result: [singular, plural], e.g. ["offer", "offers"]; Russian: [1, 2-4, 5+]'),
       goal_total: z.number().int().min(1).max(100).describe('How many results the goal needs (1-100)'),
       goal_every_days: z.number().positive().max(3650).describe('Pace: one result every N days'),
+      source_url: z.string().url().regex(/^https?:\/\//).nullable().optional().describe('Link to the table or list with this funnel\'s items (Google Sheet, Notion, Airtable…). Give it whenever the list opens by a URL; null removes it, leaving it out keeps it'),
       theme: z.enum(THEMES).optional().describe('Look: mine (miners, ore), lab (chemists, flasks), forge (smiths, coins), love (cupids, hearts), code (hackers, chips), money (bankers, banknotes). Default mine'),
       stages: z.array(z.object({
         key: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/).describe('Stable key, e.g. "applied"'),
         label: forms.describe('[singular, plural], e.g. ["interview", "interviews"]'),
-        source_url: z.string().url().optional().describe('Link to the list of this stage\'s items (Google Sheet, Notion, Airtable…). Give it whenever the list opens by a URL; leave it out only when there is none'),
       })).min(2).max(5).describe('Stages top to bottom'),
     }),
     annotations: { idempotentHint: true },
@@ -115,10 +116,11 @@ function server(db: Db) {
     const f = check(await db.from('funnels').upsert({
       key: a.id, title: a.title, result: a.result, theme: a.theme ?? 'mine',
       goal_total: a.goal_total, goal_every_days: a.goal_every_days,
+      ...(a.source_url !== undefined && { source_url: a.source_url }),
     }, { onConflict: 'user_id,key' }).select('id').single()) as { id: string }
     check(await db.from('stages').delete().eq('funnel_id', f.id).not('key', 'in', `(${keys.join(',')})`))
     check(await db.from('stages').upsert(a.stages.map((st, i) => ({
-      funnel_id: f.id, key: st.key, position: i, label: st.label, source_url: st.source_url ?? null,
+      funnel_id: f.id, key: st.key, position: i, label: st.label,
     })), { onConflict: 'funnel_id,key' }))
     return text(await one(db, a.id))
   })
@@ -138,14 +140,14 @@ function server(db: Db) {
         .describe('Manual gauge, { zone: pace } with zones as in set_agent_state ("0" above the first stage … "n" below the last). Pace against the goal: 1 = just in time (red mark), 0.5 = half the pace needed, 2 = twice. null = automatic'),
       flow_per_day: z.record(z.string(), z.number().min(0).max(1e9).nullable()).optional()
         .describe('Manual flow, { zone: items per day } shown under the gauge (zone "n": results per day). null = automatic, from the count reports'),
-      source_url: z.record(z.string(), z.string().url().nullable()).optional()
-        .describe('Links to the stage lists, { stage_key: url }: give one whenever a stage list opens by a URL (Google Sheet, Notion…); null removes it'),
+      source_url: z.string().url().regex(/^https?:\/\//).nullable().optional()
+        .describe('Link to the table or list with this funnel\'s items: give it whenever it opens by a URL (Google Sheet, Notion…); null removes it'),
     }),
   }, async ({ funnel_id, counts, results, fill_percent, pace, flow_per_day, source_url }) => {
     const f = await funnelRow(db, funnel_id)
     const stages = check(await db.from('stages').select('key, position').eq('funnel_id', f.id).order('position')) as { key: string, position: number }[]
     const known = stages.map(s => s.key), n = stages.length
-    const unknown = [...Object.keys(counts), ...Object.keys(fill_percent ?? {}), ...Object.keys(source_url ?? {})].filter(k => !known.includes(k))
+    const unknown = [...Object.keys(counts), ...Object.keys(fill_percent ?? {})].filter(k => !known.includes(k))
     if (unknown.length) fail(`Unknown stage keys: ${unknown.join(', ')}. Stages: ${known.join(', ')}`)
     const badZones = [...Object.keys(pace ?? {}), ...Object.keys(flow_per_day ?? {})].filter(z => !/^\d+$/.test(z) || +z > n)
     if (badZones.length) fail(`Unknown zones: ${badZones.join(', ')}. This funnel has zones 0-${n}`)
@@ -153,7 +155,6 @@ function server(db: Db) {
       const patch: Record<string, unknown> = {}
       if (key in counts) patch.count = counts[key]
       if (fill_percent && key in fill_percent) patch.fill_percent = fill_percent[key]
-      if (source_url && key in source_url) patch.source_url = source_url[key]
       const zone = String(stages.find(s => s.key === key)!.position)
       if (pace && zone in pace) patch.pace = pace[zone]
       if (flow_per_day && zone in flow_per_day) patch.flow_per_day = flow_per_day[zone]
@@ -161,6 +162,7 @@ function server(db: Db) {
     }
     const funnelPatch: Record<string, unknown> = {}
     if (results != null) funnelPatch.results = results
+    if (source_url !== undefined) funnelPatch.source_url = source_url
     if (pace && String(n) in pace) funnelPatch.output_pace = pace[String(n)]
     if (flow_per_day && String(n) in flow_per_day) funnelPatch.output_flow_per_day = flow_per_day[String(n)]
     if (Object.keys(funnelPatch).length) check(await db.from('funnels').update(funnelPatch).eq('id', f.id))

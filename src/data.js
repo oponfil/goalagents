@@ -50,6 +50,7 @@ export function agentButton(info) {
 export const FUNNELS = [
   {
     title: 'Job Search',
+    source_url: 'https://docs.google.com/spreadsheets',
     theme: 'mine',
     result: ['offer', 'offers'],
     stages: [
@@ -107,6 +108,7 @@ export const FUNNELS = [
   },
   {
     title: 'Research',
+    source_url: 'https://www.notion.so',
     theme: 'lab',
     result: ['published paper', 'published papers'],
     stages: [
@@ -185,6 +187,7 @@ export const FUNNELS = [
   },
   {
     title: 'Fundraising',
+    source_url: 'https://airtable.com',
     theme: 'forge',
     result: ['term sheet', 'term sheets'],
     stages: [

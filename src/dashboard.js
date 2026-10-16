@@ -1,7 +1,7 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
 import { agentInfo, agentButton, chatLink, plural } from './data.js';
-import { Scene, CW, fmtCount } from './scene.js';
+import { Scene, CW } from './scene.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -129,23 +129,13 @@ export function mountDashboard(funnels, opts = {}) {
   canvas.addEventListener('click', e => {
     const h = scene.hitTest(...toLogical(e));
     if (!h) return hidePop();
+    // The sheets on top open the funnel's list straight away.
+    if (h.type === 'source') { hidePop(); return window.open(h.url, '_blank', 'noopener'); }
     showPop(e, content(h));
     if (h.type === 'ask' && opts.onAnswer) bindAnswer(h.a);
   });
 
   function content(h) {
-    if (h.type === 'stage') {
-      const f = scene.funnels[h.fi], s = f.stages[h.j], need = scene.stageNeed(h.fi, h.j);
-      const needText = need
-        ? `The goal (${f.goal.total} ${plural(f.goal.total, f.result)}) needs about ${fmtCount(Math.ceil(need))} ${plural(Math.ceil(need), s.forms)} here; now ${fmtCount(s.count)}.`
-        : 'Not enough data yet to estimate how many are needed here for the goal.';
-      const source = opts.live
-        ? (s.source_url ? `<a class="btn" href="${esc(s.source_url)}" target="_blank" rel="noopener">Open the list</a>` : '<p>No list linked yet.</p>')
-        : `<p>The list lives in a Google Sheet the agent connected.</p>
-          <a class="btn" href="https://docs.google.com/spreadsheets" target="_blank" rel="noopener">Open spreadsheet</a>`;
-      return `<div class="pop-title">${esc(f.title)}: ${fmtCount(s.count)} ${esc(plural(s.count, s.forms))}</div>
-        <p>${esc(needText)}</p>${source}`;
-    }
     const a = h.a, info = agentInfo(a.agent), f = a.f;
     const web = a.chat || info.chat, chat = chatLink(info, web), paint = agentButton(info);
     const who = esc(info.name);
