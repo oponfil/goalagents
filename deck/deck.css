@@ -21,6 +21,10 @@ h2 { font-size: clamp(28px, 4vw, 44px); line-height: 1.15; margin: 0 0 22px; }
 ul.big { margin: 0; padding-left: 1.1em; font-size: clamp(19px, 2.2vw, 24px); }
 ul.big li { margin: 10px 0; }
 ul.big b { color: var(--accent); }
+/* Bullets drawn as pixel icons from the board (src/deck.js). */
+ul.icons { list-style: none; padding: 0; }
+ul.icons li { display: flex; align-items: center; gap: 18px; margin: 16px 0; }
+ul.icons canvas { flex: none; width: 72px; height: 64px; image-rendering: pixelated; }
 .chips { display: flex; flex-wrap: wrap; gap: 12px; }
 .chips span { border: 2px solid var(--accent); padding: 8px 16px; font-weight: 600; font-size: clamp(18px, 2vw, 22px); }
 ol.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; counter-reset: step; }

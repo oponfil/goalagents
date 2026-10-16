@@ -536,13 +536,13 @@ function statusColor(r) {
   return r >= 1.5 ? '#3CF27A' : r >= 0.9 ? '#7BD88F' : r >= 0.5 ? '#F2C14E' : '#FF5A4E';
 }
 
-function gaugeRim(c, cx, gy) {
+export function gaugeRim(c, cx, gy) {
   fcircle(c, cx, gy, GAUGE_R + 1.5, '#2E3036');
   fcircle(c, cx, gy, GAUGE_R + 0.5, '#8E939D');
 }
 
 // r === null: reading unknown — a dimmed dial with no needle (a "?" is printed over it).
-function gaugeFace(c, cx, gy, r, wobble) {
+export function gaugeFace(c, cx, gy, r, wobble) {
   const known = r != null;
   fcircle(c, cx, gy, GAUGE_R - 0.5, known ? '#F1ECDD' : '#9C968A');
   c.fillStyle = known ? '#D0362B' : '#7A5650';

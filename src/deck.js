@@ -2,7 +2,8 @@
 // at work under the text. Arrow keys, Page Up/Down and Space move between slides.
 import { THEMES } from './themes.js';
 import { AGENTS } from './data.js';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, MINER_H } from './sprites.js';
+import { gaugeRim, gaugeFace } from './scene.js';
+import { drawStanding, drawLying, drawBubble, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, MINER_H } from './sprites.js';
 
 const K = 4;  // screen pixels per logical pixel, as blocky as the dashboard
 
@@ -91,10 +92,45 @@ function callouts() {
     }
   });
 }
+// Bullet icons, drawn like the board: an unread gauge, an agent idle, a funnel, a gauge, an agent asking.
+const IW = 36, IH = 32;
+function icons() {
+  document.querySelectorAll('ul.icons li[data-icon]').forEach(li => {
+    let canvas = li.querySelector('canvas');
+    if (!canvas) { canvas = document.createElement('canvas'); li.prepend(canvas); }
+    const res = 4;
+    canvas.width = IW * res; canvas.height = IH * res;
+    const c = canvas.getContext('2d');
+    c.setTransform(res, 0, 0, res, 0, 0);
+    const kind = li.dataset.icon;
+    if (kind === 'gauge' || kind === 'gauge-unknown') {
+      c.fillStyle = '#5E626B'; c.fillRect(IW / 2 - 4, 26, 9, 6); c.fillStyle = '#8E939D'; c.fillRect(IW / 2 - 2, 26, 5, 6);
+      gaugeRim(c, IW / 2, 15);
+      gaugeFace(c, IW / 2, 15, kind === 'gauge' ? 1.6 : null, 0);
+      if (kind === 'gauge-unknown') { c.fillStyle = '#2B2B2B'; c.font = '700 9px Rubik, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', IW / 2, 15.5); }
+    } else if (kind === 'idle') {
+      drawLying(c, 4, 10, 'claude', AGENTS.claude.color, false, 'helmet');
+      c.fillStyle = '#BFD7FF'; c.font = '700 7px Rubik, sans-serif'; c.fillText('z', 30, 10); c.font = '700 5px Rubik, sans-serif'; c.fillText('z', 33, 5);
+    } else if (kind === 'ask') {
+      drawStanding(c, 2, 4, 'chatgpt', AGENTS.chatgpt.color, -1, false, false, 'helmet');
+      drawBubble(c, 20, 1);
+    } else if (kind === 'funnel') {
+      const cx = IW / 2, th = THEMES.mine;
+      for (let y = 0; y < 8; y++) { const half = Math.round(9 - y * 4.5 / 7); c.fillStyle = '#8E939D'; c.fillRect(cx - half, y, half * 2 + 1, 1); }
+      c.fillStyle = '#5E626B'; c.fillRect(cx - 4, 8, 9, 6); c.fillStyle = '#8E939D'; c.fillRect(cx - 2, 8, 5, 6);
+      c.fillStyle = th.frame; c.fillRect(2, 14, IW - 4, 16);
+      c.fillStyle = th.tankBg; c.fillRect(4, 16, IW - 8, 12);
+      c.save(); c.beginPath(); c.rect(4, 16, (IW - 8) * 0.6, 12); c.clip();
+      th.tank(c, 4, 16, IW - 4, 12, 2, 5, 0, 7);
+      c.restore();
+    }
+  });
+}
+
 document.querySelectorAll('.annot .shot').forEach(img => img.addEventListener('load', callouts));
 
 const slides = [...document.querySelectorAll('.slide')];
-const paintAll = () => { slides.forEach(paint); callouts(); };
+const paintAll = () => { slides.forEach(paint); callouts(); icons(); };
 document.fonts.ready.then(paintAll);
 let t;
 addEventListener('resize', () => { clearTimeout(t); t = setTimeout(paintAll, 150); });
