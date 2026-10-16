@@ -1,8 +1,8 @@
 // Visual themes a funnel can use. The data and behaviour are the same; only the look changes:
 // the zone walls, what fills the tanks, the result items, and the agents' outfit and tool.
-//   mine  — miners with pickaxes striking ore, tanks of ore and gems, ore carts
+//   mine  — miners with pickaxes striking ore, tanks of ore and gems, treasure chests
 //   lab   — chemists pouring into a Petri dish, tanks of liquid, flasks
-//   garden — gardeners trimming a bush with shears, tanks of sprouts and flowers, flower pots
+//   garden — gardeners snipping a flower bed with shears, tanks of flowers, flower pots
 //   love  — cupids shooting at a bed, tanks of hearts, big hearts
 //   code  — hackers in hoodies typing on laptops over a keyboard, tanks of code, chips
 //   money — bankers stamping a contract, tanks of coins, banknotes, silver and gold bars, bitcoins; money bags
@@ -233,15 +233,23 @@ function resultFlask(c, x, y, empty) {
   rect(c, mx - 3, y + 15, 1, 2, '#FFFFFF');
 }
 
-function resultCart(c, x, y, empty) {
-  if (!empty) {
-    const gems = ['#FFD866', '#B8F4FF', '#DDE3EA', '#FFD866', '#C47A45'];
-    gems.forEach((g, i) => rect(c, x + 1.5 + i * 2.6, y + 6 - (i % 2) * 2, 3, 3, g));
+function resultTreasure(c, x, y, empty) {
+  // A treasure chest: shut and dark while still to come; open with gold and gems once it's in.
+  rect(c, x + 1, y + 9, 14, 10, '#6B3E1A'); rect(c, x + 2, y + 10, 12, 8, '#8A5426');
+  rect(c, x + 1, y + 13, 14, 1.5, '#D9A520'); rect(c, x + 4, y + 9, 1.5, 10, '#B07A30'); rect(c, x + 10.5, y + 9, 1.5, 10, '#B07A30');
+  if (empty) {
+    // closed rounded lid with a lock
+    rect(c, x + 1, y + 6, 14, 3, '#7A4A20'); rect(c, x + 2, y + 5, 12, 1, '#7A4A20'); rect(c, x + 2, y + 5, 12, 0.5, '#9C6230');
+    rect(c, x + 7, y + 8, 2, 3, '#B07A30'); rect(c, x + 7.5, y + 9, 1, 1, '#3A2414');
+    return;
   }
-  rect(c, x, y + 8, 16, 7, '#6E737D'); rect(c, x + 1, y + 9, 14, 5, '#4A4E56');
-  rect(c, x, y + 8, 16, 1, '#9EA3AD');
-  rect(c, x + 2, y + 15, 4, 4, '#2B2B2B'); rect(c, x + 10, y + 15, 4, 4, '#2B2B2B');
-  rect(c, x + 3, y + 16, 2, 2, '#8E939D'); rect(c, x + 11, y + 16, 2, 2, '#8E939D');
+  // lid thrown back, a heap of gold coins and gems over the rim
+  rect(c, x + 1, y + 2.5, 14, 4, '#7A4A20'); rect(c, x + 1, y + 2.5, 14, 0.5, '#9C6230'); rect(c, x + 2, y + 3.5, 12, 2.5, '#4A2A10');
+  blob(c, x + 8, y + 5.5, 4, t => 3 + t * 4, '#D9A520');
+  blob(c, x + 8, y + 5.5, 3, t => 2 + t * 3.5, '#FFD24A');
+  [[4, 7.5], [6.5, 6.5], [9, 7], [11, 8], [7.5, 8.3]].forEach(([dx, dy]) => rect(c, x + dx, y + dy, 1, 0.5, '#FFF6C9'));
+  rect(c, x + 5, y + 7, 1.5, 1.5, '#E8345E'); rect(c, x + 10, y + 6.5, 1.5, 1.5, '#3FC7DA'); rect(c, x + 7.5, y + 5.5, 1.5, 1.5, '#7CF0B0');
+  rect(c, x + 7, y + 12, 2, 3, '#F2C14E');
 }
 
 function resultHeart(c, x, y, empty) {
@@ -365,32 +373,28 @@ function backGarden(c, x, w, h, r) {
   }
 }
 
-// Growing from seed to bloom, top stages to bottom: sprouts, buds, then flowers in white, yellow and red.
+// Flowers on stems, a different colour per stage: white, yellow, pink, red, then purple at the bottom.
 function tankGarden(c, x, y, w, h, j, n) {
   rect(c, x, y, w, h, '#16240F');
-  const kind = byDepth(['sprout', 'bud', '#F4EDE1', '#FFD24A', '#E8345E'], j, n);
+  const col = byDepth(['#F4EDE1', '#FFD24A', '#F28AB8', '#E8345E', '#B585F2'], j, n);
   for (let fy = y + 1, row = 0; fy < y + h - 4; fy += 6.5, row++) {
     for (let fx = x + (row % 2 ? 4 : 0.5); fx < x + w - 6; fx += 7.5) {
-      if (kind === 'sprout') pixmap(c, fx + 0.5, fy + 0.5, 1, ['L...L', '.L.L.', '..S..', '..S..', '.DDD.'], { L: '#8FD46A', S: '#4E8A3A', D: '#5A3A22' });
-      else if (kind === 'bud') pixmap(c, fx + 0.5, fy, 1, ['..P..', '.PPP.', '.LPL.', 'L.S.L', '..S..', '..S..'], { P: '#F28AB8', L: '#6BB84E', S: '#3E7A30' });
-      else {
-        rect(c, fx + 2.5, fy + 4, 1, 2.5, '#3E7A30'); rect(c, fx + 3.5, fy + 5, 1.5, 1, '#6BB84E');
-        flower(c, fx, fy - 0.5, 1, kind);
-      }
+      rect(c, fx + 2.5, fy + 4, 0.5, 2.5, '#3E7A30'); rect(c, fx + 3, fy + 5, 1.5, 1, '#6BB84E');
+      flower(c, fx, fy - 0.5, 1, col);
     }
   }
 }
 
 function plateGarden(c, x, y, w, h) {
-  // A trimmed bush on a soil bed, with a few flowers in it.
+  // A flower bed: four flowers on stems with leaves, growing out of a soil bed.
   const cx = x + w / 2;
   rect(c, x + 1, y + h - 2.5, w - 2, 2.5, '#5A3A22'); rect(c, x + 1, y + h - 2.5, w - 2, 0.5, '#7A5232');
-  blob(c, cx, y, h - 2, t => (w / 2 - 2) * Math.sqrt(Math.max(0, 1 - (1.6 * t - 1) ** 2)) + 1, '#2E6B2A');
-  blob(c, cx - 0.5, y + 0.5, h - 4, t => (w / 2 - 4) * Math.sqrt(Math.max(0, 1 - (1.6 * t - 1) ** 2)), '#4E9A3E');
-  [[-7, 3], [-2, 1.5], [3, 3.5], [7, 2]].forEach(([dx, dy], i) => {
-    rect(c, cx + dx, y + dy, 1.5, 1.5, i % 2 ? '#FFD24A' : '#F28AB8');
+  ['#F28AB8', '#FFD24A', '#E8345E', '#F4EDE1'].forEach((col, i) => {
+    const fx = cx - 9 + i * 6, top = y + (i % 2 ? 0 : 1);
+    rect(c, fx, top + 4, 0.5, y + h - 2.5 - top - 4, '#3E7A30');
+    rect(c, fx - 1.5, top + 6.5, 1.5, 1, '#6BB84E'); rect(c, fx + 0.5, top + 5.5, 1.5, 1, '#6BB84E');
+    flower(c, fx - 2.5, top - 0.5, 1, col);
   });
-  rect(c, cx - 5, y + 2, 2, 0.5, '#8FD46A'); rect(c, cx + 1, y + 1, 2, 0.5, '#8FD46A');
 }
 
 function resultPot(c, x, y, empty) {
@@ -404,7 +408,7 @@ function resultPot(c, x, y, empty) {
 }
 
 export const THEMES = {
-  mine: { tankBg: '#2A2420', emptyAlpha: 0.3, backdrop: backMine, frame: '#8A6238', zone: zoneMine, tank: tankMine, plate: plateMine, result: resultCart, outfit: 'helmet', tool: 'pickaxe', spark: '#FFE38A', accent: '#FFD866' },
+  mine: { tankBg: '#2A2420', emptyAlpha: 0.3, backdrop: backMine, frame: '#8A6238', zone: zoneMine, tank: tankMine, plate: plateMine, result: resultTreasure, outfit: 'helmet', tool: 'pickaxe', spark: '#FFE38A', accent: '#FFD866' },
   lab: { tankBg: '#122233', emptyAlpha: 0.3, backdrop: backLab, frame: '#9FD3FF', zone: zoneLab, tank: tankLab, plate: plateLab, result: resultFlask, outfit: 'goggles', tool: 'beaker', spark: '#B585F2', accent: '#C4A3F5' },
   garden: { tankBg: '#16240F', emptyAlpha: 0.3, backdrop: backGarden, frame: '#7A5232', tank: tankGarden, plate: plateGarden, result: resultPot, outfit: 'straw', tool: 'shears', spark: '#8FD46A', accent: '#F28AB8' },
   love: { tankBg: '#3A1A30', backdrop: backLove, frame: '#F28AB8', zone: zoneLove, tank: tankLove, plate: plateLove, result: resultHeart, outfit: 'wings', tool: 'bow', spark: '#F28AB8', accent: '#F28AB8' },

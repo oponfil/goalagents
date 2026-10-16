@@ -30,9 +30,9 @@ Each funnel picks a look; the data and behaviour are the same.
 
 | Theme | Agents | Work piece | Tanks fill with | Results |
 |---|---|---|---|---|
-| `mine` | miners with pickaxes | ore rock | ore and gems, richer by stage | ore carts |
+| `mine` | miners with pickaxes | ore rock | ore and gems, richer by stage | treasure chests |
 | `lab` | chemists pouring reagents | Petri dish | liquid, deeper colour by stage | flasks |
-| `garden` | gardeners with shears | bush | sprouts, buds, white, yellow and red flowers | flower pots |
+| `garden` | gardeners with shears | flower bed | flowers: white, yellow, pink, red, purple | flower pots |
 | `love` | cupids with bows | bed | flowers, love letters, hearts, kisses, rings: pink to red | hearts |
 | `code` | hackers on laptops | keyboard | scrolling code | chips |
 | `money` | bankers with stamps | contract | silver coins, banknotes, silver bars, gold bars, bitcoins | money bags |

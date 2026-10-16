@@ -283,13 +283,13 @@ export class Scene {
         c.fillStyle = 'rgba(205,235,255,0.5)'; c.fillRect(x + 4, y + 4, 1, LH - 8);
         this.hits.push({ x, y, w: lw, h: LH, type: 'stage', fi, j });
       });
-      // One result item per result the goal needs (carts, flasks, chests…): filled ones are done,
+      // One result item per result the goal needs (chests, flasks, pots…): filled ones are done,
       // empty ones are still to come.
       const total = f.goal.total;
       for (let i = 0; i < total; i++) {
         const row = Math.floor(i / PER_ROW), inRow = Math.min(PER_ROW, total - row * PER_ROW), col = i % PER_ROW;
         const empty = i >= f.cubes;
-        // Empty carts, flasks, chests and chips are faded so done results stand out.
+        // Empty chests, flasks, pots and chips are faded so done results stand out.
         if (empty) c.globalAlpha = theme.emptyAlpha ?? 1;
         theme.result(c, Math.round(cx - (inRow * 18 - 2) / 2 + col * 18), flasksY(n) + row * 22, empty);
         c.globalAlpha = 1;
