@@ -303,13 +303,15 @@ export function t(key, ...args) {
 }
 
 // Fill the static page: data-i18n (text), data-i18n-html (text with markup), data-i18n-attr.
+// A key this file does not know yet (a page newer than a cached copy of this file, say) keeps the
+// page's own English text rather than showing the key.
 export function applyI18n(root = document) {
-  root.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
-  root.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  root.querySelectorAll('[data-i18n]').forEach(el => { if (STRINGS[el.dataset.i18n]) el.textContent = t(el.dataset.i18n); });
+  root.querySelectorAll('[data-i18n-html]').forEach(el => { if (STRINGS[el.dataset.i18nHtml]) el.innerHTML = t(el.dataset.i18nHtml); });
   root.querySelectorAll('[data-i18n-attr]').forEach(el => {
     for (const pair of el.dataset.i18nAttr.split(';')) {
       const [attr, key] = pair.split(':').map(s => s.trim());
-      if (attr && key) el.setAttribute(attr, t(key));
+      if (attr && STRINGS[key]) el.setAttribute(attr, t(key));
     }
   });
 }
