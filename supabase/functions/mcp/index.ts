@@ -19,7 +19,7 @@ const agent = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,31}$/)
 const INSTRUCTIONS = `GoalAgents shows the person their goals as funnels and the agents working them.
 A funnel is one goal (e.g. "Job Search") with 2-5 stages top to bottom (jobs found → applied → interview → final round) and a result at the bottom (offer).
 Zones: 0 is the inflow above the first stage, zone k moves stage k-1 into stage k, zone n (below the last stage) turns the last stage into results. At most two agents per zone on Pro, one on the free plan.
-On every run: set_agent_state(work) in your zone; after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question) and poll get_answer; at the end set_agent_state(sleep, next_run_at) or clear_agent.
+On every run: set_agent_state(work) in your zone (this starts the run's counter, shown by you on the dashboard); after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question) and poll get_answer; at the end set_agent_state(sleep, next_run_at) or clear_agent.
 Plans: free has up to 3 funnels with up to 3 stages each and one agent per zone; Pro has up to 10 funnels with up to 5 stages each and two agents per zone. list_funnels tells which plan the person has.
 Report only counts, dates and links: the items themselves stay in the person's own sources.
 Link to the list: whenever the funnel's items are kept in a table or list that opens by a URL (Google Sheets, Notion, Airtable, a GitHub file…), give that URL as the funnel's source_url (in upsert_funnel or report_counts) — the dashboard shows it as a sheet on top of the funnel and opens it on click. One link per funnel. Keep the list where a link can open it when you can. If it only exists on your machine or you have no such place, leave source_url empty and say so to the person; it is optional.`
@@ -36,12 +36,31 @@ async function funnelRow(db: Db, key: string) {
   return row ?? fail(`No funnel "${key}". Call list_funnels to see the ids, or upsert_funnel to create it.`)
 }
 
+// The count an agent in this zone works into: the stage its zone feeds, or the results below the last stage.
+async function zoneTargets(db: Db, funnelId: string) {
+  const stages = check(await db.from('stages').select('position, count').eq('funnel_id', funnelId).order('position')) as { count: number }[]
+  const { results } = check(await db.from('funnels').select('results').eq('id', funnelId).single()) as { results: number }
+  return (zone: number) => Number(zone < stages.length ? stages[zone].count : results)
+}
+
+// After counts change: each agent at work (or asking) has added what its count grew since its run began.
+async function updateRuns(db: Db, funnelId: string) {
+  const target = await zoneTargets(db, funnelId)
+  const agents = check(await db.from('presence').select('agent, zone, state, run_base, run_added, run_manual')
+    .eq('funnel_id', funnelId)) as any[]
+  for (const p of agents) {
+    if (p.state === 'sleep' || p.run_manual || p.run_base == null) continue
+    const added = Math.max(0, Math.round(target(p.zone) - Number(p.run_base)))
+    if (added !== p.run_added) check(await db.from('presence').update({ run_added: added }).eq('funnel_id', funnelId).eq('agent', p.agent))
+  }
+}
+
 // What the person sees, in the shape the tools take.
 async function funnels(db: Db, key?: string) {
   let q = db.from('funnels')
     .select(`key, title, theme, source_url, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day, updated_at,
       stages (key, position, label, count, fill_percent, pace, flow_per_day),
-      presence (agent, zone, state, next_run_at, chat_url, question_id, updated_at),
+      presence (agent, zone, state, next_run_at, chat_url, question_id, run_added, updated_at),
       questions (id, agent, question, answer, asked_at, answered_at)`)
     .order('created_at')
   if (key) q = q.eq('key', key)
@@ -169,6 +188,7 @@ function server(db: Db) {
     const rows = Object.entries(counts).map(([stage_key, value]) => ({ funnel_id: f.id, stage_key, value }))
     if (results != null) rows.push({ funnel_id: f.id, stage_key: null as unknown as string, value: results })
     if (rows.length) check(await db.from('count_reports').insert(rows))
+    await updateRuns(db, f.id)
     return text(await one(db, funnel_id))
   })
 
@@ -181,6 +201,7 @@ function server(db: Db) {
     const { results } = check(await db.from('funnels').select('results').eq('id', f.id).single()) as { results: number }
     check(await db.from('funnels').update({ results: results + 1 }).eq('id', f.id))
     check(await db.from('count_reports').insert({ funnel_id: f.id, stage_key: null, value: results + 1 }))
+    await updateRuns(db, f.id)
     return text(await one(db, funnel_id))
   })
 
@@ -195,6 +216,7 @@ function server(db: Db) {
       next_run_at: z.string().datetime({ offset: true }).optional().describe('For sleep: ISO time of your next run'),
       question: z.string().min(1).max(1000).optional().describe('For ask: what you need from the person'),
       chat_url: z.string().url().optional().describe('Link to your chat or session'),
+      added: z.number().int().min(0).max(1e9).optional().describe('How many items you added this run, when you know it better than the counts show (e.g. when items also left your stage). Leave it out and the dashboard counts it from report_counts'),
     }),
   }, async (a) => {
     const f = await funnelRow(db, a.funnel_id)
@@ -207,10 +229,17 @@ function server(db: Db) {
         .select('id').single()) as { id: string }
       question_id = q.id
     }
+    // A run starts when the agent comes to work from sleep (or to another zone): its counter starts at 0
+    // and is kept through the next sleep, so the person sees what the last run added.
+    const prev = check(await db.from('presence').select('zone, state').eq('funnel_id', f.id).eq('agent', a.agent).maybeSingle()) as any
+    const newRun = a.state === 'work' && (!prev || prev.state === 'sleep' || prev.zone !== a.zone)
+    const run = newRun ? { run_base: (await zoneTargets(db, f.id))(a.zone), run_added: 0, run_manual: false } : {}
     check(await db.from('presence').upsert({
       funnel_id: f.id, agent: a.agent, zone: a.zone, state: a.state,
       next_run_at: a.state === 'sleep' ? a.next_run_at ?? null : null,
       question_id, chat_url: a.chat_url ?? null,
+      ...run,
+      ...(a.added != null && { run_added: a.added, run_manual: true }),
     }, { onConflict: 'funnel_id,agent' }))
     return text({ question_id, funnel: await one(db, a.funnel_id) })
   })

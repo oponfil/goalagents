@@ -60,6 +60,8 @@ export class Scene {
       const a = { ...w, f, side: n ? 'R' : 'L', rand: r, hitAt: 1 + r() * 3, phase: r() };
       if (w.state === 'sleep') a.wakeAt = w.wakeIn;
       if (w.state === 'work' && !live) a.workUntil = 20 + r() * 25;
+      // The demo makes up what each agent's last run added; it then counts the items it adds.
+      if (!live && a.added == null) a.added = w.state === 'sleep' ? 1 + Math.floor(r() * 6) : 0;
       this.agents.push(a);
     }));
   }
@@ -192,7 +194,7 @@ export class Scene {
         const step = 20 * dt * Math.sign(target - a.x);
         if (Math.abs(target - a.x) <= Math.abs(step)) {
           a.x = target;
-          if (a.to === 'work') { a.state = 'work'; a.workUntil = t + 20 + a.rand() * 20; a.hitAt = t + 1; }
+          if (a.to === 'work') { a.state = 'work'; a.added = 0; a.workUntil = t + 20 + a.rand() * 20; a.hitAt = t + 1; }
           else { a.state = 'sleep'; a.wakeAt = t + 8 + a.rand() * 10; }
         } else a.x += step;
       }
@@ -225,6 +227,9 @@ export class Scene {
         if (i === n) k = Math.min(k, Math.max(0, f.goal.total - f.cubes));
         if (!k) continue;
         if (i === n) f.cubes += k; else f.stages[i].count += k;
+        // Credit the items to an agent at work in the zone that feeds this stage.
+        const crew = this.agents.filter(a => a.f === f && a.zone === i - 1 && a.state === 'work');
+        if (crew.length) crew[Math.floor(Math.random() * crew.length)].added += k;
         f.pending[i] += k;
       }
       for (let i = 0; i <= n; i++) {
@@ -453,6 +458,14 @@ export class Scene {
         T('z', hx, p.y - 2 - q * 12, 7 + q * 3, '#BFD7FF', 'center', 700);
         g.globalAlpha = 1;
       }
+    }
+    // What each agent added this run (the last run's while it sleeps), next to it.
+    for (const a of this.agents) {
+      if (!a.added || a.state === 'walk') continue;
+      const R = a.side === 'R', p = this.spot(a, a.state === 'sleep' ? 'rest' : a.state);
+      const x = a.state === 'sleep' ? (R ? p.x + 40 : p.x - 10) : R ? p.x + 26 : p.x - 6;
+      const y = a.state === 'sleep' ? p.y + 8 : p.y + 4;
+      shadowed(() => T('+' + fmtCount(a.added), x, y, 8, '#9FE870', 'center', 700));
     }
     for (const f of this.floaters) {
       const q = (t - f.born) / 1.4;

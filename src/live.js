@@ -48,6 +48,8 @@ function toScene(f, reports, now) {
         question: q?.question,
         question_id: q?.id,
         chat: p.chat_url,
+        // What this run added (the last run's, while the agent sleeps); null = not known.
+        added: p.run_added,
       };
     }),
   };
@@ -59,7 +61,7 @@ export async function loadFunnels() {
     supabase.from('funnels')
       .select(`id, title, theme, source_url, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day,
         stages (key, position, label, count, fill_percent, pace, flow_per_day),
-        presence (agent, zone, state, next_run_at, question_id, chat_url),
+        presence (agent, zone, state, next_run_at, question_id, chat_url, run_added),
         questions (id, question, answered_at)`)
       .order('created_at'),
     supabase.from('count_reports')
