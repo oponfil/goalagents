@@ -25,6 +25,9 @@ const GAUGE_R = 9;
 // pipe between it and the gauge; agents stand on the tank's top edge as on a floor.
 const PLATE_H = 11;
 const plateTop = k => zoneTop(k) + ZH - PLATE_H;
+// Below the last tank there is no tank to sit on: the plate sits right under the gauge and the pipe
+// runs on past it to where results drip out.
+const outPlateTop = k => zoneTop(k) + 4 + 2 * GAUGE_R + 3;
 const gaugeY = k => zoneTop(k) + 4 + GAUGE_R + 2;
 export const DAY_SECONDS = 2;
 const PER_ROW = 10;  // result items per row under a funnel, the same for every theme
@@ -262,7 +265,7 @@ export class Scene {
         gaugeFace(c, cx, gy, project(f).zones[k + 1], Math.sin(t * 3 + fi + k) * 0.015);
         // The plate under each gauge is what the agents work on; only the output zone's has text
         // on it: when the next result is due.
-        theme.plate(c, cx - 13, plateTop(k), 26, PLATE_H);
+        theme.plate(c, cx - 13, k === n - 1 ? outPlateTop(k) : plateTop(k), 26, PLATE_H);
       }
       const pr = project(f);
       f.stages.forEach((s, j) => {
