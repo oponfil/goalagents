@@ -83,7 +83,7 @@ export class Scene {
     const cx = this.cx(this.fi(a.f)), floor = zoneTop(a.zone) + ZH - (out ? OUT_LIFT : 0), R = a.side === 'R';
     if (kind === 'work') return { x: R ? cx + 18 : cx - 38, y: floor - MINER_H };
     if (kind === 'ask') return { x: R ? cx + 26 : cx - 46, y: floor - MINER_H };
-    return { x: R ? cx + 14 : cx - 42, y: floor - 10 * P };
+    return { x: R ? cx + 46 : cx - 74, y: floor - 10 * P };
   }
 
   resize(scale, dpr) {
