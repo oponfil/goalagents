@@ -190,7 +190,9 @@ function plateLab(c, x, y, w, h) {
 }
 
 function plateLove(c, x, y, w, h) {
-  // A small bed: pillow, red blanket, footboard.
+  // A small bed: headboard with a heart, pillow, red blanket, footboard.
+  rect(c, x, y - 3, 4, h + 3, '#9C4A66'); rect(c, x + 0.5, y - 2.5, 3, 0.5, '#E8A0B8');
+  heart(c, x + 0.5, y - 1, 0.45, '#FFB8CC');
   rect(c, x + w - 2.5, y + 2, 2.5, h - 2, '#9C4A66');
   rect(c, x + 4, y + 3, w - 6.5, h - 5, '#F4EDE1');
   rect(c, x + 4.5, y + 1.5, 7, 4, '#FFFFFF'); rect(c, x + 4.5, y + 4.5, 7, 1, '#DCD3CC');
