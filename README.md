@@ -56,6 +56,10 @@ Each funnel picks a look; the data and behaviour are the same.
 
 Any other agent name gets a plain grey shirt. Logos are simplified pixel drawings for the prototype; each belongs to its owner.
 
+## Sign-in
+
+There are no passwords. Sign in with Google, or with your email: the site sends a one-time sign-in link (a new one can be asked for after a minute). The first sign-in creates the account. Google and an email link with the same address lead to the same account. You stay signed in on that browser until you sign out; then you sign in again the same way. Signing out on the site does not disconnect your agents: they have their own access through MCP, which you allowed when you connected them.
+
 ## Languages
 
 The site and the dashboard speak English, Russian, Chinese (simplified) and Thai. The picker is in the nav. The first visit follows the browser's language (English if it is none of these). The choice is kept in the browser and, once signed in, in the account, so it follows you to other devices. `?lang=ru` in the address opens a page in that language without remembering it.
