@@ -41,11 +41,18 @@ ol.steps b::before { content: counter(step) ". "; color: var(--accent); }
 .callout[data-side="left"] { text-align: right; }
 .shot { border: 2px solid var(--border); display: block; }
 .cta { margin: 26px 0 0; text-align: center; }
+/* It's real: the text beside a phone showing the live demo (an iframe at 375×771, scaled down to fill the frame). */
+.body.wide-real { max-width: 1120px; }
+.real { display: flex; gap: 36px; align-items: center; }
+.real > div:first-child { flex: 1; }
+.phone { flex: none; width: 260px; height: 513px; border: 10px solid #0E0C0B; border-radius: 30px; overflow: hidden; background: #1B1714; box-shadow: 0 0 0 2px #4A3F35; }
+.phone iframe { width: 375px; height: 771px; border: 0; transform: scale(0.64); transform-origin: 0 0; }
 .btn { display: inline-block; background: var(--accent); color: #1B1714; font-weight: 700; text-decoration: none; padding: 12px 24px; border: 2px solid var(--accent); }
 .btn:hover { background: #FFD866; }
 #counter { position: fixed; right: 16px; bottom: 12px; color: var(--muted); font-size: 14px; z-index: 2; text-shadow: 0 1px 2px #000; }
 @media (max-width: 760px) {
   .body { padding: 24px 20px; }
+  .real { flex-direction: column; }
   .annot { padding: 0; }
   .annot .shot { height: auto; width: 100%; max-width: 100%; }
   .annot .arrows { display: none; }
