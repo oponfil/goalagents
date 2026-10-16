@@ -167,7 +167,7 @@ export function mountDashboard(funnels, opts = {}) {
         : 'is working';
     return `<div class="pop-title">${who} ${state}</div>
       <div class="pop-sub">${where}</div>
-      ${chat ? `<a class="btn" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>Open ${esc(info.name)}</a>` : ''}`;
+      ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>Open ${esc(info.name)}</a>` : ''}`;
   }
 
   function bindAnswer(a) {
