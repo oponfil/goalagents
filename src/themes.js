@@ -423,13 +423,66 @@ function resultPot(c, x, y, empty) {
   flower(c, x + 5.25, y, 1, '#E8345E');
 }
 
+// --- One piece of what a tank holds, for the heap look: (c, x, y, j, n) draws it with its top-left
+// at x, y; w and h are the cell it takes in the heap. The lab holds a liquid and has no pieces.
+const pieceMine = {
+  w: 4.5, h: 4,
+  draw(c, x, y, j, n) {
+    const ore = byDepth([['#4A4A4A', '#6B6B6B'], ['#9C5A2E', '#C47A45'], ['#7F8790', '#AEB5BF'], ['#D9A520', '#FFD866'], ['#2F7FD8', '#8FC4FF']], j, n);
+    if (j === n - 1 && n > 1) {
+      rect(c, x + 0.5, y, 2.5, 1, ore[1]); rect(c, x, y + 1, 3.5, 1, ore[0]);
+      rect(c, x + 0.75, y + 2, 2, 0.5, ore[0]); rect(c, x + 1.25, y + 2.5, 1, 0.5, ore[0]);
+    } else { rect(c, x, y, 3.5, 3, ore[0]); rect(c, x + 0.5, y + 0.5, 1.5, 1, ore[1]); }
+  },
+};
+const pieceGarden = {
+  w: 6, h: 7,
+  draw(c, x, y, j, n) {
+    const kind = byDepth(['sprout', 'bud', '#F28AB8', '#E8345E', '#B585F2'], j, n);
+    if (kind === 'sprout') pixmap(c, x + 0.5, y + 1.5, 1, ['L...L', '.L.L.', '..S..', '..S..', '.DDD.'], { L: '#8FD46A', S: '#4E8A3A', D: '#5A3A22' });
+    else if (kind === 'bud') pixmap(c, x + 0.5, y + 0.5, 1, ['..P..', '.PPP.', '.LPL.', 'L.S.L', '..S..', '..S..'], { P: '#F28AB8', L: '#6BB84E', S: '#3E7A30' });
+    else { rect(c, x + 2.5, y + 4.5, 0.5, 2.5, '#3E7A30'); rect(c, x + 3, y + 5.5, 1.5, 1, '#6BB84E'); flower(c, x, y, 1, kind); }
+  },
+};
+const pieceLove = {
+  w: 7, h: 5,
+  draw(c, x, y, j, n) {
+    const col = byDepth(['#F7B8D0', '#F28AB8', '#E85A8C', '#D9345E', '#B8123E'], j, n);
+    byDepth([flower, letter, heart, lips, ring], j, n)(c, x, y, 0.75, col);
+  },
+};
+// Code: ones and zeros, each stage in its own colour, so the heap reads as binary pouring in.
+const pieceCode = {
+  w: 4, h: 5.5,
+  draw(c, x, y, j, n, i = 0) {
+    const col = byDepth(['#3CF27A', '#F0F05C', '#FFB866', '#5CF0F0', '#7CB8FF'], j, n);
+    pixmap(c, x + 0.5, y, 1, i % 3 ? ['.B.', 'BB.', '.B.', '.B.', 'BBB'] : ['BBB', 'B.B', 'B.B', 'B.B', 'BBB'], { B: col });
+  },
+};
+const pieceMoney = {
+  w: 6, h: 5.5,
+  draw(c, x, y, j, n) {
+    const kind = byDepth(['coin', 'note', 'silver', 'gold', 'btc'], j, n);
+    if (kind === 'note') {
+      rect(c, x, y + 1, 5.5, 3.5, '#2E6B3A'); rect(c, x + 0.5, y + 1.5, 4.5, 2.5, '#5DAA5E'); rect(c, x + 2, y + 2, 1.5, 1.5, '#2E6B3A');
+    } else if (kind === 'silver' || kind === 'gold') {
+      const [top, side, edge] = kind === 'gold' ? ['#FFE38A', '#E0A82E', '#8A6010'] : ['#AEB5BF', '#858C96', '#4A4F58'];
+      rect(c, x, y + 2, 5.5, 3, edge); rect(c, x + 0.5, y + 3, 4.5, 2, side); rect(c, x + 1, y + 2, 3.5, 1, top);
+    } else {
+      const btc = kind === 'btc', [face, rim] = btc ? ['#F7931A', '#A85E08'] : ['#B8693A', '#6E3A1C'];
+      disc(c, x + 2.75, y + 2.75, 2.75, rim); disc(c, x + 2.75, y + 2.5, 2.25, face);
+      if (btc) rect(c, x + 2.25, y + 1.5, 1, 2, '#FFFFFF'); else rect(c, x + 1.5, y + 1, 1, 1, '#E09A6A');
+    }
+  },
+};
+
 export const THEMES = {
-  mine: { tankBg: '#2A2420', emptyAlpha: 0.3, backdrop: backMine, frame: '#8A6238', zone: zoneMine, tank: tankMine, plate: plateMine, result: resultTreasure, outfit: 'helmet', tool: 'pickaxe', spark: '#FFE38A', accent: '#FFD866' },
+  mine: { piece: pieceMine, tankBg: '#2A2420', emptyAlpha: 0.3, backdrop: backMine, frame: '#8A6238', zone: zoneMine, tank: tankMine, plate: plateMine, result: resultTreasure, outfit: 'helmet', tool: 'pickaxe', spark: '#FFE38A', accent: '#FFD866' },
   lab: { tankBg: '#122233', emptyAlpha: 0.3, backdrop: backLab, frame: '#9FD3FF', zone: zoneLab, tank: tankLab, plate: plateLab, result: resultFlask, outfit: 'goggles', tool: 'beaker', spark: '#B585F2', accent: '#C4A3F5' },
-  garden: { tankBg: '#16240F', emptyAlpha: 0.3, backdrop: backGarden, frame: '#7A5232', tank: tankGarden, plate: plateGarden, result: resultPot, outfit: 'straw', tool: 'shears', spark: '#8FD46A', accent: '#F28AB8' },
-  love: { tankBg: '#3A1A30', backdrop: backLove, frame: '#F28AB8', zone: zoneLove, tank: tankLove, plate: plateLove, result: resultHeart, outfit: 'wings', tool: 'bow', spark: '#F28AB8', accent: '#F28AB8' },
-  code: { tankBg: '#06100A', emptyAlpha: 0.3, backdrop: backCode, frame: '#3CF27A', zone: zoneCode, tank: tankCode, plate: plateCode, result: resultChip, outfit: 'hoodie', tool: 'laptop', spark: '#3CF27A', accent: '#7CF0B0' },
-  money: { tankBg: '#14201A', backdrop: backMoney, frame: '#D9A520', zone: zoneMoney, tank: tankMoney, plate: plateMoney, result: resultBag, outfit: 'suit', tool: 'stamp', spark: '#FFD866', accent: '#9FE870' },
+  garden: { piece: pieceGarden, tankBg: '#16240F', emptyAlpha: 0.3, backdrop: backGarden, frame: '#7A5232', tank: tankGarden, plate: plateGarden, result: resultPot, outfit: 'straw', tool: 'shears', spark: '#8FD46A', accent: '#F28AB8' },
+  love: { piece: pieceLove, tankBg: '#3A1A30', backdrop: backLove, frame: '#F28AB8', zone: zoneLove, tank: tankLove, plate: plateLove, result: resultHeart, outfit: 'wings', tool: 'bow', spark: '#F28AB8', accent: '#F28AB8' },
+  code: { piece: pieceCode, tankBg: '#06100A', emptyAlpha: 0.3, backdrop: backCode, frame: '#3CF27A', zone: zoneCode, tank: tankCode, plate: plateCode, result: resultChip, outfit: 'hoodie', tool: 'laptop', spark: '#3CF27A', accent: '#7CF0B0' },
+  money: { piece: pieceMoney, tankBg: '#14201A', backdrop: backMoney, frame: '#D9A520', zone: zoneMoney, tank: tankMoney, plate: plateMoney, result: resultBag, outfit: 'suit', tool: 'stamp', spark: '#FFD866', accent: '#9FE870' },
 };
 
 export const themeOf = f => THEMES[f.theme] || THEMES.mine;

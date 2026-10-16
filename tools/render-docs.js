@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=767957f0';
-import { Scene, CW, H } from '../src/scene.js?v=767957f0';
-import { THEMES } from '../src/themes.js?v=767957f0';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=767957f0';
+import { AGENTS, FUNNELS } from '../src/data.js?v=cef56275';
+import { Scene, CW, H } from '../src/scene.js?v=cef56275';
+import { THEMES } from '../src/themes.js?v=cef56275';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=cef56275';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -88,7 +88,7 @@ function overview() {
   // The Dating funnel stays in the live demo but out of the pictures.
   const scene = new Scene(document.createElement('canvas'), FUNNELS.filter(f => f.theme !== 'love'));
   scene.resize(scale, dpr);
-  for (let i = 0; i < 12 * 30; i++) scene.update(1 / 30);
+  for (let i = 0; i < 12 * 30; i++) { scene.update(1 / 30); scene.render(); }
   scene.render();
   const src = scene.canvas, w = Math.round(src.width * cols / scene.funnels.length);
   const [c, g] = canvas(w, TH * K + src.height);
@@ -146,7 +146,7 @@ function funnelGuide({ labels = true } = {}) {
     .map(([id, sd]) => [`${f0.title}|${id}`, sd]));
   const scene = new Scene(document.createElement('canvas'), [f0], { sides });
   scene.resize(scale, dpr);
-  for (let i = 0; i < 5 * 30; i++) scene.update(1 / 30);
+  for (let i = 0; i < 5 * 30; i++) { scene.update(1 / 30); scene.render(); }
   scene.render();
   const src = scene.canvas, fw = CW * K;
   // Without labels (the landing page writes them as text, in the page's language) the picture is

@@ -1,13 +1,13 @@
-import { agentInfo, plural } from './data.js?v=767957f0';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=767957f0';
-import { themeOf } from './themes.js?v=767957f0';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=767957f0';
+import { agentInfo, plural } from './data.js?v=cef56275';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=cef56275';
+import { themeOf } from './themes.js?v=cef56275';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=cef56275';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
 // The scene is tall enough for 5 tanks; shorter funnels end higher up. Titles live in the page header.
 export const CW = 200;
-const ZW = 164, TOP = 27, ZH = 40, LH = 30, MAX_STAGES = 5;
+const ZW = 164, TOP = 27, ZH = 40, LH = 46, MAX_STAGES = 5;
 // The pixel layer is drawn at RES× the logical grid: scenery stays blocky, gauges get finer pixels.
 const RES = 2;
 const tankTop = j => TOP + ZH + j * (LH + ZH);
@@ -20,9 +20,13 @@ export const sceneHeight = funnels => Math.max(H, ...funnels.map(f =>
   flasksY(f.stages.length) + Math.ceil(slots(f) / PER_ROW) * 22 + 52));
 // Result items under a funnel: one per result the goal needs, and more once agents go past it.
 const slots = f => Math.max(f.goal?.total || 0, f.cubes || 0);
-// Tanks narrow from 156 at the top to 76 at the bottom whatever their number, so every funnel
-// is the same pyramid; stages in between are spaced evenly.
-const tankW = (j, n) => Math.round((156 - (n > 1 ? j * 80 / (n - 1) : 0)) / 2) * 2;
+// The tanks make one funnel: each is a trapezoid from its own width at the top to the next one's
+// at the bottom, 184 wide at the top of the funnel and 52 at the last tank, whatever their number.
+const tankW = (j, n) => Math.round((184 - (n > 1 ? j * 132 / (n - 1) : 0)) / 2) * 2;
+const tankHalf = (j, n, r) => {
+  const top = tankW(j, n) / 2, bot = j + 1 < n ? tankW(j + 1, n) / 2 : top - (tankW(0, n) - tankW(1, n)) / 2;
+  return Math.round(top + (bot - top) * r / (LH - 1));
+};
 const GAUGE_R = 9;
 // The work piece under each gauge (anvil, flower bed…) sits right on the tank below, with a bit of
 // pipe between it and the gauge; agents stand on the tank's top edge as on a floor.
@@ -60,6 +64,7 @@ export class Scene {
     this.bg = document.createElement('canvas');
     this.period = 0;
     this.floaters = [];
+    this.heaps = new Map();
     this.sparks = [];
     this.hits = [];
     this.dropAt = null;
@@ -168,10 +173,18 @@ export class Scene {
         gaugeRim(c, cx, gaugeY(k, k === n - 1));
       }
       f.stages.forEach((s, j) => {
-        const lw = tankW(j, n), x = cx - lw / 2, y = tankTop(j);
-        c.fillStyle = theme.frame; c.fillRect(x, y, lw, LH);
-        // The empty part of a tank is the theme's own dark ground, without items.
-        c.fillStyle = theme.tankBg; c.fillRect(x + 2, y + 2, lw - 4, LH - 4);
+        // A thin outline: full top and bottom rows, one pixel down each side; inside, the theme's
+        // dark ground.
+        const y = tankTop(j);
+        for (let r = 0; r < LH; r++) {
+          const h = tankHalf(j, n, r);
+          c.fillStyle = theme.frame;
+          if (r === 0 || r === LH - 1) c.fillRect(cx - h, y + r, h * 2, 1);
+          else {
+            c.fillRect(cx - h, y + r, 1, 1); c.fillRect(cx + h - 1, y + r, 1, 1);
+            c.fillStyle = theme.tankBg; c.fillRect(cx - h + 1, y + r, h * 2 - 2, 1);
+          }
+        }
       });
       // Below the last tank the pipe just ends; results drip out of it.
       c.fillStyle = '#7D828C'; c.fillRect(cx - 4, zoneTop(n - 1) + ZH, 9, 3);
@@ -303,24 +316,18 @@ export class Scene {
       }
       const pr = project(f);
       f.stages.forEach((s, j) => {
-        const lw = tankW(j, n), x = cx - lw / 2, y = tankTop(j), inner = lw - 4;
-        const fill = pr.fill[j];
-        if (fill == null) {
-          // Unknown how much is needed: light diagonal streaks over the empty tank instead of a level.
-          c.save(); c.beginPath(); c.rect(x + 2, y + 2, inner, LH - 4); c.clip();
-          c.fillStyle = 'rgba(255,255,255,0.13)';
-          for (let d = -LH; d < inner; d += 6) for (let i = 0; i < LH; i += 2) c.fillRect(x + 2 + d + i, y + 2 + i, 2, 2);
-          c.restore();
-        } else {
-          // The tank fills left to right (ore, liquid, coins or hearts, by theme): how much of
-          // what is needed here for the whole goal.
-          // The filling is drawn over the whole tank and a little past it, then cut at the level,
-          // so a full tank is filled to its right wall and the pattern stays put as it rises.
-          const w = Math.max(fill > 0 ? 2 : 0, Math.round(inner * fill / 2) * 2);
-          if (w > 0) {
-            c.save(); c.beginPath(); c.rect(x + 2, y + 2, w, LH - 4); c.clip();
-            theme.tank(c, x + 2, y + 2, inner + 8, LH - 4, j, n, t, fi * 97 + j * 13 + 5);
-            c.restore();
+        const lw = tankW(j, n), x = cx - lw / 2, y = tankTop(j);
+        // What the tank holds rises with the share of what is needed here for the whole goal: a heap
+        // of pieces (ore, flowers, coins, hearts, bits) dropped in one by one, or in the lab a liquid
+        // that lies flat. A stage with items always shows a little.
+        const rows = LH - 2, share = s.count > 0 ? Math.min(1, Math.max(pr.fill[j] ?? 0, 0.02)) : 0;
+        if (theme.piece) this.drawHeap(c, f, fi, j, cx, y, share, theme);
+        else {
+          const level = Math.round(rows * share);
+          if (level > 0) {
+            c.save(); c.beginPath();
+            for (let r = rows - level; r < rows; r++) { const hw = tankHalf(j, n, r + 1) - 1; c.rect(cx - hw, y + 1 + r, hw * 2, 1); }
+            c.clip(); theme.tank(c, x - 20, y + 1, lw + 40, rows, j, n, t, fi * 97 + j * 13 + 5); c.restore();
           }
         }
         this.hits.push({ x, y, w: lw, h: LH, type: 'stage', fi, j });
@@ -461,20 +468,14 @@ export class Scene {
     this.funnels.forEach((f, fi) => {
       const cx = this.cx(fi), n = f.stages.length;
       f.stages.forEach((s, j) => {
-        // The number is the same size in every tank; next to it, how fast the tank fills (the flow of
+        // The number is the same size in every tank; under it, how fast the tank fills (the flow of
         // the zone above it). What the tank holds shows on hover.
         const num = fmtCount(s.count), flow = fmtFlow(f.flows[j] ?? 0, unit);
-        const maxW = (tankW(j, n) - 12) * S, y = (tankTop(j) + LH / 2 + 2) * S;
-        const width = (text, size) => { g.font = `700 ${size * S}px ${FONT}`; return g.measureText(text).width; };
-        const bigN = 15, gap = flow ? 4 * S : 0, wN = width(num, bigN);
-        let fs = 9;
-        while (flow && wN + gap + width(flow, fs) > maxW && fs > 6) fs -= 0.25;
-        const x0 = cx * S - (wN + gap + (flow ? width(flow, fs) : 0)) / 2;
-        g.textAlign = 'left'; g.textBaseline = 'middle';
-        g.shadowColor = 'rgba(0,0,0,0.85)'; g.shadowBlur = S * 1.2;
-        g.fillStyle = '#FFFFFF'; g.font = `700 ${bigN * S}px ${FONT}`; g.fillText(num, x0, y);
-        if (flow) { g.fillStyle = '#9FE870'; g.font = `700 ${fs * S}px ${FONT}`; g.fillText(flow, x0 + wN + gap, y); }
-        g.shadowColor = 'transparent'; g.shadowBlur = 0;
+        // The count, and under it the flow, both in the middle of the tank.
+        shadowed(() => {
+          T(num, cx, tankTop(j) + LH / 2 - 5, 15, '#FFFFFF', 'center', 700);
+          if (flow) T(flow, cx, tankTop(j) + LH / 2 + 9, 8.5, '#9FE870', 'center', 700);
+        });
       });
       const pr = project(f);
       const ry = flasksY(n) + Math.ceil(slots(f) / PER_ROW) * 22 + 8;
@@ -544,6 +545,44 @@ export class Scene {
       if (lx >= h.x && lx < h.x + h.w && ly >= h.y && ly < h.y + h.h) return h;
     }
     return null;
+  }
+
+  // The tank holds discrete pieces in cells, filled middle-first and low-first so they
+  // pile up into a mound; as many cells are taken as the share of what the goal needs. Pieces join
+  // one at a time, each falling from the pipe to its cell (also on load, so the heap builds up).
+  drawHeap(c, f, fi, j, cx, y, share, theme) {
+    const n = f.stages.length, P = theme.piece, key = `${fi}|${j}`;
+    let h = this.heaps.get(key);
+    if (!h) {
+      const cells = [], rows = Math.floor((LH - 3) / P.h);
+      for (let r = 0; r < rows; r++) {
+        const top = y + LH - 2 - (r + 1) * P.h, hw = tankHalf(j, n, Math.max(1, Math.round(top - y))) - 1.5;
+        const k = Math.floor((hw * 2) / P.w);
+        for (let i = 0; i < k; i++) {
+          const px = cx - (k * P.w) / 2 + i * P.w + (r % 2 ? P.w / 4 : 0), off = Math.abs(px + P.w / 2 - cx) / P.w;
+          if (px + P.w > cx + hw) continue;
+          cells.push({ x: px, y: top, score: r * 1.6 + off * 0.7 + ((i * 7 + r * 3) % 5) * 0.05 });
+        }
+      }
+      cells.sort((a, b) => a.score - b.score);
+      h = { cells, shown: 0, falling: [], next: 0 };
+      this.heaps.set(key, h);
+    }
+    const t = this.t, want = Math.min(h.cells.length, Math.round(h.cells.length * share)) || (share > 0 ? 1 : 0);
+    if (h.shown > want) { h.shown = want; h.falling = []; }
+    if (h.shown + h.falling.length < want && t >= h.next) {
+      h.falling.push({ cell: h.cells[h.shown + h.falling.length], born: t });
+      h.next = t + 0.05;
+    }
+    h.falling = h.falling.filter(d => {
+      if (t - d.born < 0.45) return true;
+      h.shown++; return false;
+    });
+    for (let i = 0; i < h.shown; i++) P.draw(c, Math.round(h.cells[i].x * 2) / 2, Math.round(h.cells[i].y * 2) / 2, j, n, i);
+    for (const d of h.falling) {
+      const q = (t - d.born) / 0.45, sx = cx - P.w / 2, sy = y - 2;
+      P.draw(c, Math.round((sx + (d.cell.x - sx) * q) * 2) / 2, Math.round((sy + (d.cell.y - sy) * q * q) * 2) / 2, j, n, h.cells.indexOf(d.cell));
+    }
   }
 
   stageNeed(fi, j) { return project(this.funnels[fi]).need[j]; }

@@ -14,7 +14,7 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 
 | On screen | Meaning |
 |---|---|
-| Tank, its number and `+N/d` | How many items have reached this stage (cumulative) and how many it gains per day (average over the last 7 days; an agent can set it; `+0/d` until there are two reports to compare). The fill, left to right, is the share of what this stage needs for the whole goal; that need comes from the conversion between the tanks' counts (next ÷ this), 30% while a count is still 0. Hover a tank for its name |
+| Tank, its number and `+N/d` | How many items have reached this stage (cumulative) and how many it gains per day (average over the last 7 days; an agent can set it; `+0/d` until there are two reports to compare). The tanks make one funnel, each narrowing to the next. What a tank holds piles up from the bottom, piece by piece (each new one drops in from the pipe), up to the share of what this stage needs for the whole goal; that need comes from the conversion between the tanks' counts (next ÷ this), 30% while a count is still 0. Hover a tank for its name |
 | Gauge in a zone | Will the tank below fill in time: what the zone's current flow brings by the goal's date against what the tank still misses. On the red mark it fills just in time; left of it the tank is behind, right of it ahead. At zero while the flow is 0 or not known yet |
 | Agent with a tool | Working on that step |
 | Agent lying with a timer | Waiting for its next scheduled run |
@@ -29,13 +29,13 @@ Each funnel picks a look; the data and behaviour are the same.
 
 ![The six themes: mine, lab, garden, love, code, money](docs/img/themes.png)
 
-| Theme | Agents | Work piece | Tanks fill with | Results |
+| Theme | Agents | Work piece | Tanks fill with (piece by piece) | Results |
 |---|---|---|---|---|
 | `mine` | miners with pickaxes | ore rock | ore and gems, richer by stage | treasure chests |
 | `lab` | chemists pouring reagents | Petri dish | liquid, deeper colour by stage | flasks |
 | `garden` | gardeners with shears | flower bed | sprouts, buds, then pink, red and purple flowers | flower pots |
 | `love` | cupids with bows | bed | flowers, love letters, hearts, kisses, rings: pink to red | hearts |
-| `code` | hackers on laptops | server rack | scrolling code | chips |
+| `code` | hackers on laptops | server rack | ones and zeros, a colour per stage | chips |
 | `money` | bankers with stamps | contract | copper pennies, banknotes, silver bars, gold bars, bitcoins | money bags |
 
 ## Agents
