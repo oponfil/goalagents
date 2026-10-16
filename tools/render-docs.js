@@ -3,7 +3,7 @@
 import { AGENTS, FUNNELS } from '../src/data.js';
 import { Scene, CW, H } from '../src/scene.js';
 import { THEMES } from '../src/themes.js';
-import { drawStanding, drawPickaxe, drawHammer, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -43,7 +43,7 @@ function agentsSheet() {
   return c;
 }
 
-// One tile per theme: a working agent and its work piece in the open, a tank, results.
+// One tile per theme: a working agent on the tank's top edge by its work piece, the tank, results.
 function themesSheet() {
   const names = Object.keys(THEMES), K = 4, W = 180, Hh = 112, cols = 3;
   const [c, g] = canvas(cols * W * K, Math.ceil(names.length / cols) * Hh * K);
@@ -52,19 +52,19 @@ function themesSheet() {
     const th = THEMES[name], ox = (i % cols) * W, oy = Math.floor(i / cols) * Hh, r = rng(7 + i);
     g.setTransform(K, 0, 0, K, ox * K, oy * K);
     th.backdrop(g, 0, W, Hh, r);
-    g.fillStyle = '#5E626B'; g.fillRect(86, 12, 9, 36);
-    g.fillStyle = '#8E939D'; g.fillRect(88, 12, 5, 36);
-    th.plate(g, 72, 33, 36, 11);
-    const id = agentsFor[i % agentsFor.length], ax = 52, ay = 17, hx = ax + 16.5, hy = ay + 15;
+    g.fillStyle = '#5E626B'; g.fillRect(86, 6, 9, 48);
+    g.fillStyle = '#8E939D'; g.fillRect(88, 6, 5, 48);
+    th.plate(g, 77, 43, 26, 11);
+    const id = agentsFor[i % agentsFor.length], ax = 57, ay = 26, hx = ax + 16.5, hy = ay + 15;
     drawStanding(g, ax, ay, id, AGENTS[id].color, -1, false, true, th.outfit);
     if (th.tool === 'pickaxe') drawPickaxe(g, hx, hy - 1, -0.9);
-    else if (th.tool === 'hammer') drawHammer(g, hx, hy - 1, -0.9);
+    else if (th.tool === 'shears') drawShears(g, hx, hy + 1, 0.6);
     else if (th.tool === 'beaker') drawBeaker(g, hx, hy, 0.9, '#B585F2');
     else if (th.tool === 'laptop') drawLaptop(g, hx - 3, hy + 2, 0.3);
     else if (th.tool === 'stamp') drawStamp(g, hx - 1, hy + 4, 0.5);
     else { drawBow(g, hx, hy, 0.6); drawArrow(g, hx + 1, hy); }
     g.fillStyle = th.frame; g.fillRect(16, 54, 148, 24);
-    g.fillStyle = '#16314F'; g.fillRect(18, 56, 144, 20);
+    g.fillStyle = th.tankBg; g.fillRect(18, 56, 144, 20);
     g.save(); g.beginPath(); g.rect(18, 56, 92, 20); g.clip();
     th.tank(g, 18, 56, 92, 20, 1, 3, 0, 11 + i);
     g.restore();
