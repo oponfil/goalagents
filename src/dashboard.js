@@ -172,9 +172,13 @@ export function mountDashboard(funnels, opts = {}) {
           ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>Open ${esc(info.name)}</a>` : ''}
           <div class="pop-msg"></div>`
         : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>Reply in ${esc(info.name)}</a>`;
-      return `<div class="pop-title">${who} is waiting for you</div>
+      // Standing, the agent is waiting and takes the answer at once; asleep, only on its next run.
+      const asleep = a.state === 'sleep', left = scene.sleepLeft(a);
+      const when = left > 0 ? `in ${left >= 3600 ? Math.round(left / 3600) + ' h' : Math.max(1, Math.round(left / 60)) + ' min'}` : 'when it next runs';
+      return `<div class="pop-title">${who} ${asleep ? 'asked you, then went to sleep' : 'is waiting for you'}</div>
         <div class="pop-sub">${where}</div>
-        <p>${esc(a.question)}</p>${reply}`;
+        <p>${esc(a.question)}</p>
+        ${asleep ? `<p class="pop-note">It will pick your answer up on its next run, ${esc(when)}.</p>` : ''}${reply}`;
     }
     const state = a.state === 'sleep' ? 'is resting until the next run'
       : a.state === 'walk' ? (a.to === 'work' ? 'is starting a shift' : 'finished a shift')
@@ -193,7 +197,8 @@ export function mountDashboard(funnels, opts = {}) {
       send.disabled = true;
       const error = await opts.onAnswer(a, text);
       if (error) { msg.textContent = error; send.disabled = false; return; }
-      a.state = 'work'; // the agent picks the answer up on its next check
+      // A waiting agent takes the answer at once; a sleeping one keeps sleeping, its bubble gone.
+      if (a.state === 'sleep') a.question = null; else a.state = 'work';
       hidePop();
     });
   }

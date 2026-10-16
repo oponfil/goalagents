@@ -36,11 +36,12 @@ function toScene(f, reports, now) {
     cubes: f.results,
     goal: { total: f.goal_total, every: Number(f.goal_every_days) },
     workers: f.presence.map(p => {
-      // An agent with a question still unanswered is shown asking, even if it went to sleep: for the
-      // person it is still waiting. Once answered, an asking agent is shown back at work.
+      // The agent's latest unanswered question. An agent asking stands and waits for the answer; one
+      // that went to sleep keeps its question in a bubble and picks the answer up on its next run.
+      // Once answered, an asking agent is shown back at work.
       const q = f.questions.filter(q => q.agent === p.agent && !q.answered_at)
         .sort((a, b) => Date.parse(a.asked_at) - Date.parse(b.asked_at)).pop();
-      const state = q ? 'ask' : p.state === 'ask' ? 'work' : p.state;
+      const state = p.state === 'ask' && !q ? 'work' : p.state;
       return {
         agent: p.agent,
         zone: p.zone - 1,

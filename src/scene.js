@@ -335,7 +335,12 @@ export class Scene {
     if (a.state === 'sleep') {
       const p = this.spot(a, 'rest');
       drawLying(c, p.x, p.y, a.agent, info.color, a.side === 'R', outfit);
-      this.hits.push({ x: p.x - 4, y: p.y - 14, w: 34, h: 36, type: 'agent', a });
+      // Asleep with a question still open: its bubble stays, on the side toward the pipe.
+      if (a.question) {
+        const bx = a.side === 'R' ? p.x - 16 : p.x + 30;
+        drawBubble(c, bx, p.y - 14);
+        this.hits.push({ x: Math.min(p.x, bx) - 4, y: p.y - 16, w: 52, h: 38, type: 'ask', a });
+      } else this.hits.push({ x: p.x - 4, y: p.y - 14, w: 34, h: 36, type: 'agent', a });
       return;
     }
     if (a.state === 'walk') {
@@ -497,7 +502,9 @@ export class Scene {
   }
 
   stageNeed(fi, j) { return project(this.funnels[fi]).need[j]; }
-  waitingFor(f) { return this.agents.filter(a => a.f === f && a.state === 'ask').length; }
+  // Seconds until a sleeping agent's next run, or null.
+  sleepLeft(a) { return a.state === 'sleep' && a.wakeAt != null ? a.wakeAt - this.t : null; }
+  waitingFor(f) { return this.agents.filter(a => a.f === f && (a.state === 'ask' || (a.state === 'sleep' && a.question))).length; }
 }
 
 // Rough projection for the gauges and tanks, from the funnel's own numbers (visual only, not a
