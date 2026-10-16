@@ -30,7 +30,7 @@ function pixmap(c, x, y, s, rows, colors) {
 }
 // Romance from light to close, top stages to bottom: a flower, a love letter, a heart, a kiss, a ring.
 // The flower is seen from above: five round petals around a pale centre, on half-unit pixels.
-function flower(c, x, y, s, col) {
+function flower(c, x, y, s, col, centre = '#FFF0F6') {
   const cx = x + 2.75, cy = y + 2.5;
   const disc = (px, py, r, colour) => {
     c.fillStyle = colour;
@@ -42,7 +42,7 @@ function flower(c, x, y, s, col) {
     const a = -Math.PI / 2 + k * 2 * Math.PI / 5;
     disc(cx + Math.cos(a) * 1.8, cy + Math.sin(a) * 1.8, 1.05, col);
   }
-  disc(cx, cy, 0.6, '#FFF0F6');
+  disc(cx, cy, 0.6, centre);
 }
 const letter = (c, x, y, s, col) => pixmap(c, x, y + 0.5, s,
   ['EEEEEEE', 'EDEEEDE', 'EEDEDEE', 'EEEDEEE', 'EEEEEEE'], { E: col, D: '#7A2A48' });
@@ -438,30 +438,33 @@ const pieceMine = {
 const pieceGarden = {
   w: 6, h: 7,
   draw(c, x, y, j, n) {
-    const kind = byDepth(['sprout', 'bud', '#F28AB8', '#E8345E', '#B585F2'], j, n);
+    const kind = byDepth(['sprout', 'bud', '#D4507E', '#E8345E', '#B585F2'], j, n);
     if (kind === 'sprout') pixmap(c, x + 0.5, y + 1.5, 1, ['L...L', '.L.L.', '..S..', '..S..', '.DDD.'], { L: '#8FD46A', S: '#4E8A3A', D: '#5A3A22' });
     else if (kind === 'bud') pixmap(c, x + 0.5, y + 0.5, 1, ['..P..', '.PPP.', '.LPL.', 'L.S.L', '..S..', '..S..'], { P: '#F28AB8', L: '#6BB84E', S: '#3E7A30' });
-    else { rect(c, x + 2.5, y + 4.5, 0.5, 2.5, '#3E7A30'); rect(c, x + 3, y + 5.5, 1.5, 1, '#6BB84E'); flower(c, x, y, 1, kind); }
+    else { rect(c, x + 2.5, y + 4.5, 0.5, 2.5, '#3E7A30'); rect(c, x + 3, y + 5.5, 1.5, 1, '#6BB84E'); flower(c, x, y, 1, kind, '#5A1E30'); }
   },
 };
 const pieceLove = {
   w: 7, h: 5,
   draw(c, x, y, j, n) {
-    const col = byDepth(['#F7B8D0', '#F28AB8', '#E85A8C', '#D9345E', '#B8123E'], j, n);
-    byDepth([flower, letter, heart, lips, ring], j, n)(c, x, y, 0.75, col);
+    // Darker than in the old tanks, so the count over them stays readable.
+    const col = byDepth(['#D86A98', '#E0609A', '#E85A8C', '#D9345E', '#B8123E'], j, n);
+    const darkFlower = (c2, x2, y2, s2, col2) => flower(c2, x2, y2, s2, col2, '#7A1E44');
+    byDepth([darkFlower, letter, heart, lips, ring], j, n)(c, x, y, 0.75, col);
   },
 };
 // Code: floppy disks, a colour per stage: a case, a metal shutter on top, a white label below.
 const pieceCode = {
   w: 5.5, h: 5.5,
   draw(c, x, y, j, n) {
-    const col = byDepth(['#3A6AD0', '#3CA05A', '#D8A020', '#D85A30', '#9B4BD0'], j, n);
-    rect(c, x, y, 5, 5, col); rect(c, x + 1.5, y, 2, 1.5, '#C8CED8'); rect(c, x + 2.5, y + 0.5, 0.5, 0.5, '#1E2228');
-    rect(c, x + 1, y + 2.5, 3, 2, '#F4EDE1'); rect(c, x + 1.5, y + 3, 2, 0.5, '#8A8A8A');
+    // Muted: a bright label would outshine the count over the heap.
+    const col = byDepth(['#2C52A8', '#2E7E46', '#A87A18', '#A84424', '#7038A0'], j, n);
+    rect(c, x, y, 5, 5, col); rect(c, x + 1.5, y, 2, 1.5, '#8E949E'); rect(c, x + 2.5, y + 0.5, 0.5, 0.5, '#1E2228');
+    rect(c, x + 1, y + 2.5, 3, 2, '#8C8576'); rect(c, x + 1.5, y + 3, 2, 0.5, '#5E584C');
   },
 };
 const pieceMoney = {
-  w: 6, h: 5.5,
+  w: 6.5, h: 6.5,
   draw(c, x, y, j, n) {
     const kind = byDepth(['coin', 'note', 'silver', 'gold', 'btc'], j, n);
     if (kind === 'note') {
@@ -469,10 +472,15 @@ const pieceMoney = {
     } else if (kind === 'silver' || kind === 'gold') {
       const [top, side, edge] = kind === 'gold' ? ['#FFE38A', '#E0A82E', '#8A6010'] : ['#AEB5BF', '#858C96', '#4A4F58'];
       rect(c, x, y + 2, 5.5, 3, edge); rect(c, x + 0.5, y + 3, 4.5, 2, side); rect(c, x + 1, y + 2, 3.5, 1, top);
+    } else if (kind === 'btc') {
+      // A bitcoin: an orange coin with a white ₿.
+      disc(c, x + 3, y + 3, 3, '#A85E08'); disc(c, x + 3, y + 2.75, 2.5, '#F7931A');
+      pixmap(c, x + 1.75, y + 1, 0.5, ['.I.I.', 'IIII.', 'I...I', 'IIII.', 'I...I', 'IIII.', '.I.I.'], { I: '#FFFFFF' });
     } else {
-      const btc = kind === 'btc', [face, rim] = btc ? ['#F7931A', '#A85E08'] : ['#B8693A', '#6E3A1C'];
-      disc(c, x + 2.75, y + 2.75, 2.75, rim); disc(c, x + 2.75, y + 2.5, 2.25, face);
-      if (btc) rect(c, x + 2.25, y + 1.5, 1, 2, '#FFFFFF'); else rect(c, x + 1.5, y + 1, 1, 1, '#E09A6A');
+      // A copper penny: a dark rim, an inner ring and a glint.
+      disc(c, x + 3, y + 3, 3, '#6E3A1C'); disc(c, x + 3, y + 2.75, 2.5, '#C27840');
+      disc(c, x + 3, y + 2.75, 1.5, '#9A5A2C'); disc(c, x + 3, y + 2.75, 1, '#C27840');
+      rect(c, x + 1.5, y + 1, 1, 0.5, '#F0B080');
     }
   },
 };
