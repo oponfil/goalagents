@@ -30,6 +30,8 @@ h1 { font-size: clamp(32px, 6vw, 52px); line-height: 1.12; margin: 0 auto 18px; 
 .btn.primary:hover { background: #FFD866; border-color: #FFD866; }
 .btn:disabled { opacity: 0.5; cursor: wait; }
 .shot { display: block; margin: 40px auto 0; width: 100%; border: 2px solid var(--border); image-rendering: pixelated; }
+/* The labelled funnel on the landing page: tall, so narrower than the column. */
+.shot.guide { width: min(100%, 560px); height: auto; image-rendering: auto; }
 .points { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; padding: 40px 0; }
 .point { background: var(--panel); border: 2px solid var(--border); padding: 18px 20px; }
 .point h3 { margin: 0 0 6px; font-size: 18px; }

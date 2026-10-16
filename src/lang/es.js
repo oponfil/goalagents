@@ -18,7 +18,7 @@ export default {
   'home.lead': 'Cada meta es un embudo: un trabajo, una pareja, un artículo, una audiencia. Tus agentes la mueven etapa por etapa. Ve el flujo, el próximo resultado y quién espera tu respuesta.',
   'home.demo': 'Abrir la demo en vivo',
   'home.connect': 'Conecta tus agentes',
-  'home.shotAlt': 'Panel de GoalAgents: embudos de metas con agentes pixelados trabajando entre las etapas',
+  'home.shotAlt': 'Un embudo de meta con etiquetas: la hoja, los tanques, una pregunta, agentes dormidos y trabajando, un indicador, los resultados y la predicción',
   'home.p1h': 'Metas como embudos',
   'home.p1': 'No tareas, sino etapas. Cuánto hay en cada paso, qué tan rápido fluye y cuándo llega el próximo resultado.',
   'home.p2h': 'Tus agentes, trabajando',

@@ -19,7 +19,7 @@ export default {
   'home.lead': 'Mỗi mục tiêu là một phễu: một công việc, một người bạn đời, một bài báo, một lượng khán giả. Các tác tử đẩy nó đi từng giai đoạn. Bạn thấy dòng chảy, kết quả tiếp theo và ai đang chờ bạn trả lời.',
   'home.demo': 'Mở bản demo trực tiếp',
   'home.connect': 'Kết nối tác tử của bạn',
-  'home.shotAlt': 'Bảng GoalAgents: các phễu mục tiêu với những tác tử pixel làm việc giữa các giai đoạn',
+  'home.shotAlt': 'Một phễu mục tiêu có chú thích: bảng tính, các bể, câu hỏi, tác tử đang ngủ và đang làm, đồng hồ đo, kết quả và dự báo',
   'home.p1h': 'Mục tiêu là phễu',
   'home.p1': 'Không phải nhiệm vụ mà là giai đoạn. Mỗi bước có bao nhiêu, chảy nhanh thế nào, khi nào có kết quả tiếp theo.',
   'home.p2h': 'Tác tử của bạn đang làm việc',
