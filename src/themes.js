@@ -234,11 +234,12 @@ function plateLove(c, x, y, w, h) {
 function plateCode(c, x, y, w, h) {
   // A keyboard: dark case, three rows of keycaps, a space bar, one glowing key.
   rect(c, x, y + 1, w, h - 1, '#1E2228'); rect(c, x, y + 1, w, 0.5, '#4A525C');
-  for (let r = 0; r < 3; r++) for (let k = 0; k < 11; k++) {
+  const keys = Math.floor((w - 4) / 3);  // as many keys as the case holds
+  for (let r = 0; r < 3; r++) for (let k = 0; k < keys; k++) {
     rect(c, x + 1.5 + k * 3 + r * 0.5, y + 2.5 + r * 2.3, 2.5, 1.8, '#5E6670');
     rect(c, x + 1.5 + k * 3 + r * 0.5, y + 2.5 + r * 2.3, 2.5, 0.5, '#8A929C');
   }
-  rect(c, x + 10, y + 9.5, 15, 1, '#5E6670');
+  rect(c, x + w / 2 - 5, y + 9.5, 10, 1, '#5E6670');
   rect(c, x + w - 6.5, y + 4.8, 2.5, 1.8, '#3CF27A');
 }
 
