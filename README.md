@@ -18,7 +18,7 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 | Gauge in a zone | Will the tank below fill in time: what the zone's current flow brings by the goal's date against what the tank still misses. On the red mark it fills just in time; left of it the tank is behind, right of it ahead. Dimmed with `?` when it can't be estimated yet |
 | Agent with a tool | Working on that step |
 | Agent lying with a timer | Waiting for its next scheduled run |
-| Agent lying with an amber `! 2 h` | Did not wake up on time: its run was due more than 5 minutes ago and it has not reported since (agents report `work` first thing in a run; 5 minutes leave room for a scheduler that starts a little late). Click it for when it was due and when it was last heard from, and check on the agent |
+| Agent lying under an amber triangle with `2 h` | Did not wake up on time: its run was due more than 5 minutes ago and it has not reported since (agents report `work` first thing in a run; 5 minutes leave room for a scheduler that starts a little late). Click it for when it was due and when it was last heard from, and check on the agent |
 | Agent with a red `!` | Waiting for you; click to read the question and answer it. One `!` per open question (`!!` for two, up to four; from five, the number: `5!`), each answered on its own. Lying with a `!` bubble: it asked, then went to sleep, and takes your answer on its next run. The red badge in the header counts them |
 | `+N` by an agent | What its current run added (its last run's while it sleeps). Click the agent and open "Last runs" for its last 10 runs: when each started, how long it took and what it added |
 | Bottom zone and items | Results so far with their flow, when the next one is due, and the goal |

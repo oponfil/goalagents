@@ -500,11 +500,18 @@ export class Scene {
     for (const a of this.agents) {
       if (a.state !== 'sleep') continue;
       const p = this.spot(a, 'rest');
-      // Past its next run and still no word from it: an amber "!" with how late it is, instead of the timer.
+      // Past its next run and still no word from it: how late it is, in an amber warning triangle,
+      // instead of the timer.
       if (this.overdue(a)) {
-        const late = fmtDuration(t - a.wakeAt), w = late.length * 4.6 + 13, x0 = p.x + 14 - w / 2;
-        g.fillStyle = '#F2A33C'; g.fillRect(x0 * S, (p.y - 13) * S, w * S, 10 * S);
-        T('! ' + late, p.x + 14, p.y - 7.6, 7.5, '#1B1714', 'center', 700);
+        const late = fmtDuration(t - a.wakeAt);
+        g.font = `700 ${7 * S}px ${FONT}`;
+        const tw = g.measureText(late).width / S, cx = p.x + 14, base = p.y - 3, h = 17, half = Math.max(12, tw / 2 + 7);
+        g.beginPath();
+        g.moveTo(cx * S, (base - h) * S); g.lineTo((cx + half) * S, base * S); g.lineTo((cx - half) * S, base * S);
+        g.closePath();
+        g.lineJoin = 'round'; g.lineWidth = 1.6 * S; g.strokeStyle = '#1B1714'; g.fillStyle = '#F2A33C';
+        g.fill(); g.stroke();
+        T(late, cx, base - 4.2, 7, '#1B1714', 'center', 700);
       } else if (a.wakeAt != null) shadowed(() => T(fmtTimer(a.wakeAt - t), p.x + 14, p.y - 8, 8.5, '#F4EDE1', 'center', 700));
       for (let i = 0; i < 2; i++) {
         const q = ((t * 0.6 + i * 0.5) % 1);
