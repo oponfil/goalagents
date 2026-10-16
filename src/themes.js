@@ -118,12 +118,19 @@ function zoneLove(c, x0, y, w, h, r) {
 // --- Tank fillings: (c, x, y, w, h, j, n, t, seed) fill the box from the left, w wide ---
 
 function tankMine(c, x, y, w, h, j, n, t, seed) {
-  const ore = byDepth([['#4A4A4A', '#6B6B6B'], ['#9C5A2E', '#C47A45'], ['#A9B0B8', '#DDE3EA'], ['#D9A520', '#FFD866'], ['#3FC7DA', '#B8F4FF']], j, n);
+  const ore = byDepth([['#4A4A4A', '#6B6B6B'], ['#9C5A2E', '#C47A45'], ['#7F8790', '#AEB5BF'], ['#D9A520', '#FFD866'], ['#2F7FD8', '#8FC4FF']], j, n);
   rect(c, x, y, w, h, '#2A2420');
   const r = rng(seed);
   for (let gy = y; gy < y + h - 1; gy += 4) for (let gx = x + (r() * 3 | 0); gx < x + w - 2; gx += 5 + (r() * 3 | 0)) {
-    rect(c, gx, gy + (r() * 2 | 0) * 0.5, 3.5, 3, ore[0]);
-    rect(c, gx + 0.5, gy + 0.5, 1.5, 1, ore[1]);
+    const oy = gy + (r() * 2 | 0) * 0.5;
+    if (j === n - 1 && n > 1) {
+      // Diamonds at the last stage: a cut gem, flat on top and pointed below.
+      rect(c, gx + 0.5, oy, 2.5, 1, ore[1]); rect(c, gx, oy + 1, 3.5, 1, ore[0]);
+      rect(c, gx + 0.75, oy + 2, 2, 0.5, ore[0]); rect(c, gx + 1.25, oy + 2.5, 1, 0.5, ore[0]);
+    } else {
+      rect(c, gx, oy, 3.5, 3, ore[0]);
+      rect(c, gx + 0.5, oy + 0.5, 1.5, 1, ore[1]);
+    }
   }
   // an occasional glint
   const g = Math.floor((t * 1.3 + seed) % 7);
@@ -327,7 +334,7 @@ function tankMoney(c, x, y, w, h, j, n) {
     }
   } else if (kind === 'silver' || kind === 'gold') {
     // Ingots stacked like bricks: a lighter top face over a darker side.
-    const [top, side, edge] = kind === 'gold' ? ['#FFE38A', '#E0A82E', '#8A6010'] : ['#EEF2F6', '#B8BEC8', '#5E6670'];
+    const [top, side, edge] = kind === 'gold' ? ['#FFE38A', '#E0A82E', '#8A6010'] : ['#AEB5BF', '#858C96', '#4A4F58'];
     for (let by = y + h - 4, row = 0; by > y - 3; by -= 3.5, row++) {
       for (let bx = x + (row % 2 ? 3.5 : 0); bx < x + w - 5; bx += 7) {
         rect(c, bx, by, 6.5, 3, edge); rect(c, bx + 0.5, by + 1, 5.5, 2, side); rect(c, bx + 1, by, 4.5, 1, top);
@@ -335,12 +342,12 @@ function tankMoney(c, x, y, w, h, j, n) {
     }
   } else {
     // Round coins; bitcoins are orange with the ₿ sign.
-    const btc = kind === 'btc', [face, rim] = btc ? ['#F7931A', '#A85E08'] : ['#C9CED6', '#6E737D'];
+    const btc = kind === 'btc', [face, rim] = btc ? ['#F7931A', '#A85E08'] : ['#8E959F', '#4E535C'];
     for (let cy = y + h - 6, row = 0; cy > y - 4; cy -= 5.5, row++) {
       for (let cx = x + (row % 2 ? 3 : 0); cx < x + w - 5; cx += 6) {
         disc(c, cx + 2.75, cy + 2.75, 2.75, rim); disc(c, cx + 2.75, cy + 2.5, 2.25, face);
         if (btc) pixmap(c, cx + 1.5, cy + 0.75, 0.5, ['.I.I.', 'IIII.', 'I...I', 'IIII.', 'I...I', 'IIII.', '.I.I.'], { I: '#FFFFFF' });
-        else rect(c, cx + 1.5, cy + 1, 1, 1, '#FFFFFF');
+        else rect(c, cx + 1.5, cy + 1, 1, 1, '#C4CAD2');
       }
     }
   }
