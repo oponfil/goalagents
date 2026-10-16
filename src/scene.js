@@ -422,17 +422,25 @@ export class Scene {
       });
       const pr = project(f);
       for (let k = -1; k < n; k++) {
-        const plateY = zoneTop(k) + 4 + 2 * GAUGE_R + 8.5;
-        // The output zone's plate shows when the next result is due, coloured by pace vs goal.
-        g.shadowColor = 'rgba(0,0,0,0.9)'; g.shadowBlur = S * 1.5;
-        if (k === n - 1) T(fmtEta(pr.eta), cx, plateY, 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 'center', 700);
-        g.shadowColor = 'transparent'; g.shadowBlur = 0;
         if (pr.zones[k + 1] == null) T('?', cx, zoneTop(k) + 4 + GAUGE_R + 2.5, 7.5, '#2B2B2B', 'center', 700);
       }
       const ry = flasksY(n) + Math.ceil(f.goal.total / PER_ROW) * 22 + 8;
-      T(`${f.cubes} ${plural(f.cubes, f.result)}`, cx, ry, 9, f.cubes ? themeOf(f).accent : '#8C8276', 'center', 600);
+      // Under the results, as on a tank: how many came out and how fast; then the goal and when the
+      // next result is due (coloured by pace against the goal).
+      const segs = (parts, y) => {
+        const w = parts.map(([str, size, , weight]) => { g.font = `${weight} ${size * S}px ${FONT}`; return g.measureText(str).width; });
+        let x = cx * S - w.reduce((p, v) => p + v, 0) / 2;
+        g.textAlign = 'left'; g.textBaseline = 'middle';
+        parts.forEach(([str, size, color, weight], i) => {
+          g.font = `${weight} ${size * S}px ${FONT}`; g.fillStyle = color; g.fillText(str, x, y * S); x += w[i];
+        });
+      };
+      const outFlow = f.flows[n];
+      segs([[`${f.cubes} ${plural(f.cubes, f.result)}`, 9, f.cubes ? themeOf(f).accent : '#8C8276', 600],
+        ...(outFlow == null ? [] : [[' ' + fmtFlow(outFlow, unit), 8.5, '#9FE870', 700]])], ry);
       if (f.cubes >= f.goal.total) T('goal reached ✓', cx, ry + 11, 8, '#3CF27A', 'center', 700);
-      else T(`goal: ${f.goal.total}, 1 per ${fmtEta(f.goal.every).slice(1)}`, cx, ry + 11, 7.5, '#B8AE9F', 'center', 500);
+      else segs([[`goal: ${f.goal.total}, 1 per ${fmtEta(f.goal.every).slice(1)} · next `, 7.5, '#B8AE9F', 500],
+        [fmtEta(pr.eta), 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 700]], ry + 11);
     });
     for (const a of this.agents) {
       if (a.state !== 'sleep') continue;
