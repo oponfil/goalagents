@@ -264,7 +264,8 @@ export class Scene {
       const cx = this.cx(fi), n = f.stages.length, theme = themeOf(f);
       for (let k = -1; k < n; k++) {
         const y = zoneTop(k), fl = f.flows[k + 1], gy = gaugeY(k, k === n - 1);
-        this.drops(c, cx, y + 4, y + ZH, fl, fi * 3 + k);
+        // Below the last tank the drops run a little past the pipe's end, dripping out of it.
+        this.drops(c, cx, y + 4, y + ZH + (k === n - 1 ? 9 : 0), fl, fi * 3 + k);
         gaugeFace(c, cx, gy, project(f).zones[k + 1], Math.sin(t * 3 + fi + k) * 0.015);
         // The plate under each gauge is what the agents work on; only the output zone's has text
         // on it: when the next result is due.
