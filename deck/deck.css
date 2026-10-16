@@ -4,10 +4,11 @@
 html { scroll-snap-type: y mandatory; }
 body { margin: 0; background: #1B1714; color: var(--text); font: 20px/1.5 "Rubik", system-ui, sans-serif; }
 a { color: inherit; }
-.slide { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: center; justify-content: center; padding: 48px 24px; scroll-snap-align: start; overflow: hidden; }
+.slide { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; scroll-snap-align: start; overflow: hidden; }
 .slide canvas.bg { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; z-index: 0; }
 .body { position: relative; z-index: 1; max-width: 900px; width: 100%; background: var(--panel); border: 3px solid var(--border); padding: 36px 44px; }
-.body.wide { max-width: 1240px; }
+.body.wide { width: auto; max-width: 96vw; padding: 24px 28px; }
+.slide canvas.work { position: relative; z-index: 1; image-rendering: pixelated; align-self: center; margin-top: -3px; }
 .body.center { text-align: center; max-width: 760px; }
 .kicker { margin: 0 0 6px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 15px; }
 h1 { font-size: clamp(48px, 9vw, 88px); line-height: 1; margin: 12px 0 18px; }
@@ -25,9 +26,13 @@ ol.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template
 ol.steps li { border: 2px solid var(--border); padding: 14px 16px; font-size: 17px; color: var(--muted); counter-increment: step; }
 ol.steps b { display: block; color: var(--text); font-size: 21px; margin-bottom: 4px; }
 ol.steps b::before { content: counter(step) ". "; color: var(--accent); }
-.split { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(240px, 1fr); gap: 28px; align-items: center; }
-.shot { width: 100%; border: 2px solid var(--border); display: block; }
-.legend { margin: 0; font-size: 18px; }
+/* The board screenshot as big as the screen allows, the legend in a narrow column beside it. */
+.split { display: flex; gap: 28px; align-items: center; justify-content: center; }
+.split .shot { height: calc(100vh - 270px); height: calc(100svh - 270px); min-height: 320px; width: auto; max-width: calc(96vw - 330px); object-fit: contain; }
+.split .legend { flex: 0 0 240px; }
+.shot { border: 2px solid var(--border); display: block; }
+.legend { margin: 0; font-size: 17px; }
+.legend dt { font-size: 18px; }
 .legend dt { color: var(--accent); font-weight: 700; margin-top: 10px; }
 .legend dd { margin: 0; color: var(--muted); }
 .cta { margin: 26px 0 0; }
@@ -36,7 +41,9 @@ ol.steps b::before { content: counter(step) ". "; color: var(--accent); }
 #counter { position: fixed; right: 16px; bottom: 12px; color: var(--muted); font-size: 14px; z-index: 2; text-shadow: 0 1px 2px #000; }
 @media (max-width: 760px) {
   .body { padding: 24px 20px; }
-  .split { grid-template-columns: 1fr; }
+  .split { flex-direction: column; }
+  .split .shot { height: auto; width: 100%; max-width: 100%; }
+  .split .legend { flex: none; }
 }
 @media print {
   html { scroll-snap-type: none; }

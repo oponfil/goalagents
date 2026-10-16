@@ -1,8 +1,8 @@
 // The pitch deck: each slide's backdrop is one of the dashboard themes, with an agent of that theme
-// working in the corner. Arrow keys, Page Up/Down and Space move between slides.
+// at work under the text. Arrow keys, Page Up/Down and Space move between slides.
 import { THEMES } from './themes.js';
 import { AGENTS } from './data.js';
-import { drawStanding } from './sprites.js';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, MINER_H } from './sprites.js';
 
 const K = 4;  // screen pixels per logical pixel, as blocky as the dashboard
 
@@ -11,7 +11,7 @@ function rng(seed) {
 }
 
 function paint(slide, i) {
-  const theme = THEMES[slide.dataset.theme], id = slide.dataset.agent;
+  const theme = THEMES[slide.dataset.theme];
   let canvas = slide.querySelector('canvas.bg');
   if (!canvas) { canvas = document.createElement('canvas'); canvas.className = 'bg'; slide.prepend(canvas); }
   const w = Math.ceil(slide.clientWidth / K), h = Math.ceil(slide.clientHeight / K), res = 2;
@@ -19,10 +19,40 @@ function paint(slide, i) {
   const c = canvas.getContext('2d');
   c.setTransform(res, 0, 0, res, 0, 0);
   theme.backdrop(c, 0, w, h, rng(11 + i));
-  // An agent of this theme standing on a strip of the theme's tank frame, bottom right.
-  const x = w - 34, y = h - 36;
-  c.fillStyle = theme.frame; c.fillRect(x - 8, y + 28, 36, 2);
-  drawStanding(c, x, y, id, AGENTS[id].color, -1, true, false, theme.outfit);
+  vignette(slide);
+}
+
+// Under each slide's text, an agent of the slide's theme at work, as on the board: its work piece
+// on a strip of tank, the pipe coming down into it, the tool mid-stroke.
+const VW = 76, VH = 42, VK = 3;
+function vignette(slide) {
+  const theme = THEMES[slide.dataset.theme], id = slide.dataset.agent;
+  let canvas = slide.querySelector('canvas.work');
+  if (!canvas) {
+    canvas = document.createElement('canvas'); canvas.className = 'work';
+    canvas.style.width = VW * VK + 'px'; canvas.style.height = VH * VK + 'px';
+    slide.querySelector('.body').after(canvas);
+  }
+  const res = VK * 2;
+  canvas.width = VW * res; canvas.height = VH * res;
+  const c = canvas.getContext('2d');
+  c.setTransform(res, 0, 0, res, 0, 0);
+  const cx = 46, floor = VH - 3;
+  c.fillStyle = '#5E626B'; c.fillRect(cx - 4, 0, 9, floor);
+  c.fillStyle = '#8E939D'; c.fillRect(cx - 2, 0, 5, floor);
+  c.fillStyle = '#B9BEC7'; c.fillRect(cx - 2, 0, 2, floor);
+  theme.plate(c, cx - 13, floor - 11, 26, 11);
+  c.fillStyle = theme.frame; c.fillRect(2, floor, VW - 4, 3);
+  const x = cx - 38, y = floor - MINER_H, hx = x + 16.5, hy = y + 15, pipeX = cx - 5;
+  drawStanding(c, x, y, id, AGENTS[id].color, -1, false, true, theme.outfit);
+  if (theme.tool === 'pickaxe') drawPickaxe(c, hx, hy - 1, -0.9);
+  else if (theme.tool === 'shears') drawShears(c, hx, hy + 1, 0.6);
+  else if (theme.tool === 'beaker') {
+    drawBeaker(c, hx, hy, 1.1, '#B585F2');
+    for (let k = 0; k < 3; k++) { const q = k / 3 + 0.15; c.fillStyle = '#B585F2'; c.fillRect(hx + 5 + q * (pipeX - hx - 5), hy - 4 + q * q * 10, 1.5, 1.5); }
+  } else if (theme.tool === 'laptop') drawLaptop(c, hx - 3, hy + 2, 0.3);
+  else if (theme.tool === 'stamp') drawStamp(c, hx - 1, hy + 4, 0.4);
+  else { drawBow(c, hx, hy, 0.6); drawArrow(c, hx + 1, hy); }
 }
 
 const slides = [...document.querySelectorAll('.slide')];
