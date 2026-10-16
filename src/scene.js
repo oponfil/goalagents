@@ -463,7 +463,7 @@ export class Scene {
       f.stages.forEach((s, j) => {
         // The number is the same size in every tank; next to it, how fast the tank fills (the flow of
         // the zone above it). What the tank holds shows on hover.
-        const num = fmtCount(s.count), flow = f.flows[j] == null ? '' : fmtFlow(f.flows[j], unit);
+        const num = fmtCount(s.count), flow = fmtFlow(f.flows[j] ?? 0, unit);
         const maxW = (tankW(j, n) - 12) * S, y = (tankTop(j) + LH / 2 + 2) * S;
         const width = (text, size) => { g.font = `700 ${size * S}px ${FONT}`; return g.measureText(text).width; };
         const bigN = 15, gap = flow ? 4 * S : 0, wN = width(num, bigN);
@@ -477,16 +477,13 @@ export class Scene {
         g.shadowColor = 'transparent'; g.shadowBlur = 0;
       });
       const pr = project(f);
-      for (let k = -1; k < n; k++) {
-        if (pr.zones[k + 1] == null) T('?', cx, gaugeY(k, k === n - 1) + 0.5, 7.5, '#2B2B2B', 'center', 700);
-      }
       const ry = flasksY(n) + Math.ceil(slots(f) / PER_ROW) * 22 + 8;
       // Under the results, one thing per line: what they are, how many and how fast (as on a tank),
       // when the next one is due (coloured by pace against the goal), and the goal.
       const name = plural(5, f.result), num = String(f.cubes), outFlow = f.flows[n];
       T(name.charAt(0).toUpperCase() + name.slice(1), cx, ry, 8, '#D8CFC2', 'center', 600);
       g.font = `700 ${12 * S}px ${FONT}`; const wNum = g.measureText(num).width;
-      const flowText = outFlow == null ? '' : fmtFlow(outFlow, unit);
+      const flowText = fmtFlow(outFlow ?? 0, unit);
       g.font = `700 ${8.5 * S}px ${FONT}`; const wFlow = flowText ? g.measureText(flowText).width + 3 * S : 0;
       const x0 = cx * S - (wNum + wFlow) / 2;
       g.textAlign = 'left'; g.textBaseline = 'middle';
@@ -573,10 +570,11 @@ export class Scene {
 // is when the remaining results are due at the goal pace (one per goal.every days). The reading is
 // what the flow brings by then ÷ what the tank still misses: 1 is on the red mark, so the needle and
 // the tank's level tell the same story. The output zone's "tank" is the results row.
-// A reading is null (empty gauge) when it can't be estimated: no goal, or a flow not reported yet.
+// A flow nobody reported counts as 0, and a reading that can't be estimated reads 0: every gauge
+// shows a needle.
 const DEFAULT_CONVERSION = 0.3;
 function project(f) {
-  const st = f.stages, n = st.length, every = f.goal?.every, total = f.goal?.total, fl = f.flows;
+  const st = f.stages, n = st.length, every = f.goal?.every, total = f.goal?.total, fl = f.flows.map(v => v ?? 0);
   const next = j => (j + 1 < n ? st[j + 1].count : f.cubes);
   const conv = st.map((s, j) => (s.count > 0 && next(j) > 0 ? Math.min(1, next(j) / s.count) : DEFAULT_CONVERSION));
   const need = st.map((s, j) => {
@@ -590,7 +588,7 @@ function project(f) {
   const days = total > 0 && every > 0 ? Math.max(0, total - f.cubes) * every : null;
   const reading = (flow, i) => {
     const want = i < n ? need[i] : total, have = i < n ? st[i].count : f.cubes;
-    if (days == null || flow == null || !want) return null;
+    if (days == null || !want) return 0;
     if (have >= want || days === 0) return 1e3; // already enough: the needle rests far right
     return flow * days / (want - have);
   };

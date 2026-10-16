@@ -7,9 +7,10 @@ const WINDOW_DAYS = 7;
 // Flow of one reported value (a stage count or the results), per day: how much it grew over the
 // last 7 days, an average per day. Only increases count, so a stage that items leave does not read
 // as negative. With less than a day of history the growth so far counts as one day's: +1 in the
-// first hour is +1/d, not +24/d. Unknown (null) until there are two reports to compare.
+// first hour is +1/d, not +24/d. Until there are two reports to compare it is 0: "+0/d" and a
+// gauge at zero rather than an empty one.
 function flowOf(reports, now) {
-  if (reports.length < 2) return null;
+  if (reports.length < 2) return 0;
   let grew = 0;
   for (let i = 1; i < reports.length; i++) grew += Math.max(0, reports[i].value - reports[i - 1].value);
   const days = Math.max(1, (now - Date.parse(reports[0].at)) / DAY);
