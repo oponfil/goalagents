@@ -254,8 +254,9 @@ export class Scene {
         const y = zoneTop(k), fl = f.flows[k + 1], gy = y + 4 + GAUGE_R + 2;
         this.drops(c, cx, y + 4, y + ZH, fl, fi * 3 + k);
         gaugeFace(c, cx, gy, project(f).zones[k + 1], Math.sin(t * 3 + fi + k) * 0.015);
-        // Only the output zone keeps a plate under its gauge: when the next result is due.
-        if (k === n - 1) theme.plate(c, cx - 18, gy + GAUGE_R + 1, 36, 11);
+        // The plate under each gauge is what the agents work on; only the output zone's has text
+        // on it: when the next result is due.
+        theme.plate(c, cx - 18, gy + GAUGE_R + 1, 36, 11);
       }
       const pr = project(f);
       f.stages.forEach((s, j) => {
