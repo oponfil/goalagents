@@ -16,7 +16,7 @@ Prototype for U-Hackathon 2026 (Bangkok). It runs on demo data (six example goal
 |---|---|
 | Tank and its number | How many items are at this stage. The fill, left to right, is the share of what this stage needs for the whole goal |
 | Gauge in a zone | Will the tank below fill in time: what the zone's current flow brings by the goal's date against what the tank still misses. On the red mark it fills just in time; left of it the tank is behind, right of it ahead. Dimmed with `?` when it can't be estimated yet |
-| Label under the gauge | Flow into the next stage (`+12/d`); click a gauge to switch hours, days, weeks |
+| Label under the gauge | Flow into the next stage (`+12/d`), in days, or weeks and months when slower |
 | Agent with a tool | Working on that step |
 | Agent lying with a timer | Waiting for its next scheduled run |
 | Agent with a red `!` | Waiting for you; click to read the question and answer it. The red badge in the header counts them |

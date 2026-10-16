@@ -129,7 +129,6 @@ export function mountDashboard(funnels, opts = {}) {
   canvas.addEventListener('click', e => {
     const h = scene.hitTest(...toLogical(e));
     if (!h) return hidePop();
-    if (h.type === 'gauge') { scene.cyclePeriod(); return hidePop(); }
     showPop(e, content(h));
     if (h.type === 'ask' && opts.onAnswer) bindAnswer(h.a);
   });

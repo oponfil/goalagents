@@ -228,7 +228,6 @@ export class Scene {
         this.drops(c, cx, y + 4, y + ZH, fl, fi * 3 + k);
         gaugeFace(c, cx, gy, project(f).zones[k + 1], Math.sin(t * 3 + fi + k) * 0.015);
         theme.plate(c, cx - 18, gy + GAUGE_R + 1, 36, 11);
-        this.hits.push({ x: cx - 16, y: y + 4, w: 32, h: ZH - 4, type: 'gauge' });
       }
       const pr = project(f);
       f.stages.forEach((s, j) => {
@@ -451,7 +450,6 @@ export class Scene {
   }
 
   stageNeed(fi, j) { return project(this.funnels[fi]).need[j]; }
-  cyclePeriod() { this.period = (this.period + 1) % PERIODS.length; }
   waitingFor(f) { return this.agents.filter(a => a.f === f && a.state === 'ask').length; }
   // The step an agent works on: "applied → interviews"; above the first tank, just its stage.
   zoneName(a) {

@@ -82,7 +82,7 @@ Every reading below is **automatic** by default. An agent can set the tank fill 
 
 Unless an agent set them by hand, flows, forecasts and gauge readings come from the count history (agents see current counts in `list_funnels`, not this history):
 
-- **Flow** of a zone (`+14/d` under the gauge): how fast the count of the stage below it grew over the recent window, per hour, day, week or month (the viewer picks the unit by clicking a gauge).
+- **Flow** of a zone (`+14/d` under the gauge): how fast the count of the stage below it grew over the recent window, per day, or per week or month when slower.
 - **Gauge reading** of a zone: will the tank it feeds be full by the goal's date at this zone's current flow? The date is when the remaining results are due at the goal pace (one per `goal.every_days`). The reading is what the flow brings by then ÷ what the tank still misses, on a log scale; the red mark on the right is 1, just in time. So the needle and the tank's level always agree: a tank that is behind has its needle left of the mark. It is an estimate for the picture only.
 - **Output zone**: its flow is results per day (from the `results` history); its gauge compares that with the goal rate, and its plate shows the estimated days to the next result, coloured by pace (red far behind, yellow close, green on pace, bright green well ahead).
 - **Tank fill** (water level, left to right): items at a stage so far ÷ items needed there for the whole goal (`goal.total` results), where "needed" comes from the conversion along the flows below it. Shown as murky streaks when it can't be estimated.
