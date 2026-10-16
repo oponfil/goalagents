@@ -35,6 +35,8 @@ export function mountDashboard(funnels, opts = {}) {
   const clock = document.getElementById('day');
   const pop = document.getElementById('pop');
   pop.addEventListener('click', openApp);
+  const tip = document.createElement('div');
+  tip.id = 'tip'; tip.hidden = true; document.body.append(tip);
   let scene = new Scene(canvas, funnels, { live: opts.live });
 
   // Funnel order is the viewer's own arrangement, kept in this browser only.
@@ -123,12 +125,31 @@ export function mountDashboard(funnels, opts = {}) {
   });
 
   canvas.addEventListener('pointermove', e => {
-    canvas.style.cursor = scene.hitTest(...toLogical(e)) ? 'pointer' : 'default';
+    const h = scene.hitTest(...toLogical(e));
+    canvas.style.cursor = h && h.type !== 'stage' ? 'pointer' : 'default';
+    // A tank shows only its number and flow; what it holds pops up on hover.
+    if (h?.type !== 'stage' || e.pointerType === 'touch') return (tip.hidden = true);
+    showTip(e, h);
   });
+  let tipTimer;
+  function showTip(e, h) {
+    const s = scene.funnels[h.fi].stages[h.j], label = plural(s.count, s.forms);
+    tip.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    tip.hidden = false;
+    tip.style.left = Math.max(8, Math.min(window.innerWidth - tip.offsetWidth - 8, e.clientX + 14)) + 'px';
+    tip.style.top = e.clientY + 18 + 'px';
+  }
+  canvas.addEventListener('pointerleave', () => { tip.hidden = true; });
 
   canvas.addEventListener('click', e => {
     const h = scene.hitTest(...toLogical(e));
     if (!h) return hidePop();
+    // On a phone there is no hover: a tap on a tank shows what it holds for a moment.
+    if (h.type === 'stage') {
+      hidePop(); showTip(e, h);
+      clearTimeout(tipTimer); tipTimer = setTimeout(() => { tip.hidden = true; }, 2000);
+      return;
+    }
     // The sheets on top open the funnel's list straight away.
     if (h.type === 'source') { hidePop(); return window.open(h.url, '_blank', 'noopener'); }
     showPop(e, content(h));

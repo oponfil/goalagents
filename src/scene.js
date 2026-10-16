@@ -254,7 +254,8 @@ export class Scene {
         const y = zoneTop(k), fl = f.flows[k + 1], gy = y + 4 + GAUGE_R + 2;
         this.drops(c, cx, y + 4, y + ZH, fl, fi * 3 + k);
         gaugeFace(c, cx, gy, project(f).zones[k + 1], Math.sin(t * 3 + fi + k) * 0.015);
-        theme.plate(c, cx - 18, gy + GAUGE_R + 1, 36, 11);
+        // Only the output zone keeps a plate under its gauge: when the next result is due.
+        if (k === n - 1) theme.plate(c, cx - 18, gy + GAUGE_R + 1, 36, 11);
       }
       const pr = project(f);
       f.stages.forEach((s, j) => {
@@ -279,6 +280,7 @@ export class Scene {
           }
         }
         c.fillStyle = 'rgba(205,235,255,0.5)'; c.fillRect(x + 4, y + 4, 1, LH - 8);
+        this.hits.push({ x, y, w: lw, h: LH, type: 'stage', fi, j });
       });
       // One result item per result the goal needs (carts, flasks, chests…): filled ones are done,
       // empty ones are still to come.
@@ -402,34 +404,19 @@ export class Scene {
     this.funnels.forEach((f, fi) => {
       const cx = this.cx(fi), n = f.stages.length;
       f.stages.forEach((s, j) => {
-        // The number is the same size in every tank. Its label sits to the right on one line, or on
-        // two lines when one does not fit.
-        const num = fmtCount(s.count), label = plural(s.count, s.forms);
+        // The number is the same size in every tank; next to it, how fast the tank fills (the flow of
+        // the zone above it). What the tank holds shows on hover.
+        const num = fmtCount(s.count), flow = f.flows[j] == null ? '' : fmtFlow(f.flows[j], unit);
         const maxW = (tankW(j, n) - 12) * S, y = (tankTop(j) + LH / 2 + 2) * S;
-        const width = (text, weight, size) => { g.font = `${weight} ${size * S}px ${FONT}`; return g.measureText(text).width; };
-        const bigN = 15, gap = 3 * S, wN = width(num, 700, bigN);
-        let lines = [label, ''];
-        if (wN + gap + width(label, 500, 8.6) > maxW) {
-          // Split the label where its two lines come out most even.
-          const words = label.split(' ');
-          let best = Infinity;
-          for (let i = 1; i < words.length; i++) {
-            const a = words.slice(0, i).join(' '), b2 = words.slice(i).join(' ');
-            const w = Math.max(width(a, 500, 8.6), width(b2, 500, 8.6));
-            if (w < best) { best = w; lines = [a, b2]; }
-          }
-        }
-        let ls = 8.6;
-        const labelW = sz => Math.max(width(lines[0], 500, sz), width(lines[1], 500, sz));
-        while (wN + gap + labelW(ls) > maxW && ls > 6) ls -= 0.25;
-        const x0 = cx * S - (wN + gap + labelW(ls)) / 2;
+        const width = (text, size) => { g.font = `700 ${size * S}px ${FONT}`; return g.measureText(text).width; };
+        const bigN = 15, gap = flow ? 4 * S : 0, wN = width(num, bigN);
+        let fs = 9;
+        while (flow && wN + gap + width(flow, fs) > maxW && fs > 6) fs -= 0.25;
+        const x0 = cx * S - (wN + gap + (flow ? width(flow, fs) : 0)) / 2;
         g.textAlign = 'left'; g.textBaseline = 'middle';
         g.shadowColor = 'rgba(0,0,0,0.85)'; g.shadowBlur = S * 1.2;
         g.fillStyle = '#FFFFFF'; g.font = `700 ${bigN * S}px ${FONT}`; g.fillText(num, x0, y);
-        g.fillStyle = '#EAF3FF'; g.font = `500 ${ls * S}px ${FONT}`;
-        const dy = ls * 0.55 * S;
-        g.fillText(lines[0], x0 + wN + gap, lines[1] ? y - dy : y);
-        if (lines[1]) g.fillText(lines[1], x0 + wN + gap, y + dy);
+        if (flow) { g.fillStyle = '#9FE870'; g.font = `700 ${fs * S}px ${FONT}`; g.fillText(flow, x0 + wN + gap, y); }
         g.shadowColor = 'transparent'; g.shadowBlur = 0;
       });
       const pr = project(f);
@@ -438,7 +425,6 @@ export class Scene {
         // The output zone's plate shows when the next result is due, coloured by pace vs goal.
         g.shadowColor = 'rgba(0,0,0,0.9)'; g.shadowBlur = S * 1.5;
         if (k === n - 1) T(fmtEta(pr.eta), cx, plateY, 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 'center', 700);
-        else T(fmtFlow(f.flows[k + 1], unit), cx, plateY, 7.5, '#FFFFFF', 'center', 700);
         g.shadowColor = 'transparent'; g.shadowBlur = 0;
         if (pr.zones[k + 1] == null) T('?', cx, zoneTop(k) + 4 + GAUGE_R + 2.5, 7.5, '#2B2B2B', 'center', 700);
       }

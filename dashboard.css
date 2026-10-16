@@ -84,6 +84,18 @@ body {
 #scroller::-webkit-scrollbar-thumb:hover { background: #8A745C; }
 #scene { display: block; flex: none; image-rendering: pixelated; touch-action: pan-x pan-y; }
 #scene[hidden], #titles[hidden] { display: none; }
+/* What a tank holds, next to the cursor while it hovers the tank. */
+#tip {
+  position: fixed;
+  z-index: 9;
+  pointer-events: none;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  padding: 4px 8px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+#tip[hidden] { display: none; }
 #pop {
   position: fixed;
   z-index: 10;
