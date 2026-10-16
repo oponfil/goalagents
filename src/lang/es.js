@@ -37,7 +37,7 @@ export default {
   'guide.work.h': 'Agente trabajando',
   'guide.work': '+N es lo que añadió su ejecución actual.',
   'guide.gauge.h': 'Indicador',
-  'guide.gauge': '¿Vas al ritmo de la meta? La marca roja es justo a tiempo.',
+  'guide.gauge': '¿Vas al ritmo de la meta? Arriba es justo a tiempo; el rojo a la izquierda, muy atrasado.',
   'guide.results.h': 'Resultados',
   'guide.results': 'Uno por cada resultado que necesita la meta; los llenos ya están logrados.',
   'guide.prediction.h': 'Predicción',

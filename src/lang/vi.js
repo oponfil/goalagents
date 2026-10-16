@@ -38,7 +38,7 @@ export default {
   'guide.work.h': 'Tác tử đang làm việc',
   'guide.work': '+N là số lần chạy hiện tại đã thêm.',
   'guide.gauge.h': 'Đồng hồ đo',
-  'guide.gauge': 'Có kịp mục tiêu không? Vạch đỏ là vừa kịp.',
+  'guide.gauge': 'Có kịp mục tiêu không? Kim chỉ thẳng lên là vừa kịp; vùng đỏ bên trái là chậm nhiều.',
   'guide.results.h': 'Kết quả',
   'guide.results': 'Mỗi kết quả mục tiêu cần là một ô; ô đầy là đã đạt.',
   'guide.prediction.h': 'Dự báo',

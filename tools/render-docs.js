@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=37d7cad7';
-import { Scene, CW, H } from '../src/scene.js?v=37d7cad7';
-import { THEMES } from '../src/themes.js?v=37d7cad7';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=37d7cad7';
+import { AGENTS, FUNNELS } from '../src/data.js?v=fc689838';
+import { Scene, CW, H } from '../src/scene.js?v=fc689838';
+import { THEMES } from '../src/themes.js?v=fc689838';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=fc689838';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -198,7 +198,7 @@ function funnelGuide({ labels = true } = {}) {
     [P(ask.bubble.x, ask.bubble.y + 11), 'Question', 'An agent waits for your answer. Click it to reply.'],
     [P(sleep.x - 1, sleep.y + 1), 'Asleep', 'Resting until its next run; the timer counts down.'],
     [P(work.x + 1, work.y + 20), 'Agent at work', '+N is what its current run added.'],
-    [P(cx - 9, gauge.y + gauge.h + 15), 'Gauge', 'On pace for the goal? The red mark is just in time.'],
+    [P(cx - 9, gauge.y + gauge.h + 15), 'Gauge', 'On pace for the goal? Straight up is just in time; red on the left is far behind.'],
     [P(cx - 45, resultsY + 8), 'Results', 'One per result the goal needs; filled ones are done.'],
     [P(cx - 23, resultsY + 54), 'Prediction', 'When the next result is due at the current pace.'],
   ];

@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=37d7cad7';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=37d7cad7';
-import { themeOf } from './themes.js?v=37d7cad7';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=37d7cad7';
+import { agentInfo, plural } from './data.js?v=fc689838';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=fc689838';
+import { themeOf } from './themes.js?v=fc689838';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=fc689838';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -608,7 +608,7 @@ export class Scene {
 // 30% stands in, so every tank shows a level from the first report.
 // Gauge of a zone: will the tank it feeds be full by the goal's date at this zone's flow? The date
 // is when the remaining results are due at the goal pace (one per goal.every days). The reading is
-// what the flow brings by then ÷ what the tank still misses: 1 is on the red mark, so the needle and
+// what the flow brings by then ÷ what the tank still misses: 1 is straight up, so the needle and
 // the tank's level tell the same story. The output zone's "tank" is the results row.
 // A flow nobody reported counts as 0, and a reading that can't be estimated reads 0: every gauge
 // shows a needle.
@@ -651,20 +651,23 @@ export function gaugeFace(c, cx, gy, r, wobble) {
   const known = r != null;
   fcircle(c, cx, gy, GAUGE_R - 0.5, known ? '#F1ECDD' : '#9C968A');
   c.fillStyle = known ? '#D0362B' : '#7A5650';
-  // The red zone ends where the needle stops at its highest (1.06), so a maxed needle sits on its edge.
-  for (let a = 0.95; a <= 1.0601; a += 0.01) {
+  // Straight up is just in time; right of it ahead, left of it behind. The red zone at the very
+  // start on the left is far behind (a tenth of the pace or less, or nothing moving).
+  for (let a = 0; a <= 0.15; a += 0.01) {
     const ang = SWEEP0 + SWEEP * a;
     for (let d = GAUGE_R - 3; d <= GAUGE_R - 1; d += 0.5) {
       c.fillRect(snap(cx + Math.cos(ang) * d), snap(gy + Math.sin(ang) * d), 0.5, 0.5);
     }
   }
-  for (let i = 0; i < 5; i++) {
-    const ang = SWEEP0 + SWEEP * i / 5;
-    fline(c, cx + Math.cos(ang) * (GAUGE_R - 3.5), gy + Math.sin(ang) * (GAUGE_R - 3.5), cx + Math.cos(ang) * (GAUGE_R - 1.5), gy + Math.sin(ang) * (GAUGE_R - 1.5), '#6B6D74');
+  // Five ticks, the middle one (on time) longer.
+  for (let i = 0; i <= 4; i++) {
+    const ang = SWEEP0 + SWEEP * i / 4, inner = i === 2 ? GAUGE_R - 4.5 : GAUGE_R - 3.5;
+    fline(c, cx + Math.cos(ang) * inner, gy + Math.sin(ang) * inner, cx + Math.cos(ang) * (GAUGE_R - 1.5), gy + Math.sin(ang) * (GAUGE_R - 1.5), '#6B6D74');
   }
   if (!known) return;
-  const pos = r > 0 ? 1 + Math.log10(r) / 1.5 : 0;
-  const ang = SWEEP0 + SWEEP * Math.max(0, Math.min(1.06, pos + wobble));
+  // Log scale: 1 at the top, 30× ahead at the right end, 1/30 at the left end.
+  const pos = r > 0 ? 0.5 + Math.log10(r) / 3 : 0;
+  const ang = SWEEP0 + SWEEP * Math.max(0, Math.min(1, pos + wobble));
   fline(c, cx, gy, cx + Math.cos(ang) * (GAUGE_R - 2.5), gy + Math.sin(ang) * (GAUGE_R - 2.5), '#1E2A44', 1);
   c.fillStyle = '#1E2A44'; c.fillRect(cx - 1, gy - 1, 2, 2);
 }

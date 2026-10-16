@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=37d7cad7';
-import vi from './lang/vi.js?v=37d7cad7';
-import ja from './lang/ja.js?v=37d7cad7';
+import es from './lang/es.js?v=fc689838';
+import vi from './lang/vi.js?v=fc689838';
+import ja from './lang/ja.js?v=fc689838';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -100,7 +100,7 @@ const STRINGS = {
   'guide.work.h': L('Agent at work', 'Агент за работой', '工作中的智能体', 'เอเจนต์กำลังทำงาน'),
   'guide.work': L('+N is what its current run added.', '+N — сколько добавил текущий запуск.', '+N 是本次运行新增的数量。', '+N คือสิ่งที่รอบปัจจุบันเพิ่มเข้ามา'),
   'guide.gauge.h': L('Gauge', 'Манометр', '仪表', 'มาตรวัด'),
-  'guide.gauge': L('On pace for the goal? The red mark is just in time.', 'Успеваете к цели? Красная отметка — точно в срок.', '能按时达成目标吗？红色刻度表示刚好赶上。', 'ทันเป้าหมายไหม? ขีดสีแดงคือทันพอดี'),
+  'guide.gauge': L('On pace for the goal? Straight up is just in time; red on the left is far behind.', 'Успеваете к цели? Стрелка вверх — точно в срок, красное слева — сильно отстаёте.', '能按时达成目标吗？指针朝上表示刚好赶上，左侧红区表示严重落后。', 'ทันเป้าหมายไหม? เข็มชี้ขึ้นคือทันพอดี สีแดงทางซ้ายคือช้ามาก'),
   'guide.results.h': L('Results', 'Результаты', '成果', 'ผลลัพธ์'),
   'guide.results': L('One per result the goal needs; filled ones are done.', 'По одному на каждый нужный результат; заполненные — уже получены.', '目标需要的每个成果一个；已填满的表示已完成。', 'หนึ่งช่องต่อผลลัพธ์ที่เป้าหมายต้องการ ช่องที่เต็มคือได้แล้ว'),
   'guide.prediction.h': L('Prediction', 'Прогноз', '预测', 'การคาดการณ์'),

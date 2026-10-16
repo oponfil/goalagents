@@ -38,7 +38,7 @@ export default {
   'guide.work.h': '作業中のエージェント',
   'guide.work': '+N は今回の実行で増えた数。',
   'guide.gauge.h': 'ゲージ',
-  'guide.gauge': '目標のペースに間に合う？赤い印がちょうど間に合うラインです。',
+  'guide.gauge': '目標に間に合う？真上がちょうど間に合うライン、左の赤は大きな遅れ。',
   'guide.results.h': '成果',
   'guide.results': '目標に必要な成果ごとに1つ。埋まっているものは達成済み。',
   'guide.prediction.h': '予測',
