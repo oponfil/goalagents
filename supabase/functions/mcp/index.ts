@@ -21,7 +21,8 @@ A funnel is one goal (e.g. "Job Search") with 2-5 stages top to bottom (jobs fou
 Zones: 0 is the inflow above the first stage, zone k moves stage k-1 into stage k, zone n (below the last stage) turns the last stage into results. At most two agents per zone on Pro, one on the free plan.
 On every run: set_agent_state(work) in your zone; after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question) and poll get_answer; at the end set_agent_state(sleep, next_run_at) or clear_agent.
 Plans: free has up to 3 funnels with up to 3 stages each and one agent per zone; Pro has up to 10 funnels with up to 5 stages each and two agents per zone. list_funnels tells which plan the person has.
-Report only counts, dates and links. Item lists stay in the person's own sources (e.g. a Google Sheet, linked as source_url).`
+Report only counts, dates and links: the items themselves stay in the person's own sources.
+Links to the lists: whenever a stage's items are kept in a list that opens by a URL (Google Sheets, Notion, Airtable, a GitHub file…), give that URL as the stage's source_url (in upsert_funnel or report_counts) — the dashboard opens it when the person clicks the tank. Keep the lists where a link can open them when you can. If a list only exists on your machine or you have no such place, leave source_url empty and say so to the person; it is optional.`
 
 const text = (v: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(v, null, 1) }] })
 const fail = (msg: string) => { throw new Error(msg) }
@@ -102,7 +103,7 @@ function server(db: Db) {
       stages: z.array(z.object({
         key: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/).describe('Stable key, e.g. "applied"'),
         label: forms.describe('[singular, plural], e.g. ["interview", "interviews"]'),
-        source_url: z.string().url().optional().describe('Where the list lives, usually a Google Sheet'),
+        source_url: z.string().url().optional().describe('Link to the list of this stage\'s items (Google Sheet, Notion, Airtable…). Give it whenever the list opens by a URL; leave it out only when there is none'),
       })).min(2).max(5).describe('Stages top to bottom'),
     }),
     annotations: { idempotentHint: true },
@@ -137,12 +138,14 @@ function server(db: Db) {
         .describe('Manual gauge, { zone: pace } with zones as in set_agent_state ("0" above the first stage … "n" below the last). Pace against the goal: 1 = just in time (red mark), 0.5 = half the pace needed, 2 = twice. null = automatic'),
       flow_per_day: z.record(z.string(), z.number().min(0).max(1e9).nullable()).optional()
         .describe('Manual flow, { zone: items per day } shown under the gauge (zone "n": results per day). null = automatic, from the count reports'),
+      source_url: z.record(z.string(), z.string().url().nullable()).optional()
+        .describe('Links to the stage lists, { stage_key: url }: give one whenever a stage list opens by a URL (Google Sheet, Notion…); null removes it'),
     }),
-  }, async ({ funnel_id, counts, results, fill_percent, pace, flow_per_day }) => {
+  }, async ({ funnel_id, counts, results, fill_percent, pace, flow_per_day, source_url }) => {
     const f = await funnelRow(db, funnel_id)
     const stages = check(await db.from('stages').select('key, position').eq('funnel_id', f.id).order('position')) as { key: string, position: number }[]
     const known = stages.map(s => s.key), n = stages.length
-    const unknown = [...Object.keys(counts), ...Object.keys(fill_percent ?? {})].filter(k => !known.includes(k))
+    const unknown = [...Object.keys(counts), ...Object.keys(fill_percent ?? {}), ...Object.keys(source_url ?? {})].filter(k => !known.includes(k))
     if (unknown.length) fail(`Unknown stage keys: ${unknown.join(', ')}. Stages: ${known.join(', ')}`)
     const badZones = [...Object.keys(pace ?? {}), ...Object.keys(flow_per_day ?? {})].filter(z => !/^\d+$/.test(z) || +z > n)
     if (badZones.length) fail(`Unknown zones: ${badZones.join(', ')}. This funnel has zones 0-${n}`)
@@ -150,6 +153,7 @@ function server(db: Db) {
       const patch: Record<string, unknown> = {}
       if (key in counts) patch.count = counts[key]
       if (fill_percent && key in fill_percent) patch.fill_percent = fill_percent[key]
+      if (source_url && key in source_url) patch.source_url = source_url[key]
       const zone = String(stages.find(s => s.key === key)!.position)
       if (pace && zone in pace) patch.pace = pace[zone]
       if (flow_per_day && zone in flow_per_day) patch.flow_per_day = flow_per_day[zone]
