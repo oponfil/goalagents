@@ -21,7 +21,9 @@ export const AGENTS = {
 export function agentInfo(id) {
   if (AGENTS[id]) return AGENTS[id];
   const [kind, ...rest] = id.split(/[-_]/), base = AGENTS[kind];
-  if (base && rest.length) return { ...base, name: `${base.name} · ${rest.join(' ')}` };
+  // "chatgpt-search": the agent's own name for its job (several ChatGPT agents in one funnel),
+  // shown after the brand; buttons that open the app use the brand alone (product).
+  if (base && rest.length) return { ...base, name: `${base.name} · ${rest.join(' ')}`, product: base.name };
   return { name: id, color: '#8A8F98', chat: '' };
 }
 

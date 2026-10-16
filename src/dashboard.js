@@ -170,9 +170,9 @@ export function mountDashboard(funnels, opts = {}) {
       const reply = opts.onAnswer
         ? `<textarea class="answer" rows="3" maxlength="2000" placeholder="${esc(t('board.answer'))}"></textarea>
           <button class="btn primary send" style="${paint}">${esc(t('board.send'))}</button>
-          ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.name))}</a>` : ''}
+          ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.product || info.name))}</a>` : ''}
           <div class="pop-msg"></div>`
-        : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.replyIn', info.name))}</a>`;
+        : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.replyIn', info.product || info.name))}</a>`;
       // Standing, the agent is waiting and takes the answer at once; asleep, only on its next run.
       const asleep = a.state === 'sleep', left = scene.sleepLeft(a);
       const when = left > 0 ? t('board.inTime', fmtDuration(left)) : t('board.whenRuns');
@@ -186,7 +186,7 @@ export function mountDashboard(funnels, opts = {}) {
         : 'board.working';
     return `<div class="pop-title">${t(state, who)}</div>
       <div class="pop-sub">${where}</div>
-      ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.name))}</a>` : ''}`;
+      ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.product || info.name))}</a>` : ''}`;
   }
 
   function bindAnswer(a) {
