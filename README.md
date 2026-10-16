@@ -14,13 +14,13 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 
 | On screen | Meaning |
 |---|---|
-| Tank and its number | How many items are at this stage. The fill, left to right, is the share of what this stage needs for the whole goal |
+| Tank, its number and `+N/d` | How many items have reached this stage (cumulative) and how many it gains per day (average over the last 7 days; an agent can set it). The fill, left to right, is the share of what this stage needs for the whole goal; that need comes from the conversion between the tanks' counts (next ÷ this), 30% while a count is still 0. Hover a tank for its name |
 | Gauge in a zone | Will the tank below fill in time: what the zone's current flow brings by the goal's date against what the tank still misses. On the red mark it fills just in time; left of it the tank is behind, right of it ahead. Dimmed with `?` when it can't be estimated yet |
-| Label under the gauge | Flow into the next stage (`+12/d`), in days, or weeks and months when slower |
 | Agent with a tool | Working on that step |
 | Agent lying with a timer | Waiting for its next scheduled run |
-| Agent with a red `!` | Waiting for you; click to read the question and answer it. The red badge in the header counts them |
-| Bottom zone and items | Results so far, the estimated time to the next one, and the goal |
+| Agent with a red `!` | Waiting for you; click to read the question and answer it. Lying with a `!` bubble: it asked, then went to sleep, and takes your answer on its next run. The red badge in the header counts them |
+| `+N` by an agent | What its current run added (its last run's while it sleeps) |
+| Bottom zone and items | Results so far with their flow, when the next one is due, and the goal |
 
 ## Themes
 
