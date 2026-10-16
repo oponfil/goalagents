@@ -170,11 +170,11 @@ function funnelGuide({ labels = true } = {}) {
   const gauge = stage(3), resultsY = last.y + last.h + 40 + 9;
   // Each arrow ends on the left edge of what it explains.
   const notes = [
-    [P(src0.x + 3, src0.y + 14), 'Sheet', 'The table where the agents keep track of everything: each item and its status. Click to open it.'],
-    [P(s0.x + 1, s0.y + 15), 'Tank', 'Items at this stage so far, and +N a day. The fill is the share the goal needs.'],
+    [P(src0.x + 3, src0.y + 14), 'Sheet', 'The table where the agents keep track of everything.'],
+    [P(s0.x + 1, s0.y + 6), 'Tank', 'Items at this stage so far, and +N a day.'],
     [P(ask.bubble.x, ask.bubble.y + 11), 'Question', 'An agent waits for your answer. Click it to reply.'],
     [P(sleep.x - 1, sleep.y + 1), 'Asleep', 'Resting until its next run; the timer counts down.'],
-    [P(work.x + 1, work.y + 20), 'Agent at work', '+N is what its current run added. Click for its last runs.'],
+    [P(work.x + 1, work.y + 20), 'Agent at work', '+N is what its current run added.'],
     [P(cx - 9, gauge.y + gauge.h + 15), 'Gauge', 'On pace for the goal? The red mark is just in time.'],
     [P(cx - 45, resultsY + 8), 'Results', 'One per result the goal needs; filled ones are done.'],
     [P(cx - 23, resultsY + 54), 'Prediction', 'When the next result is due at the current pace.'],
