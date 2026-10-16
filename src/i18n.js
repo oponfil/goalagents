@@ -58,7 +58,7 @@ const STRINGS = {
   'nav.goals': L('Goals', 'Цели', '目标', 'เป้าหมาย'),
   'nav.signout': L('Sign out', 'Выйти', '退出', 'ออกจากระบบ'),
   'nav.lang': L('Language', 'Язык', '语言', 'ภาษา'),
-  'footer.built': L('© 2026 GoalAgents · Built at U-Hackathon 2026, Bangkok', '© 2026 GoalAgents · Сделано на U-Hackathon 2026, Бангкок', '© 2026 GoalAgents · 诞生于 U-Hackathon 2026，曼谷', '© 2026 GoalAgents · สร้างที่ U-Hackathon 2026 กรุงเทพฯ'),
+  'footer.built': L('© 2026 GoalAgents', '© 2026 GoalAgents', '© 2026 GoalAgents', '© 2026 GoalAgents'),
   'footer.deck': L('Pitch deck', 'Презентация', '路演文稿', 'พิตช์เด็ค'),
   'footer.privacy': L('Privacy', 'Конфиденциальность', '隐私', 'ความเป็นส่วนตัว'),
   'footer.contact': L('Contact', 'Контакты', '联系', 'ติดต่อ'),
@@ -208,7 +208,7 @@ const STRINGS = {
 
   // Contact
   'contact.h1': L('Contact', 'Контакты', '联系', 'ติดต่อ'),
-  'contact.who': L('GoalAgents is made by Oleg Ponfilenok. It started at U-Hackathon 2026 in Bangkok.', 'GoalAgents делает Олег Понфиленок. Проект начался на U-Hackathon 2026 в Бангкоке.', 'GoalAgents 由 Oleg Ponfilenok 打造，始于曼谷 U-Hackathon 2026。', 'GoalAgents สร้างโดย Oleg Ponfilenok เริ่มต้นที่ U-Hackathon 2026 ในกรุงเทพฯ'),
+  'contact.who': L('GoalAgents is made by Oleg Ponfilenok.', 'GoalAgents делает Олег Понфиленок.', 'GoalAgents 由 Oleg Ponfilenok 打造。', 'GoalAgents สร้างโดย Oleg Ponfilenok'),
   'contact.h.write': L('Write to us', 'Напишите нам', '给我们写信', 'เขียนถึงเรา'),
   'contact.write': L('Questions, ideas, bugs or a partnership: <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>.', 'Вопросы, идеи, ошибки или партнёрство: <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>.', '问题、想法、错误或合作：<a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>。', 'คำถาม ไอเดีย บั๊ก หรือความร่วมมือ: <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>'),
   'contact.h.code': L('Code', 'Код', '代码', 'โค้ด'),

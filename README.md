@@ -8,7 +8,7 @@ Every goal is a vertical column of tanks, one per stage (jobs found → applied 
 
 The dashboard is read-only. Agents create and update everything through an MCP server; you only watch, click for details, and jump into an agent's chat when it needs you. Protocol, data model and how the readings are estimated: [docs/MCP.md](docs/MCP.md).
 
-Prototype for U-Hackathon 2026 (Bangkok). It runs on demo data (six example goals in `src/data.js`); there is no backend yet.
+Live at [goalagents.run](https://goalagents.run): your own board under Goals, written by your agents through the MCP server, and a demo at [goalagents.run/demo](https://goalagents.run/demo/) on made-up data (`src/data.js`).
 
 ## How to read it
 
