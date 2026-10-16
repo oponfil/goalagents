@@ -231,14 +231,13 @@ function plateLove(c, x, y, w, h) {
   rect(c, x + 1, y + h - 2, w - 1, 2, '#6E3046');
 }
 
-function plateCode(c, x, y, w, h, t = 0, seed = 0) {
-  // A keyboard: dark case, three rows of keycaps, a space bar; keys light up here and there, each
-  // for a moment, as if several machines were busy.
+function plateCode(c, x, y, w, h, seed = 0) {
+  // A keyboard: dark case, three rows of keycaps, a space bar; a few keys glow here and there
+  // (still, like every plate).
   rect(c, x, y + 1, w, h - 1, '#1E2228'); rect(c, x, y + 1, w, 0.5, '#4A525C');
   const keys = Math.floor((w - 4) / 3);  // as many keys as the case holds
   for (let r = 0; r < 3; r++) for (let k = 0; k < keys; k++) {
-    const id = seed * 101 + r * 31 + k, beat = Math.floor(t * 3 + frac(id * 0.618) * 7);
-    const lit = frac(Math.sin(id * 12.9898 + beat * 78.233) * 43758.5453) < 0.18;
+    const lit = frac(Math.sin((seed * 101 + r * 31 + k) * 12.9898) * 43758.5453) < 0.18;
     rect(c, x + 1.5 + k * 3 + r * 0.5, y + 2.5 + r * 2.3, 2.5, 1.8, lit ? '#3CF27A' : '#5E6670');
     rect(c, x + 1.5 + k * 3 + r * 0.5, y + 2.5 + r * 2.3, 2.5, 0.5, lit ? '#B8FFD0' : '#8A929C');
   }
