@@ -48,7 +48,9 @@
 
     // Coming back from an email link, supabase-js reads the session from the URL.
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) location.replace('../login/');
+    // Not signed in. A sign-in link that failed (used already or expired) comes back with
+    // #error=…: pass it on so the sign-in page can say what happened.
+    if (!session) location.replace('../login/' + (/[#&]error/.test(location.hash) ? location.hash : ''));
     else {
       // Drop the leftover '#' from the sign-in redirect.
       if (location.hash || location.search) history.replaceState(null, '', location.pathname);

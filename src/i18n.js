@@ -225,6 +225,12 @@ const STRINGS = {
   'login.send': L('Email me a sign-in link', 'Прислать ссылку для входа', '给我发送登录链接', 'ส่งลิงก์เข้าสู่ระบบทางอีเมล'),
   'login.signing': L('Signing in…', 'Входим…', '正在登录…', 'กำลังเข้าสู่ระบบ…'),
   'login.sending': L('Sending…', 'Отправляем…', '正在发送…', 'กำลังส่ง…'),
+  'login.expired': L(
+    'That sign-in link was already used or has expired: each link works once, for a short time. Ask for a new one below, or continue with Google.',
+    'Эта ссылка для входа уже использована или устарела: каждая работает один раз и недолго. Запросите новую ниже или войдите через Google.',
+    '此登录链接已被使用或已过期：每个链接只能使用一次，且有效期很短。请在下方重新获取，或使用 Google 登录。',
+    'ลิงก์เข้าสู่ระบบนี้ถูกใช้ไปแล้วหรือหมดอายุ: แต่ละลิงก์ใช้ได้ครั้งเดียวในเวลาสั้น ๆ ขอลิงก์ใหม่ด้านล่าง หรือเข้าสู่ระบบด้วย Google'),
+  'login.failed': L('Signing in with that link did not work. Ask for a new one below, or continue with Google.', 'Войти по этой ссылке не получилось. Запросите новую ниже или войдите через Google.', '无法通过该链接登录。请在下方重新获取，或使用 Google 登录。', 'เข้าสู่ระบบด้วยลิงก์นั้นไม่สำเร็จ ขอลิงก์ใหม่ด้านล่าง หรือเข้าสู่ระบบด้วย Google'),
   'login.check': L((email) => `Check ${email} for a sign-in link.`, (email) => `Проверьте ${email}: там ссылка для входа.`, (email) => `请查看 ${email} 中的登录链接。`, (email) => `ตรวจสอบ ${email} เพื่อดูลิงก์เข้าสู่ระบบ`),
 
   // OAuth consent

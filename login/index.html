@@ -48,6 +48,12 @@
 
     const msg = document.getElementById('msg');
     const say = (text, kind = '') => { msg.textContent = text; msg.className = 'msg ' + kind; };
+    // Back from a sign-in link that didn't work: it is one-time and short-lived.
+    const failed = new URLSearchParams(location.hash.slice(1));
+    if (failed.get('error')) {
+      say(t(failed.get('error_code') === 'otp_expired' ? 'login.expired' : 'login.failed'), 'error');
+      history.replaceState(null, '', location.pathname + location.search);
+    }
 
     // Already signed in: go straight to the account page.
     const { data: { session } } = await supabase.auth.getSession();
