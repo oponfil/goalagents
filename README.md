@@ -66,7 +66,7 @@ Open http://localhost:5173 for the landing page and http://localhost:5173/demo/ 
 
 The MCP server deploys with the Supabase CLI: `supabase db push` for the tables, `supabase functions deploy mcp --use-api` for the server (it needs the secret `MCP_AUTH_ISSUER`, the project's Auth issuer).
 
-To refresh the README pictures, open http://localhost:5173/tools/render-docs.html; it redraws `docs/img/overview.png`, `agents.png` and `themes.png` with the dashboard's own drawing code.
+To refresh the README pictures, open http://localhost:5173/tools/render-docs.html; it redraws `docs/img/overview.png`, `agents.png`, `themes.png` and the link preview card `og.png` with the dashboard's own drawing code.
 
 ## Code
 

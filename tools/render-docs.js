@@ -1,4 +1,4 @@
-// Renders the README pictures (agents sheet and theme samples) from the same drawing code as
+// Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 import { AGENTS, FUNNELS } from '../src/data.js';
 import { Scene, CW, H } from '../src/scene.js';
@@ -109,13 +109,38 @@ function overview() {
   return c;
 }
 
+// The link preview card (Open Graph, 1200×630): name and tagline on the left, the top of the
+// board on the right.
+async function ogCard(board) {
+  const [c, g] = canvas(1200, 630);
+  g.fillStyle = '#1B1714'; g.fillRect(0, 0, 1200, 630);
+  g.drawImage(board, 0, 0, 1600, 1680, 600, 0, 600, 630);
+  g.fillStyle = '#4A3F35'; g.fillRect(596, 0, 4, 630);
+  const logo = new Image();
+  await new Promise(r => { logo.onload = r; logo.src = '/favicon.svg'; });
+  g.imageSmoothingEnabled = false;
+  g.drawImage(logo, 56, 196, 76, 76);
+  g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+  g.font = `700 72px ${FONT}`;
+  g.fillStyle = '#F4EDE1'; g.fillText('Goal', 146, 262);
+  g.fillStyle = '#F2C14E'; g.fillText('Agents', 146 + g.measureText('Goal').width, 262);
+  g.font = `500 32px ${FONT}`; g.fillStyle = '#F4EDE1';
+  g.fillText('AI agents work your long goals.', 58, 340);
+  g.fillText('You see the whole funnel.', 58, 384);
+  g.font = `600 26px ${FONT}`; g.fillStyle = '#F2C14E';
+  g.fillText('goalagents.run', 58, 460);
+  return c;
+}
+
 const status = document.getElementById('status');
 try {
   await document.fonts.ready;
   await save(agentsSheet(), 'agents.png');
   await save(themesSheet(), 'themes.png');
-  await save(overview(), 'overview.png');
-  status.textContent = 'Saved docs/img/agents.png, themes.png and overview.png';
+  const board = overview();
+  await save(board, 'overview.png');
+  await save(await ogCard(board), 'og.png');
+  status.textContent = 'Saved docs/img/agents.png, themes.png, overview.png and og.png';
 } catch (e) {
   status.textContent = 'Failed: ' + e.message;
 }
