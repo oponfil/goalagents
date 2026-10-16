@@ -74,16 +74,17 @@
     <section class="slide" data-theme="money" data-agent="qwen">
       <div class="body wide">
         <p class="kicker">What you see</p>
-        <div class="split">
+        <!-- The board screenshot with callouts: src/deck.js places each label beside the image at
+             its target's height and draws an arrow to the point (x, y as fractions of the image). -->
+        <div class="annot">
           <img class="shot" src="../docs/img/overview.png" alt="The GoalAgents board: four goal funnels with agents working between the tanks">
-          <dl class="legend">
-            <dt>Tank</dt><dd>how much of what the goal needs is there</dd>
-            <dt>Gauge</dt><dd>on pace for the goal? The red mark is just in time</dd>
-            <dt>+N</dt><dd>what the agent's last run added</dd>
-            <dt>next</dt><dd>when the next result is due</dd>
-            <dt>Red badge</dt><dd>an agent is waiting for your answer</dd>
-            <dt>Sheet</dt><dd>opens the list the agent keeps</dd>
-          </dl>
+          <svg class="arrows" aria-hidden="true"></svg>
+          <div class="callout" data-side="left" data-x="0.125" data-y="0.057"><b>Sheet</b>opens the list the agent keeps</div>
+          <div class="callout" data-side="left" data-x="0.205" data-y="0.185"><b>Tank</b>how much of what the goal needs is there</div>
+          <div class="callout" data-side="left" data-x="0.298" data-y="0.358"><b>Red badge</b>an agent is waiting for your answer</div>
+          <div class="callout" data-side="left" data-x="0.098" data-y="0.886"><b>next</b>when the next result is due</div>
+          <div class="callout" data-side="right" data-x="0.886" data-y="0.237"><b>Gauge</b>on pace for the goal? The red mark is just in time</div>
+          <div class="callout" data-side="right" data-x="0.822" data-y="0.36"><b>+N</b>what the agent's last run added</div>
         </div>
       </div>
     </section>
@@ -96,7 +97,6 @@
           <li>Our own MCP server with OAuth 2.1 sign-in</li>
           <li>Supabase: each person's data is isolated, the board updates in real time</li>
           <li>Already running with real Claude and ChatGPT agents</li>
-          <li>Only counts and links are stored; the items stay in your own sources</li>
         </ul>
         <p class="cta"><a class="btn" href="../demo/">Open the live demo</a></p>
       </div>
