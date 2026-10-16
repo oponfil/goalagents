@@ -364,6 +364,7 @@ export class Scene {
         const extra = (Math.min(4, a.questions.length) - 1) * BUBBLE_STEP;
         const bx = a.side === 'R' ? p.x - 16 - extra : p.x + 30;
         drawBubble(c, bx, p.y - 14, a.questions.length);
+        a.bubble = { x: bx, y: p.y - 14 };
         this.hits.push({ x: Math.min(p.x, bx) - 4, y: p.y - 16, w: 52 + extra, h: 38, type: 'ask', a });
       } else this.hits.push({ x: p.x - 4, y: p.y - 14, w: 34, h: 36, type: 'agent', a });
       return;
@@ -379,7 +380,8 @@ export class Scene {
       const R = a.side === 'R';
       drawStanding(c, p.x, p.y, a.agent, info.color, -1, R, false, outfit);
       const extra = (Math.min(4, a.questions.length) - 1) * BUBBLE_STEP;
-      drawBubble(c, R ? p.x + 11 * P : p.x - 9 * P - extra, p.y - 2 - Math.round(Math.abs(Math.sin(t * 4)) * 2) * P, a.questions.length);
+      a.bubble = { x: R ? p.x + 11 * P : p.x - 9 * P - extra, y: p.y - 2 - Math.round(Math.abs(Math.sin(t * 4)) * 2) * P };
+      drawBubble(c, a.bubble.x, a.bubble.y, a.questions.length);
       this.hits.push({ x: R ? p.x - 2 : p.x - 20 - extra, y: p.y - 6, w: 44 + extra, h: 36, type: 'ask', a });
       return;
     }
@@ -508,6 +510,10 @@ export class Scene {
         g.globalAlpha = 1;
       }
     }
+    // Five questions or more: the number before the bubble's single "!".
+    for (const a of this.agents) {
+      if (a.questions.length > 4 && a.bubble && (a.state === 'ask' || a.state === 'sleep')) T(String(a.questions.length), a.bubble.x + 9, a.bubble.y + 8.5, 9, '#FFFFFF', 'center', 700);
+    }
     // What each agent added this run (the last run's while it sleeps), next to it.
     for (const a of this.agents) {
       if (!a.added || a.state === 'walk') continue;
@@ -533,8 +539,9 @@ export class Scene {
   }
 
   stageNeed(fi, j) { return project(this.funnels[fi]).need[j]; }
-  // A sleeping agent that should have run more than half an hour ago and has not reported since.
-  // Only a sign to check on it: its schedule may have slipped, or it may have stopped.
+  // A sleeping agent that should have run more than 5 minutes ago and has not reported since (an
+  // agent says set_agent_state(work) first thing in a run). Only a sign to check on it: its
+  // schedule may have slipped, or it may have stopped.
   overdue(a) { return this.live && a.state === 'sleep' && a.wakeAt != null && this.t - a.wakeAt > OVERDUE; }
   // Seconds until a sleeping agent's next run, or null.
   sleepLeft(a) { return a.state === 'sleep' && a.wakeAt != null ? a.wakeAt - this.t : null; }
@@ -657,7 +664,7 @@ function fmtEta(days) {
 }
 
 // A duration in seconds, rounded: "2 h", "15 min" (at least a minute).
-const OVERDUE = 30 * 60;
+const OVERDUE = 5 * 60;
 
 export const fmtDuration = sec => (sec >= 3600 ? tr('time.h', Math.round(sec / 3600)) : tr('time.min', Math.max(1, Math.round(sec / 60))));
 

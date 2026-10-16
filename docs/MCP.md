@@ -58,7 +58,7 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 | `agent` | `claude`, `chatgpt`, `grok`, `gemini`, `deepseek`, `kimi`, `qwen`, `mistral`, `perplexity`, `hermes`; sets shirt colour and logo. Any other name gets a plain grey shirt |
 | `funnel_id`, `zone` | Where the agent stands |
 | `state` | `work` (mining), `sleep` (waiting for its next scheduled run), `ask` (waiting for the person) |
-| `next_run_at` | For `sleep`: when it starts again; shown as a countdown. More than 30 minutes past it with no new state from the agent, the dashboard marks it as not woken up |
+| `next_run_at` | For `sleep`: when it starts again; shown as a countdown. More than 5 minutes past it with no new state from the agent, the dashboard marks it as not woken up, so call `set_agent_state(work)` first thing in every run |
 | `question` | For `ask`: what the agent needs from the person |
 | `question_id` | For `ask`: the open question; the person answers it on the dashboard |
 | `chat_url` | Link to the agent's chat or session |

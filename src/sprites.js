@@ -378,15 +378,17 @@ export function drawArrow(ctx, x, y) {
   rect(ctx, x - 8, y - 1, 1.5, 0.5, '#F28AB8'); rect(ctx, x - 8, y + 1, 1.5, 0.5, '#F28AB8');
 }
 
-// One "!" per open question (up to four); each more widens the bubble by BUBBLE_STEP.
+// One "!" per open question up to four, each widening the bubble by BUBBLE_STEP; from five on
+// the bubble is as wide as for four and the scene writes the number before a single "!".
 export const BUBBLE_STEP = 4;
 export function drawBubble(ctx, x, y, n = 1) {
-  const k = Math.max(1, Math.min(4, n)), w = 14 + (k - 1) * BUBBLE_STEP;
+  const k = n > 4 ? 1 : Math.max(1, n), w = 14 + (Math.min(4, Math.max(1, n)) - 1) * BUBBLE_STEP;
   rect(ctx, x + 0.5, y, w - 1, 16, '#E24B4A');
   rect(ctx, x, y + 0.5, w, 15, '#E24B4A');
   rect(ctx, x + w, y + 10, 2, 2, '#E24B4A');
+  const x0 = n > 4 ? x + w - 8 : x + 6;
   for (let i = 0; i < k; i++) {
-    rect(ctx, x + 6 + i * BUBBLE_STEP, y + 3, 2, 7, '#FFFFFF');
-    rect(ctx, x + 6 + i * BUBBLE_STEP, y + 11.5, 2, 2, '#FFFFFF');
+    rect(ctx, x0 + i * BUBBLE_STEP, y + 3, 2, 7, '#FFFFFF');
+    rect(ctx, x0 + i * BUBBLE_STEP, y + 11.5, 2, 2, '#FFFFFF');
   }
 }
