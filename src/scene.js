@@ -1,6 +1,7 @@
 import { agentInfo, plural } from './data.js';
 import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, line, P, MINER_H } from './sprites.js';
 import { themeOf } from './themes.js';
+import { t as tr } from './i18n.js';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -34,7 +35,7 @@ const OUT_LIFT = 5;
 const gaugeY = (k, out) => zoneTop(k) + 4 + GAUGE_R + 2 - (out ? OUT_LIFT : 0);
 export const DAY_SECONDS = 2;
 const PER_ROW = 10;  // result items per row under a funnel, the same for every theme
-const FONT = '"Rubik", system-ui, sans-serif';
+const FONT = '"Rubik", "Noto Sans Thai", "Noto Sans SC", system-ui, sans-serif';
 
 const PERIODS = ['d', 'w', 'h'];
 
@@ -44,7 +45,7 @@ function rng(seed) {
 
 export class Scene {
   // live: the agents report counts and states; nothing is simulated, agents keep their state.
-  constructor(canvas, funnels, { live = false } = {}) {
+  constructor(canvas, funnels, { live = false, sides = null } = {}) {
     this.live = live;
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -62,19 +63,40 @@ export class Scene {
     this.days = 0;
     const r = rng(7);
     this.agents = [];
-    const taken = new Map();
-    this.funnels.forEach(f => f.workers.forEach(w => {
-      // Two places per zone: left and right of the pipe. Extra agents are not shown.
-      const key = f.title + '|' + w.zone, n = taken.get(key) || 0;
-      if (n >= 2) return;
-      taken.set(key, n + 1);
-      const a = { ...w, f, side: n ? 'R' : 'L', rand: r, hitAt: 1 + r() * 3, phase: r() };
+    // Two places per zone: left and right of the pipe; extra agents are not shown. An agent keeps
+    // the side it had in the previous scene (sides: its map), so redraws don't swap agents around;
+    // newcomers take the free side, in name order.
+    const before = sides || new Map();
+    this.sides = new Map();
+    const place = [];
+    this.funnels.forEach(f => {
+      const zones = new Map();
+      for (const w of f.workers) zones.set(w.zone, [...(zones.get(w.zone) || []), w]);
+      for (const ws of zones.values()) {
+        const sorted = [...ws].sort((p, q) => p.agent.localeCompare(q.agent)), used = new Set();
+        const sideOf = new Map();
+        for (const w of sorted) {
+          const was = before.get(`${f.id ?? f.title}|${w.agent}`);
+          if (was && !used.has(was)) { sideOf.set(w, was); used.add(was); }
+        }
+        for (const w of sorted) {
+          if (sideOf.has(w)) continue;
+          const free = ['L', 'R'].find(x => !used.has(x));
+          if (!free) continue;
+          sideOf.set(w, free); used.add(free);
+        }
+        for (const w of ws) if (sideOf.has(w)) place.push([f, w, sideOf.get(w)]);
+      }
+    });
+    place.forEach(([f, w, side]) => {
+      this.sides.set(`${f.id ?? f.title}|${w.agent}`, side);
+      const a = { ...w, f, side, rand: r, hitAt: 1 + r() * 3, phase: r() };
       if (w.state === 'sleep') a.wakeAt = w.wakeIn;
       if (w.state === 'work' && !live) a.workUntil = 20 + r() * 25;
       // The demo makes up what each agent's last run added; it then counts the items it adds.
       if (!live && a.added == null) a.added = w.state === 'sleep' ? 1 + Math.floor(r() * 6) : 0;
       this.agents.push(a);
-    }));
+    });
   }
 
   fi(f) { return this.funnels.indexOf(f); }
@@ -460,10 +482,10 @@ export class Scene {
       g.textAlign = 'left'; g.textBaseline = 'middle';
       g.font = `700 ${12 * S}px ${FONT}`; g.fillStyle = f.cubes ? themeOf(f).accent : '#8C8276'; g.fillText(num, x0, (ry + 12) * S);
       if (flowText) { g.font = `700 ${8.5 * S}px ${FONT}`; g.fillStyle = '#9FE870'; g.fillText(flowText, x0 + wNum + 3 * S, (ry + 12) * S); }
-      if (f.cubes >= f.goal.total) T('goal reached ✓', cx, ry + 24, 8, '#3CF27A', 'center', 700);
-      else T(`next ${fmtEta(pr.eta)}`, cx, ry + 24, 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 'center', 700);
+      if (f.cubes >= f.goal.total) T(tr('board.goalReached'), cx, ry + 24, 8, '#3CF27A', 'center', 700);
+      else T(tr('board.next', fmtEta(pr.eta)), cx, ry + 24, 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 'center', 700);
       // Once the goal is reached, "goal reached ✓" replaces the goal line.
-      if (f.cubes < f.goal.total) T(`goal: ${f.goal.total}, 1 per ${fmtEta(f.goal.every).slice(1)}`, cx, ry + 35, 7.5, '#B8AE9F', 'center', 500);
+      if (f.cubes < f.goal.total) T(tr('board.goal', f.goal.total, fmtEta(f.goal.every).slice(1)), cx, ry + 35, 7.5, '#B8AE9F', 'center', 500);
     });
     for (const a of this.agents) {
       if (a.state !== 'sleep') continue;
@@ -600,23 +622,26 @@ export const fmtCount = n => n.toLocaleString('en-US');
 
 function fmtFlow(perDay, key) {
   if (perDay == null) return '—';
-  if (!perDay) return `+0/${key}`;
+  if (!perDay) return `+0/${tr('unit.' + key)}`;
   let i = UNITS.findIndex(u => u[0] === key);
   while (i < UNITS.length - 1 && perDay * UNITS[i][1] < 0.95) i++;
   const v = perDay * UNITS[i][1];
-  return `+${v >= 10 ? Math.round(v) : Math.round(v * 10) / 10}/${UNITS[i][0]}`;
+  return `+${v >= 10 ? Math.round(v) : Math.round(v * 10) / 10}/${tr('unit.' + UNITS[i][0])}`;
 }
 
 function fmtEta(days) {
   if (days == null || !isFinite(days)) return '—';
-  if (days < 1) return `≈${Math.round(days * 24)} h`;
-  if (days < 60) return `≈${Math.round(days)} d`;
-  return `≈${Math.round(days / 30)} mo`;
+  if (days < 1) return '≈' + tr('dur.h', Math.round(days * 24));
+  if (days < 60) return '≈' + tr('dur.d', Math.round(days));
+  return '≈' + tr('dur.mo', Math.round(days / 30));
 }
+
+// A duration in seconds, rounded: "2 h", "15 min" (at least a minute).
+export const fmtDuration = sec => (sec >= 3600 ? tr('time.h', Math.round(sec / 3600)) : tr('time.min', Math.max(1, Math.round(sec / 60))));
 
 function fmtTimer(sec) {
   sec = Math.max(0, Math.ceil(sec));
-  if (sec >= 3600) return `${Math.round(sec / 3600)} h`;
-  if (sec >= 60) return `${Math.round(sec / 60)} min`;
+  if (sec >= 3600) return tr('time.h', Math.round(sec / 3600));
+  if (sec >= 60) return tr('time.min', Math.round(sec / 60));
   return `0:${String(sec).padStart(2, '0')}`;
 }

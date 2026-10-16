@@ -10,7 +10,7 @@
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../site.css">
 </head>
 <body>
@@ -20,7 +20,7 @@
     </nav>
 
     <div class="card" id="card">
-      <p class="sub">Loading…</p>
+      <p class="sub" data-i18n="consent.loading">Loading…</p>
     </div>
   </div>
 
@@ -28,15 +28,16 @@
     // OAuth consent: Supabase Auth sends the person here with ?authorization_id= when an agent
     // (Claude, ChatGPT, Cursor…) asks to connect to their GoalAgents.
     import { supabase, siteUrl } from '../../src/auth.js';
+    import { t } from '../../src/i18n.js';
 
     const card = document.getElementById('card');
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
     const show = html => { card.innerHTML = html; };
-    const problem = text => show(`<h1>Can't connect</h1><p class="sub">${esc(text)}</p>
-      <a class="btn" href="${siteUrl('app/')}">Go to Goals</a>`);
+    const problem = text => show(`<h1>${esc(t('consent.cant'))}</h1><p class="sub">${esc(text)}</p>
+      <a class="btn" href="${siteUrl('app/')}">${esc(t('consent.toGoals'))}</a>`);
 
     const id = new URLSearchParams(location.search).get('authorization_id');
-    if (!id) problem('This link has no authorization request. Start connecting from your agent again.');
+    if (!id) problem(t('consent.noRequest'));
     else {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -50,20 +51,20 @@
     }
 
     function ask(d, email) {
-      const name = d.client?.name || 'An app';
+      const name = d.client?.name || t('consent.anApp');
       let host = '';
       try { host = new URL(d.redirect_uri).host; } catch {}
       show(`
-        <h1>Connect ${esc(name)}?</h1>
-        <p class="sub">${esc(name)} wants to work with your GoalAgents as ${esc(email)}.</p>
+        <h1>${esc(t('consent.h1', name))}</h1>
+        <p class="sub">${esc(t('consent.wants', name, email))}</p>
         <ul class="perm">
-          <li>See your goal funnels, counts and agents</li>
-          <li>Create and change funnels, report progress and results</li>
-          <li>Show itself at work and ask you questions</li>
+          <li>${esc(t('consent.p1'))}</li>
+          <li>${esc(t('consent.p2'))}</li>
+          <li>${esc(t('consent.p3'))}</li>
         </ul>
-        <p class="note">After you allow it, you go back to ${esc(host || 'the app')}. Only allow apps you started connecting yourself.</p>
-        <button class="btn primary" id="allow">Allow</button>
-        <button class="btn" id="deny" style="margin-top:10px">Deny</button>
+        <p class="note">${esc(t('consent.note', host || t('consent.theApp')))}</p>
+        <button class="btn primary" id="allow">${esc(t('consent.allow'))}</button>
+        <button class="btn" id="deny" style="margin-top:10px">${esc(t('consent.deny'))}</button>
         <div class="msg" id="msg"></div>`);
       const decide = approve => async () => {
         card.querySelectorAll('button').forEach(b => { b.disabled = true; });

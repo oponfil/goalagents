@@ -5,7 +5,7 @@
   --alert: #FF6B5E;
   --panel: #2A2420;
   --border: #4A3F35;
-  --font: "Rubik", system-ui, sans-serif;
+  --font: "Rubik", "Noto Sans Thai", "Noto Sans SC", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
@@ -212,3 +212,8 @@ body {
 
 .sitebar .updated { color: var(--muted); font-size: 13px; white-space: nowrap; }
 #clock:empty { display: none; }
+
+/* Language picker in the nav. */
+.links select.lang { width: 3.9em; background: transparent; color: inherit; border: 1px solid var(--border); font: inherit; font-size: 14px; padding: 3px 2px; cursor: pointer; }
+.links select.lang option { background: #241F1B; color: #F4EDE1; }
+@media (max-width: 560px) { .sitebar .links a.gh, .links a.gh { display: none; } }

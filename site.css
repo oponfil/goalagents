@@ -8,7 +8,7 @@
   --accent: #F2C14E;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 "Rubik", system-ui, sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 "Rubik", "Noto Sans Thai", "Noto Sans SC", system-ui, sans-serif; }
 a { color: inherit; }
 .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
@@ -81,3 +81,8 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 .links a.gh { display: flex; }
 .logo { display: inline-flex; align-items: center; }
 .logo .mark { image-rendering: pixelated; margin-right: 8px; }
+
+/* Language picker in the nav. */
+.links select.lang { width: 3.9em; background: transparent; color: inherit; border: 1px solid var(--border); font: inherit; font-size: 14px; padding: 3px 2px; cursor: pointer; }
+.links select.lang option { background: #241F1B; color: #F4EDE1; }
+@media (max-width: 560px) { .links a.gh { display: none; } }

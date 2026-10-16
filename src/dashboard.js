@@ -1,7 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
 import { agentInfo, agentButton, chatLink, plural } from './data.js';
-import { Scene, CW, fmtCount } from './scene.js';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js';
+import { t } from './i18n.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -79,7 +80,7 @@ export function mountDashboard(funnels, opts = {}) {
       const n = scene.waitingFor(scene.funnels[+el.dataset.fi]), badge = el.querySelector('.badge');
       badge.hidden = !n;
       badge.textContent = n;
-      badge.title = n ? `${n} ${plural(n, ['agent is', 'agents are'])} waiting for you` : '';
+      badge.title = n ? t('board.waiting', n) : '';
     });
   }
   buildTitles();
@@ -167,25 +168,25 @@ export function mountDashboard(funnels, opts = {}) {
     const where = `${esc(f.title)}: ${from}<b class="run">+${fmtCount(n)}</b> ${esc(plural(n, into))}`;
     if (h.type === 'ask') {
       const reply = opts.onAnswer
-        ? `<textarea class="answer" rows="3" maxlength="2000" placeholder="Your answer"></textarea>
-          <button class="btn primary send" style="${paint}">Send answer</button>
-          ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>Open ${esc(info.name)}</a>` : ''}
+        ? `<textarea class="answer" rows="3" maxlength="2000" placeholder="${esc(t('board.answer'))}"></textarea>
+          <button class="btn primary send" style="${paint}">${esc(t('board.send'))}</button>
+          ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.name))}</a>` : ''}
           <div class="pop-msg"></div>`
-        : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>Reply in ${esc(info.name)}</a>`;
+        : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.replyIn', info.name))}</a>`;
       // Standing, the agent is waiting and takes the answer at once; asleep, only on its next run.
       const asleep = a.state === 'sleep', left = scene.sleepLeft(a);
-      const when = left > 0 ? `in ${left >= 3600 ? Math.round(left / 3600) + ' h' : Math.max(1, Math.round(left / 60)) + ' min'}` : 'when it next runs';
-      return `<div class="pop-title">${who} ${asleep ? 'asked you, then went to sleep' : 'is waiting for you'}</div>
+      const when = left > 0 ? t('board.inTime', fmtDuration(left)) : t('board.whenRuns');
+      return `<div class="pop-title">${t(asleep ? 'board.askedAsleep' : 'board.asking', who)}</div>
         <div class="pop-sub">${where}</div>
         <p>${esc(a.question)}</p>
-        ${asleep ? `<p class="pop-note">It will pick your answer up on its next run, ${esc(when)}.</p>` : ''}${reply}`;
+        ${asleep ? `<p class="pop-note">${esc(t('board.nextRun', when))}</p>` : ''}${reply}`;
     }
-    const state = a.state === 'sleep' ? 'is resting until the next run'
-      : a.state === 'walk' ? (a.to === 'work' ? 'is starting a shift' : 'finished a shift')
-        : 'is working';
-    return `<div class="pop-title">${who} ${state}</div>
+    const state = a.state === 'sleep' ? 'board.resting'
+      : a.state === 'walk' ? (a.to === 'work' ? 'board.starting' : 'board.finished')
+        : 'board.working';
+    return `<div class="pop-title">${t(state, who)}</div>
       <div class="pop-sub">${where}</div>
-      ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>Open ${esc(info.name)}</a>` : ''}`;
+      ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.name))}</a>` : ''}`;
   }
 
   function bindAnswer(a) {
@@ -204,7 +205,7 @@ export function mountDashboard(funnels, opts = {}) {
   }
 
   function showPop(e, html) {
-    pop.innerHTML = `<button class="close" aria-label="Close">×</button>` + html;
+    pop.innerHTML = `<button class="close" aria-label="${esc(t('board.close'))}">×</button>` + html;
     pop.querySelector('.close').addEventListener('click', hidePop);
     pop.hidden = false;
     const pw = pop.offsetWidth, ph = pop.offsetHeight;
@@ -222,7 +223,7 @@ export function mountDashboard(funnels, opts = {}) {
     // New data from the agents: rebuild the scene, keep the viewer's order and scroll.
     setFunnels(next) {
       if (!pop.hidden && pop.contains(document.activeElement)) return false; // typing an answer
-      scene = new Scene(canvas, next, { live: opts.live });
+      scene = new Scene(canvas, next, { live: opts.live, sides: scene.sides });
       loadOrder();
       scene.resize(scale, window.devicePixelRatio || 1);
       layout();

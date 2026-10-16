@@ -1,4 +1,5 @@
 // Demo data shown on the landing page. In the product this comes from agents via MCP.
+import { lang } from './i18n.js';
 
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
@@ -216,6 +217,66 @@ export const FUNNELS = [
   },
 ];
 
+// The demo in the viewer's language: titles, stage and result names, and questions, keyed by the
+// English text. Russian names have three forms [1, 2-4, 5+]; Chinese and Thai have one.
+const DEMO = {
+  'Job Search': ['Поиск работы', '找工作', 'หางาน'],
+  'Creator': ['Автор', '创作者', 'ครีเอเตอร์'],
+  'Bug Bounty': ['Баг-баунти', '漏洞赏金', 'บั๊กบาวน์ตี้'],
+  'Fundraising': ['Привлечение инвестиций', '融资', 'ระดมทุน'],
+  'Dating': ['Знакомства', '约会', 'หาคู่'],
+  'Research': ['Исследования', '科研', 'งานวิจัย'],
+  'offer': [['оффер', 'оффера', 'офферов'], '录用通知', 'ข้อเสนองาน'],
+  'job found': [['найденная вакансия', 'найденные вакансии', 'найденных вакансий'], '找到的职位', 'งานที่พบ'],
+  'applied': [['отклик', 'отклика', 'откликов'], '已投递', 'สมัครแล้ว'],
+  'screening call': [['созвон с HR', 'созвона с HR', 'созвонов с HR'], '初筛电话', 'โทรคัดกรอง'],
+  'interview': [['собеседование', 'собеседования', 'собеседований'], '面试', 'สัมภาษณ์'],
+  'final round': [['финальный раунд', 'финальных раунда', 'финальных раундов'], '终面', 'รอบสุดท้าย'],
+  'paying member': [['платный подписчик', 'платных подписчика', 'платных подписчиков'], '付费会员', 'สมาชิกที่จ่ายเงิน'],
+  'view': [['просмотр', 'просмотра', 'просмотров'], '浏览', 'ยอดวิว'],
+  'profile visit': [['заход в профиль', 'захода в профиль', 'заходов в профиль'], '主页访问', 'เข้าชมโปรไฟล์'],
+  'follower': [['подписчик', 'подписчика', 'подписчиков'], '粉丝', 'ผู้ติดตาม'],
+  'subscriber': [['подписчик рассылки', 'подписчика рассылки', 'подписчиков рассылки'], '订阅者', 'ผู้สมัครรับ'],
+  'trial member': [['пробный участник', 'пробных участника', 'пробных участников'], '试用会员', 'สมาชิกทดลอง'],
+  'paid bounty': [['оплаченная награда', 'оплаченные награды', 'оплаченных наград'], '已付赏金', 'รางวัลที่จ่ายแล้ว'],
+  'target': [['цель', 'цели', 'целей'], '目标', 'เป้าหมาย'],
+  'finding': [['находка', 'находки', 'находок'], '发现', 'สิ่งที่พบ'],
+  'report': [['отчёт', 'отчёта', 'отчётов'], '报告', 'รายงาน'],
+  'triaged': [['разобран', 'разобрано', 'разобрано'], '已分类', 'คัดกรองแล้ว'],
+  'accepted': [['принят', 'принято', 'принято'], '已接受', 'ได้รับการยอมรับ'],
+  'term sheet': [['term sheet', 'term sheet', 'term sheet'], '投资意向书', 'เทิร์มชีต'],
+  'investor': [['инвестор', 'инвестора', 'инвесторов'], '投资人', 'นักลงทุน'],
+  'intro': [['знакомство', 'знакомства', 'знакомств'], '引荐', 'การแนะนำ'],
+  'meeting': [['встреча', 'встречи', 'встреч'], '会议', 'การประชุม'],
+  'partner meeting': [['встреча с партнёром', 'встречи с партнёрами', 'встреч с партнёрами'], '合伙人会议', 'ประชุมกับพาร์ทเนอร์'],
+  'in due diligence': [['на проверке', 'на проверке', 'на проверке'], '尽职调查中', 'อยู่ระหว่างตรวจสอบ'],
+  'relationship': [['отношения', 'отношений', 'отношений'], '恋爱关系', 'ความสัมพันธ์'],
+  'match': [['мэтч', 'мэтча', 'мэтчей'], '配对', 'แมตช์'],
+  'conversation': [['переписка', 'переписки', 'переписок'], '聊天', 'บทสนทนา'],
+  'first date': [['первое свидание', 'первых свидания', 'первых свиданий'], '第一次约会', 'เดทแรก'],
+  'second date': [['второе свидание', 'вторых свидания', 'вторых свиданий'], '第二次约会', 'เดทที่สอง'],
+  'sleepover': [['ночёвка', 'ночёвки', 'ночёвок'], '过夜', 'ค้างคืน'],
+  'published paper': [['опубликованная статья', 'опубликованные статьи', 'опубликованных статей'], '已发表论文', 'บทความที่ตีพิมพ์'],
+  'idea': [['идея', 'идеи', 'идей'], '想法', 'ไอเดีย'],
+  'draft': [['черновик', 'черновика', 'черновиков'], '草稿', 'ฉบับร่าง'],
+  'preprint': [['препринт', 'препринта', 'препринтов'], '预印本', 'พรีปรินต์'],
+  'submitted': [['отправлена', 'отправлены', 'отправлено'], '已投稿', 'ส่งแล้ว'],
+  'under review': [['на рецензии', 'на рецензии', 'на рецензии'], '审稿中', 'อยู่ระหว่างพิจารณา'],
+  'The form asks for a salary expectation. Send the application with $120k?': ['В форме спрашивают ожидаемую зарплату. Отправить отклик с $120k?', '表单要求填写期望薪资。用 12 万美元提交申请吗？', 'แบบฟอร์มถามเงินเดือนที่คาดหวัง ส่งใบสมัครด้วย $120k ไหม?'],
+  'This finding looks close to a public report from March. Submit it anyway?': ['Эта находка похожа на публичный отчёт из марта. Всё равно отправить?', '这个发现和三月的一份公开报告很像。仍然提交吗？', 'สิ่งที่พบนี้คล้ายรายงานสาธารณะเมื่อเดือนมีนาคม ส่งต่อไหม?'],
+  'Northwind Ventures asks for the cap table before Thursday. Share it from the data room?': ['Northwind Ventures просит таблицу капитализации до четверга. Дать доступ из data room?', 'Northwind Ventures 要求周四前提供股权结构表。从数据室共享吗？', 'Northwind Ventures ขอตารางผู้ถือหุ้นก่อนวันพฤหัสบดี แชร์จากดาต้ารูมไหม?'],
+  'Alex suggested Saturday at 7pm at the rooftop bar. Confirm the date?': ['Алекс предложил субботу в 19:00 в баре на крыше. Подтвердить свидание?', 'Alex 提议周六晚上 7 点在屋顶酒吧见面。确认约会吗？', 'Alex ชวนวันเสาร์ 1 ทุ่มที่รูฟท็อปบาร์ ยืนยันเดทไหม?'],
+};
+const COL = { ru: 0, zh: 1, th: 2 }[lang];
+const tr = text => (COL == null ? text : DEMO[text]?.[COL] ?? text);
+const trForms = forms => (COL == null ? forms : DEMO[forms[0]] ? [DEMO[forms[0]][COL]].flat() : forms);
+if (COL != null) for (const f of FUNNELS) {
+  f.title = tr(f.title);
+  f.result = trForms(f.result);
+  for (const st of f.stages) st.forms = trForms(st.forms);
+  for (const w of f.workers) if (w.question) w.question = tr(w.question);
+}
+
 // Demo only: start each stage with a count that matches the funnel's conversion, so the tanks
 // are consistent with the results so far. A stage holds enough for the results already out plus
 // a lead of 15% of the remaining goal per stage below it (work in progress). Funnels with an unknown flow keep
@@ -230,8 +291,9 @@ for (const f of FUNNELS) {
   }
 }
 
-// forms: [singular, plural] (English) or [1, 2-4, 5+] (Russian).
+// forms: [singular, plural] (English), [1, 2-4, 5+] (Russian) or one form (Chinese, Thai).
 export function plural(n, forms) {
+  if (forms.length === 1) return forms[0];
   if (forms.length === 2) return n === 1 ? forms[0] : forms[1];
   const [one, few, many] = forms;
   const m10 = n % 10, m100 = n % 100;
