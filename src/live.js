@@ -85,11 +85,11 @@ export async function answer(questionId, text) {
   return error?.message;
 }
 
-// An agent's last runs in a funnel, newest first, for its card.
-export async function runs(funnelId, agent, limit = 10) {
+// An agent's last runs in its funnel, newest first, for its card.
+export async function runs(a, limit = 10) {
   const { data, error } = await supabase.from('agent_runs')
     .select('zone, started_at, ended_at, added')
-    .eq('funnel_id', funnelId).eq('agent', agent)
+    .eq('funnel_id', a.f.id).eq('agent', a.agent)
     .order('started_at', { ascending: false }).limit(limit);
   if (error) throw error;
   return data;

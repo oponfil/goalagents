@@ -206,7 +206,7 @@ export function mountDashboard(funnels, opts = {}) {
       list.dataset.loaded = 1;
       list.textContent = '…';
       try {
-        const rows = await opts.runs(a.f.id, a.agent);
+        const rows = await opts.runs(a);
         const st = a.f.stages, when = new Intl.DateTimeFormat(lang, { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
         list.innerHTML = rows.length ? rows.map(r => {
           const into = r.zone < st.length ? st[r.zone].forms : a.f.result;
