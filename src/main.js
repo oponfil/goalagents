@@ -1,7 +1,7 @@
 // The demo: made-up funnels from src/data.js, with time running fast.
-import { FUNNELS } from './data.js?v=ae51300f';
-import { mountDashboard } from './dashboard.js?v=ae51300f';
-import { t } from './i18n.js?v=ae51300f';
+import { FUNNELS } from './data.js?v=11be7438';
+import { mountDashboard } from './dashboard.js?v=11be7438';
+import { t } from './i18n.js?v=11be7438';
 
 mountDashboard(FUNNELS, {
   clock: scene => t('demo.clock', Math.floor(scene.days) + 1),
@@ -11,19 +11,24 @@ mountDashboard(FUNNELS, {
 });
 
 // Made-up last runs for an agent's card, the same each time for the same agent: a run every 6-12
-// hours lasting 10-40 minutes, the newest still going while the agent works. Zones as in MCP
-// (the scene's zone + 1).
+// hours lasting 10-40 minutes, the newest still going while the agent works. Each run adds about
+// the flow of its zone over the hours since the one before, shared with the other agent there, and
+// all ten together never add more than the stage now holds. Zones as in MCP (the scene's + 1).
 function demoRuns(a) {
   let seed = [...a.f.title + a.agent].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
   const r = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const z = a.zone + 1, st = a.f.stages, holds = z < st.length ? st[z].count : a.f.cubes;
+  const perDay = a.f.flows[z] || 0, crew = Math.max(1, a.f.workers.filter(w => w.zone === a.zone).length);
   const now = Date.now(), rows = [];
-  let start = now - (a.state === 'sleep' ? 2 + r() * 4 : 0.2 + r() * 0.3) * 3600e3;
+  let start = now - (a.state === 'sleep' ? 2 + r() * 4 : 0.2 + r() * 0.3) * 3600e3, left = holds;
   for (let i = 0; i < 10; i++) {
-    const going = i === 0 && a.state !== 'sleep';
+    const going = i === 0 && a.state !== 'sleep', gap = 6 + r() * 6;
     const ended = going ? null : start + (10 + r() * 30) * 60e3;
-    const added = going ? a.added || 0 : r() < 0.2 ? 0 : 1 + Math.floor(r() * 6);
-    rows.push({ zone: a.zone + 1, started_at: new Date(start).toISOString(), ended_at: ended && new Date(ended).toISOString(), added });
-    start -= (6 + r() * 6) * 3600e3;
+    const share = perDay * (gap / 24) / crew * (0.5 + r());
+    const added = Math.max(0, Math.min(left, going ? a.added || 0 : Math.floor(share) + (r() < share % 1 ? 1 : 0)));
+    left -= added;
+    rows.push({ zone: z, started_at: new Date(start).toISOString(), ended_at: ended && new Date(ended).toISOString(), added });
+    start -= gap * 3600e3;
   }
   return rows;
 }
