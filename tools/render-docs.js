@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=796a1d3a';
-import { Scene, CW, H } from '../src/scene.js?v=796a1d3a';
-import { THEMES } from '../src/themes.js?v=796a1d3a';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=796a1d3a';
+import { AGENTS, FUNNELS } from '../src/data.js?v=3cb24732';
+import { Scene, CW, H } from '../src/scene.js?v=3cb24732';
+import { THEMES } from '../src/themes.js?v=3cb24732';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=3cb24732';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -64,12 +64,31 @@ function themesSheet() {
     else if (th.tool === 'laptop') drawLaptop(g, hx - 3, hy + 2, 0.3);
     else if (th.tool === 'stamp') drawStamp(g, hx - 1, hy + 4, 0.5);
     else { drawBow(g, hx, hy, 0.6); drawArrow(g, hx + 1, hy); }
-    g.fillStyle = th.frame; g.fillRect(16, 54, 148, 24);
-    g.fillStyle = th.tankBg; g.fillRect(18, 56, 144, 20);
-    g.save(); g.beginPath(); g.rect(18, 56, 92, 20); g.clip();
-    th.tank(g, 18, 56, 92, 20, 1, 3, 0, 11 + i);
-    g.restore();
-    for (let k = 0; k < 3; k++) th.result(g, 64 + k * 18, 84, false);
+    // A funnel tank as on the board: a thin trapezoid, its pieces piled from the bottom middle
+    // (a liquid in the lab), about half full.
+    const tx = 90, ty = 54, TH = 26, half = row => Math.round(74 - 22 * row / (TH - 1));
+    for (let row = 0; row < TH; row++) {
+      const h = half(row);
+      g.fillStyle = th.frame;
+      if (row === 0 || row === TH - 1) g.fillRect(tx - h, ty + row, h * 2, 1);
+      else { g.fillRect(tx - h, ty + row, 1, 1); g.fillRect(tx + h - 1, ty + row, 1, 1); g.fillStyle = th.tankBg; g.fillRect(tx - h + 1, ty + row, h * 2 - 2, 1); }
+    }
+    if (th.piece) {
+      const P = th.piece, cells = [];
+      for (let row = 0; row < Math.floor((TH - 3) / P.h); row++) {
+        const top = ty + TH - 2 - (row + 1) * P.h, hw = half(Math.round(top - ty)) - 1.5, k = Math.floor(hw * 2 / P.w);
+        for (let m = 0; m < k; m++) {
+          const px = tx - k * P.w / 2 + m * P.w + (row % 2 ? P.w / 4 : 0);
+          if (px + P.w <= tx + hw) cells.push({ x: px, y: top, score: row * 1.6 + Math.abs(px + P.w / 2 - tx) / P.w * 0.7 });
+        }
+      }
+      cells.sort((a, b) => a.score - b.score).slice(0, Math.round(cells.length * 0.5)).forEach((cell, m) => P.draw(g, cell.x, cell.y, 1, 3, m));
+    } else {
+      g.save(); g.beginPath();
+      for (let row = 12; row < TH - 1; row++) { const h = half(row) - 1; g.rect(tx - h, ty + row, h * 2, 1); }
+      g.clip(); th.tank(g, 10, ty, 160, TH, 1, 3, 0, 11 + i); g.restore();
+    }
+    for (let k = 0; k < 3; k++) th.result(g, 64 + k * 18, 86, false);
     g.setTransform(1, 0, 0, 1, 0, 0);
     g.font = `700 ${6 * K}px ${FONT}`; g.textAlign = 'left'; g.fillStyle = '#F4EDE1';
     g.shadowColor = 'rgba(0,0,0,0.8)'; g.shadowBlur = K * 1.5;
