@@ -10,7 +10,7 @@ import { z } from 'npm:zod@4.6.5'
 
 type Db = any // the Supabase client scoped to the caller
 
-const THEMES = ['mine', 'lab', 'forge', 'love', 'code', 'money'] as const
+const THEMES = ['mine', 'lab', 'garden', 'love', 'code', 'money'] as const
 const forms = z.array(z.string().min(1).max(40)).min(2).max(3)
 const funnelId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/).describe('Funnel id, e.g. "job-search"')
 const agent = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,31}$/)
@@ -120,7 +120,7 @@ function server(db: Db) {
       goal_total: z.number().int().min(1).max(100).describe('How many results the goal needs (1-100)'),
       goal_every_days: z.number().positive().max(3650).describe('Pace: one result every N days'),
       source_url: z.string().url().regex(/^https?:\/\//).nullable().optional().describe('Link to the table or list with this funnel\'s items (Google Sheet, Notion, Airtable…). Give it whenever the list opens by a URL; null removes it, leaving it out keeps it'),
-      theme: z.enum(THEMES).optional().describe('Look: mine (miners, ore), lab (chemists, flasks), forge (smiths, coins), love (cupids, hearts), code (hackers, chips), money (bankers, banknotes). Default mine'),
+      theme: z.enum(THEMES).optional().describe('Look: mine (miners, ore), lab (chemists, flasks), garden (gardeners, flowers), love (cupids, hearts), code (hackers, chips), money (bankers, coins, banknotes, gold bars, bitcoins). Default mine'),
       stages: z.array(z.object({
         key: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/).describe('Stable key, e.g. "applied"'),
         label: forms.describe('[singular, plural], e.g. ["interview", "interviews"]'),

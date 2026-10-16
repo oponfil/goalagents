@@ -2,10 +2,10 @@
 // the zone walls, what fills the tanks, the result items, and the agents' outfit and tool.
 //   mine  — miners with pickaxes striking ore, tanks of ore and gems, ore carts
 //   lab   — chemists pouring into a Petri dish, tanks of liquid, flasks
-//   forge — smiths hammering an anvil, tanks of coins, chests
+//   garden — gardeners trimming a bush with shears, tanks of sprouts and flowers, flower pots
 //   love  — cupids shooting at a bed, tanks of hearts, big hearts
 //   code  — hackers in hoodies typing on laptops over a keyboard, tanks of code, chips
-//   money — bankers stamping a contract, tanks of banknotes, money bags
+//   money — bankers stamping a contract, tanks of coins, banknotes, silver and gold bars, bitcoins; money bags
 
 function rng(seed) {
   return () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
@@ -66,12 +66,6 @@ function backLab(c, x, w, h) {
   rect(c, x, 0, w, h, '#1C262E');
   for (let ty = 0; ty < h; ty += 10) for (let tx = x; tx < x + w; tx += 10) rect(c, tx, ty, 9.5, 9.5, '#212D37');
 }
-function backForge(c, x, w, h) {
-  rect(c, x, 0, w, h, '#22120E');
-  for (let by = 0, row = 0; by < h; by += 7, row++) {
-    for (let bx = x + (row % 2 ? -7 : 0); bx < x + w; bx += 14) rect(c, Math.max(x, bx), by, Math.min(13, x + w - Math.max(x, bx)), 6, '#2E1812');
-  }
-}
 function backLove(c, x, w, h, r) {
   rect(c, x, 0, w, h, '#1E1028');
   for (let i = 0; i < w * h / 120; i++) rect(c, x + Math.floor(r() * w), Math.floor(r() * h), 1, 1, r() < 0.7 ? '#6A4A80' : '#E8B8E0');
@@ -83,8 +77,13 @@ function backCode(c, x, w, h) {
   for (let gy = 0; gy < h; gy += 8) rect(c, x, gy, w, 0.5, '#0F1A16');
 }
 function backMoney(c, x, w, h) {
-  rect(c, x, 0, w, h, '#14201A');
-  for (let px = x + 4; px < x + w; px += 18) { rect(c, px, 0, 14, h, '#182820'); rect(c, px, 0, 0.5, h, '#22362A'); }
+  // Deep banknote green with the fine diagonal lattice printed on banknotes.
+  rect(c, x, 0, w, h, '#11211A');
+  for (let d = -h; d < w; d += 6) for (let yy = 0; yy < h; yy += 1) {
+    const a = x + d + yy, b = x + d + h - yy;
+    if (a >= x && a < x + w) rect(c, a, yy, 0.5, 0.5, '#1E3D2E');
+    if (b >= x && b < x + w) rect(c, b, yy, 0.5, 0.5, '#1E3D2E');
+  }
 }
 
 // --- Zone backgrounds: (c, x0, y, w, h, r) with r a seeded random ---
@@ -105,18 +104,6 @@ function zoneLab(c, x0, y, w, h) {
   rect(c, x0 - 2, y, w + 4, 4, '#7D8794'); rect(c, x0 - 2, y, w + 4, 1, '#B9C2CC');
   rect(c, x0 - 2, y, 3, h, '#5E6670'); rect(c, x0 + w - 1, y, 3, h, '#5E6670');
   rect(c, x0 - 2, y + h - 2, w + 4, 2, '#4A525C');
-}
-
-function zoneForge(c, x0, y, w, h) {
-  rect(c, x0, y, w, h, '#2A1510');
-  c.fillStyle = '#3A1E16';
-  for (let by = y + 4, row = 0; by < y + h - 2; by += 6, row++) {
-    for (let bx = x0 + (row % 2 ? -6 : 0); bx < x0 + w; bx += 12) c.fillRect(Math.max(x0, bx), by, Math.min(11, x0 + w - Math.max(x0, bx)), 5);
-  }
-  c.fillStyle = 'rgba(255,120,40,0.18)'; c.fillRect(x0, y + h - 10, w, 8);
-  rect(c, x0 - 2, y, w + 4, 4, '#3A3A3E'); rect(c, x0 - 2, y, w + 4, 1, '#6A6A70');
-  rect(c, x0 - 2, y, 4, h, '#3A3A3E'); rect(c, x0 + w - 2, y, 4, h, '#3A3A3E');
-  rect(c, x0 - 2, y + h - 2, w + 4, 2, '#1E1E22');
 }
 
 function zoneLove(c, x0, y, w, h, r) {
@@ -149,17 +136,6 @@ function tankLab(c, x, y, w, h, j, n, t, seed) {
   for (let b = 0; b < 4 && w > 10; b++) {
     const p = ((t * 0.5 + b / 4 + seed * 0.013) % 1);
     rect(c, x + 2 + ((b * 37 + seed) % (w - 6)), Math.round(y + h - 4 - p * (h - 8)), 1.5, 1.5, 'rgba(230,240,255,0.7)');
-  }
-}
-
-function tankForge(c, x, y, w, h, j, n) {
-  const [face, rim] = byDepth([['#7D828C', '#4A4E56'], ['#B87333', '#7A4A20'], ['#C9CED6', '#7F858F'], ['#F2C14E', '#A87A18'], ['#E6F4FF', '#8FB8D0']], j, n);
-  rect(c, x, y, w, h, '#2A1A12');
-  // Bars laid like bricks: every other row shifted by half a bar, in every tank alike.
-  for (let cy = y + h - 4, row = 0; cy >= y; cy -= 3, row++) {
-    for (let cx = x + (row % 2 ? 3 : 0); cx < x + w - 5; cx += 6) {
-      rect(c, cx, cy, 5.5, 2.5, rim); rect(c, cx + 0.5, cy, 4.5, 1.5, face);
-    }
   }
 }
 
@@ -204,19 +180,6 @@ function plateLab(c, x, y, w, h) {
   rect(c, x + 1, y + 1, w - 2, 1, '#CDEBFF');
   rect(c, x + 3, y + 3.5, 8, 0.5, '#E6F6FF'); rect(c, x + w - 8, y + 6, 4, 0.5, '#7FB8E0');
   rect(c, x + 2, y + h - 2, w - 4, 0.5, '#CDEBFF');
-}
-
-function plateForge(c, x, y, w, h) {
-  // An anvil: pointed horn on the left, flat face, narrow waist, wide foot.
-  const face = '#4A4E56', light = '#A9AEB8', dark = '#2E3036';
-  const hx = x + 9;
-  rect(c, hx, y, w - 9, 5, face); rect(c, hx, y, w - 9, 0.5, light);
-  for (let i = 0; i < 9; i += 0.5) rect(c, x + i, y + 0.5 + (9 - i) * 0.12, 0.5, 3.5 - (9 - i) * 0.3 + 1, face);
-  rect(c, x + 2, y + 0.5, 7, 0.5, light);
-  rect(c, x + w - 4, y + 1.5, 2, 1, dark);
-  rect(c, x + 14, y + 5, w - 22, 2.5, dark);
-  rect(c, x + 11, y + 7.5, w - 16, h - 7.5, face); rect(c, x + 11, y + 7.5, w - 16, 0.5, light);
-  rect(c, x + 9, y + h - 1, w - 12, 1, dark);
 }
 
 function plateLove(c, x, y, w, h) {
@@ -281,16 +244,6 @@ function resultCart(c, x, y, empty) {
   rect(c, x + 3, y + 16, 2, 2, '#8E939D'); rect(c, x + 11, y + 16, 2, 2, '#8E939D');
 }
 
-function resultChest(c, x, y, empty) {
-  rect(c, x, y + 6, 16, 12, '#7A4A20'); rect(c, x + 1, y + 7, 14, 10, '#9C6230');
-  if (empty) { rect(c, x, y + 2, 16, 4, '#5A3615'); rect(c, x + 1, y + 7, 14, 3, '#2A1A10'); }
-  else {
-    rect(c, x, y + 4, 16, 4, '#8A5426'); rect(c, x, y + 4, 16, 1, '#B07A40');
-    rect(c, x + 2, y + 2, 3, 2, '#FFD866'); rect(c, x + 7, y + 1.5, 3, 2.5, '#F2C14E'); rect(c, x + 11, y + 2, 3, 2, '#FFD866');
-  }
-  rect(c, x, y + 11, 16, 1.5, '#D9A520'); rect(c, x + 7, y + 10, 2, 4, '#F2C14E');
-}
-
 function resultHeart(c, x, y, empty) {
   heart(c, x + 1, y + 3, 2, empty ? '#5A3A50' : '#E8345E');
   if (empty) heart(c, x + 3, y + 5, 1.4, '#2A1530');
@@ -350,14 +303,41 @@ function zoneMoney(c, x0, y, w, h) {
   rect(c, x0 - 2, y + h - 2, w + 4, 2, '#3A1A10');
 }
 
+// Money from small to big, top stages to bottom: silver coins, banknotes, silver bars, gold bars, bitcoins.
 function tankMoney(c, x, y, w, h, j, n) {
-  const [bill, mark] = byDepth([['#6E7C7C', '#C8D2D2'], ['#4E9A52', '#C6F0B0'], ['#2F8A8A', '#9FE0E0'], ['#3A62B8', '#A8C4F5'], ['#C9A040', '#FFE38A']], j, n);
   rect(c, x, y, w, h, '#14201A');
-  for (let by = y + h - 3.5; by > y - 1; by -= 3) {
-    for (let bx = x + ((by - y) % 6 < 3 ? 0 : 3); bx < x + w - 6; bx += 8) {
-      rect(c, bx, by, 7, 2.5, bill); rect(c, bx, by, 7, 0.5, mark);
-      rect(c, bx + 3, by + 1, 1, 1, mark);
+  const kind = byDepth(['coin', 'note', 'silver', 'gold', 'btc'], j, n);
+  if (kind === 'note') {
+    for (let by = y + h - 4, row = 0; by > y - 2; by -= 3.5, row++) {
+      for (let bx = x + (row % 2 ? 4 : 0); bx < x + w - 6; bx += 8.5) {
+        rect(c, bx, by, 8, 3.5, '#2E6B3A'); rect(c, bx + 0.5, by + 0.5, 7, 2.5, '#5DAA5E');
+        rect(c, bx + 3, by + 1, 2, 1.5, '#2E6B3A'); rect(c, bx + 1, by + 1.5, 0.5, 0.5, '#C6F0B0'); rect(c, bx + 6.5, by + 1.5, 0.5, 0.5, '#C6F0B0');
+      }
     }
+  } else if (kind === 'silver' || kind === 'gold') {
+    // Ingots stacked like bricks: a lighter top face over a darker side.
+    const [top, side, edge] = kind === 'gold' ? ['#FFE38A', '#E0A82E', '#8A6010'] : ['#EEF2F6', '#B8BEC8', '#5E6670'];
+    for (let by = y + h - 4, row = 0; by > y - 3; by -= 3.5, row++) {
+      for (let bx = x + (row % 2 ? 3.5 : 0); bx < x + w - 5; bx += 7) {
+        rect(c, bx, by, 6.5, 3, edge); rect(c, bx + 0.5, by + 1, 5.5, 2, side); rect(c, bx + 1, by, 4.5, 1, top);
+      }
+    }
+  } else {
+    // Round coins; bitcoins are orange with the ₿ sign.
+    const btc = kind === 'btc', [face, rim] = btc ? ['#F7931A', '#A85E08'] : ['#C9CED6', '#6E737D'];
+    for (let cy = y + h - 6, row = 0; cy > y - 4; cy -= 5.5, row++) {
+      for (let cx = x + (row % 2 ? 3 : 0); cx < x + w - 5; cx += 6) {
+        disc(c, cx + 2.75, cy + 2.75, 2.75, rim); disc(c, cx + 2.75, cy + 2.5, 2.25, face);
+        if (btc) pixmap(c, cx + 1.5, cy + 0.75, 0.5, ['.I.I.', 'IIII.', 'I...I', 'IIII.', 'I...I', 'IIII.', '.I.I.'], { I: '#FFFFFF' });
+        else rect(c, cx + 1.5, cy + 1, 1, 1, '#FFFFFF');
+      }
+    }
+  }
+}
+function disc(c, px, py, r, colour) {
+  c.fillStyle = colour;
+  for (let dy = -r; dy <= r; dy += 0.5) for (let dx = -r; dx <= r; dx += 0.5) {
+    if (dx * dx + dy * dy <= r * r) c.fillRect(Math.round((px + dx) * 2) / 2, Math.round((py + dy) * 2) / 2, 0.5, 0.5);
   }
 }
 
@@ -375,10 +355,58 @@ function resultBag(c, x, y, empty) {
   rect(c, x + 6, y + 11, 1, 2, '#2E6B3A'); rect(c, x + 8.5, y + 13, 1, 2, '#2E6B3A');
 }
 
+// --- Garden theme: backdrop, tanks, the bush under the gauge, flower pots ---
+
+function backGarden(c, x, w, h, r) {
+  rect(c, x, 0, w, h, '#142012');
+  for (let i = 0; i < w * h / 40; i++) {
+    const v = r();
+    rect(c, x + (Math.floor(r() * w) & ~1), Math.floor(r() * h) & ~1, v < 0.5 ? 2 : 1, 1, v < 0.6 ? '#1A2A17' : v < 0.95 ? '#22361D' : '#3A2A40');
+  }
+}
+
+// Growing from seed to bloom, top stages to bottom: sprouts, buds, then flowers in white, yellow and red.
+function tankGarden(c, x, y, w, h, j, n) {
+  rect(c, x, y, w, h, '#16240F');
+  const kind = byDepth(['sprout', 'bud', '#F4EDE1', '#FFD24A', '#E8345E'], j, n);
+  for (let fy = y + 1, row = 0; fy < y + h - 4; fy += 6.5, row++) {
+    for (let fx = x + (row % 2 ? 4 : 0.5); fx < x + w - 6; fx += 7.5) {
+      if (kind === 'sprout') pixmap(c, fx + 0.5, fy + 0.5, 1, ['L...L', '.L.L.', '..S..', '..S..', '.DDD.'], { L: '#8FD46A', S: '#4E8A3A', D: '#5A3A22' });
+      else if (kind === 'bud') pixmap(c, fx + 0.5, fy, 1, ['..P..', '.PPP.', '.LPL.', 'L.S.L', '..S..', '..S..'], { P: '#F28AB8', L: '#6BB84E', S: '#3E7A30' });
+      else {
+        rect(c, fx + 2.5, fy + 4, 1, 2.5, '#3E7A30'); rect(c, fx + 3.5, fy + 5, 1.5, 1, '#6BB84E');
+        flower(c, fx, fy - 0.5, 1, kind);
+      }
+    }
+  }
+}
+
+function plateGarden(c, x, y, w, h) {
+  // A trimmed bush on a soil bed, with a few flowers in it.
+  const cx = x + w / 2;
+  rect(c, x + 1, y + h - 2.5, w - 2, 2.5, '#5A3A22'); rect(c, x + 1, y + h - 2.5, w - 2, 0.5, '#7A5232');
+  blob(c, cx, y, h - 2, t => (w / 2 - 2) * Math.sqrt(Math.max(0, 1 - (1.6 * t - 1) ** 2)) + 1, '#2E6B2A');
+  blob(c, cx - 0.5, y + 0.5, h - 4, t => (w / 2 - 4) * Math.sqrt(Math.max(0, 1 - (1.6 * t - 1) ** 2)), '#4E9A3E');
+  [[-7, 3], [-2, 1.5], [3, 3.5], [7, 2]].forEach(([dx, dy], i) => {
+    rect(c, cx + dx, y + dy, 1.5, 1.5, i % 2 ? '#FFD24A' : '#F28AB8');
+  });
+  rect(c, cx - 5, y + 2, 2, 0.5, '#8FD46A'); rect(c, cx + 1, y + 1, 2, 0.5, '#8FD46A');
+}
+
+function resultPot(c, x, y, empty) {
+  // A clay pot; a flower blooms in it once the result is in.
+  rect(c, x + 2, y + 11, 12, 2, '#B8642E'); rect(c, x + 2, y + 11, 12, 0.5, '#D88A50');
+  for (let r = 0; r < 6; r++) rect(c, x + 3 + r * 0.4, y + 13 + r, 10 - r * 0.8, 1, r % 5 ? '#9C5226' : '#7A3E1C');
+  if (empty) { rect(c, x + 3, y + 11.5, 10, 1, '#3A2414'); return; }
+  rect(c, x + 7.5, y + 4, 1, 7, '#3E7A30');
+  rect(c, x + 4.5, y + 7, 3, 1.5, '#6BB84E'); rect(c, x + 8.5, y + 8, 3, 1.5, '#6BB84E');
+  flower(c, x + 5.25, y, 1, '#E8345E');
+}
+
 export const THEMES = {
   mine: { tankBg: '#2A2420', emptyAlpha: 0.3, backdrop: backMine, frame: '#8A6238', zone: zoneMine, tank: tankMine, plate: plateMine, result: resultCart, outfit: 'helmet', tool: 'pickaxe', spark: '#FFE38A', accent: '#FFD866' },
   lab: { tankBg: '#122233', emptyAlpha: 0.3, backdrop: backLab, frame: '#9FD3FF', zone: zoneLab, tank: tankLab, plate: plateLab, result: resultFlask, outfit: 'goggles', tool: 'beaker', spark: '#B585F2', accent: '#C4A3F5' },
-  forge: { tankBg: '#2A1A12', emptyAlpha: 0.3, backdrop: backForge, frame: '#8E939D', zone: zoneForge, tank: tankForge, plate: plateForge, result: resultChest, outfit: 'band', tool: 'hammer', spark: '#FF9A3C', accent: '#F2C14E' },
+  garden: { tankBg: '#16240F', emptyAlpha: 0.3, backdrop: backGarden, frame: '#7A5232', tank: tankGarden, plate: plateGarden, result: resultPot, outfit: 'straw', tool: 'shears', spark: '#8FD46A', accent: '#F28AB8' },
   love: { tankBg: '#3A1A30', backdrop: backLove, frame: '#F28AB8', zone: zoneLove, tank: tankLove, plate: plateLove, result: resultHeart, outfit: 'wings', tool: 'bow', spark: '#F28AB8', accent: '#F28AB8' },
   code: { tankBg: '#06100A', emptyAlpha: 0.3, backdrop: backCode, frame: '#3CF27A', zone: zoneCode, tank: tankCode, plate: plateCode, result: resultChip, outfit: 'hoodie', tool: 'laptop', spark: '#3CF27A', accent: '#7CF0B0' },
   money: { tankBg: '#14201A', backdrop: backMoney, frame: '#D9A520', zone: zoneMoney, tank: tankMoney, plate: plateMoney, result: resultBag, outfit: 'suit', tool: 'stamp', spark: '#FFD866', accent: '#9FE870' },

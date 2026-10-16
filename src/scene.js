@@ -1,5 +1,5 @@
 import { agentInfo, plural } from './data.js';
-import { drawStanding, drawLying, drawPickaxe, drawHammer, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, line, P, MINER_H } from './sprites.js';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, line, P, MINER_H } from './sprites.js';
 import { themeOf } from './themes.js';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
@@ -346,10 +346,15 @@ export class Scene {
     c.save();
     if (R) { c.translate(2 * (p.x + 10), 0); c.scale(-1, 1); }
     let hit = false;
-    if (theme.tool === 'pickaxe' || theme.tool === 'hammer') {
+    if (theme.tool === 'pickaxe') {
       const cyc = ((t + a.phase) % 0.8) / 0.8;
       const ang = cyc < 0.7 ? 0.35 - (cyc / 0.7) * 2.3 : -1.95 + ((cyc - 0.7) / 0.3) * 2.3;
-      (theme.tool === 'pickaxe' ? drawPickaxe : drawHammer)(c, hx, hy - 1, ang);
+      drawPickaxe(c, hx, hy - 1, ang);
+      hit = cyc > 0.95;
+    } else if (theme.tool === 'shears') {
+      // Gardener snips the bush: the blades open slowly and shut fast; leaves fly off.
+      const cyc = ((t + a.phase) % 0.9) / 0.9;
+      drawShears(c, hx, hy + 1, cyc < 0.75 ? cyc / 0.75 : 1 - (cyc - 0.75) / 0.25);
       hit = cyc > 0.95;
     } else if (theme.tool === 'beaker') {
       // Chemist pours: the beaker tips toward the pipe and drops fall in.

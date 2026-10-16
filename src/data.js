@@ -133,7 +133,7 @@ export const FUNNELS = [
   },
   {
     title: 'Creator',
-    theme: 'money',
+    theme: 'garden',
     result: ['paying member', 'paying members'],
     stages: [
       { count: 52000, forms: ['view', 'views'] },
@@ -188,7 +188,7 @@ export const FUNNELS = [
   {
     title: 'Fundraising',
     source_url: 'https://airtable.com',
-    theme: 'forge',
+    theme: 'money',
     result: ['term sheet', 'term sheets'],
     stages: [
       { count: 120, forms: ['investor', 'investors'] },

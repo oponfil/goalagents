@@ -197,15 +197,15 @@ function ellipse(c, cx, cy, rx, ry, col, topOnly = false) {
 
 // The agent body at (0, 0), facing right. walk: -1 standing, else the walk frame.
 // reach: the front hand is raised to (16, 14) to hold a tool.
-// outfit: helmet (miner), goggles (chemist in a lab coat), band (smith with apron), wings (cupid),
+// outfit: helmet (miner), goggles (chemist in a lab coat), straw (gardener: straw hat, apron), wings (cupid),
 // hoodie (hacker), suit (banker).
 function body(c, agent, color, walk, reach, outfit = 'helmet') {
   const shirt = color, shirtDark = shade(color, 0.72), shirtLight = shade(color, 1.25);
   const step = walk < 0 ? 0 : (walk % 2 ? 1 : -1);
   const COAT = '#ECEDE6', COAT_SHADE = '#C9CBC2';
   const SUIT = '#2B3140', SUIT_SHADE = '#1E2330';
-  const sleeve = outfit === 'goggles' ? COAT : outfit === 'band' ? SKIN : outfit === 'suit' ? SUIT : shirt;
-  const sleeveBack = outfit === 'goggles' ? COAT_SHADE : outfit === 'band' ? SKIN_SHADE : outfit === 'suit' ? SUIT_SHADE : shirtDark;
+  const sleeve = outfit === 'goggles' ? COAT : outfit === 'suit' ? SUIT : shirt;
+  const sleeveBack = outfit === 'goggles' ? COAT_SHADE : outfit === 'suit' ? SUIT_SHADE : shirtDark;
   if (outfit === 'hoodie') ellipse(c, 10, 8.5, 6, 5.5, shirtDark);
   if (outfit === 'wings') {
     ellipse(c, 2.5, 15, 3, 4.5, '#FFFFFF'); ellipse(c, 2, 16.5, 2, 3, '#DCE6F0');
@@ -229,7 +229,8 @@ function body(c, agent, color, walk, reach, outfit = 'helmet') {
   } else {
     rect(c, 4.5, 21, 11, 1.5, BELT); rect(c, 9.5, 21, 1.5, 1.5, '#D9B44A');
   }
-  if (outfit === 'band') { rect(c, 5.5, 20, 9, 4.5, '#6B4A2B'); rect(c, 5.5, 20, 9, 0.5, '#8A6238'); }
+  // gardener's apron: a green bib with a pocket, below the logo
+  if (outfit === 'straw') { rect(c, 5.5, 20, 9, 4.5, '#4E7A3A'); rect(c, 5.5, 20, 9, 0.5, '#6BA34A'); rect(c, 8.5, 21.5, 3, 1.5, '#3E6A2E'); }
   if (outfit === 'suit') {
     rect(c, 4.5, 13.5, 2.5, 9, SUIT); rect(c, 13, 13.5, 2.5, 9, SUIT_SHADE);
     rect(c, 7, 13.5, 1, 2, '#FFFFFF'); rect(c, 12, 13.5, 1, 2, '#FFFFFF');
@@ -257,9 +258,11 @@ function body(c, agent, color, walk, reach, outfit = 'helmet') {
     rect(c, 5.5, 7, 10, 1, '#2B2B2B');
     rect(c, 10, 6.5, 2.5, 2, '#2B2B2B'); rect(c, 10.5, 7, 1.5, 1, '#9FE3FF');
     rect(c, 12.8, 6.5, 2.5, 2, '#2B2B2B'); rect(c, 13.3, 7, 1.5, 1, '#9FE3FF');
-  } else if (outfit === 'band') {
-    ellipse(c, 10, 6.5, 4.8, 3.5, '#2E2018', true);
-    rect(c, 5.5, 5.5, 9.5, 1.5, '#B23A2E'); rect(c, 4.5, 6, 1.5, 3, '#B23A2E');
+  } else if (outfit === 'straw') {
+    // straw hat: low crown with a green band and a wide brim
+    ellipse(c, 10, 4.5, 3.8, 2.5, '#E8C872', true);
+    rect(c, 6.5, 4.5, 7, 1, '#6BA34A');
+    rect(c, 3, 5.5, 14, 1.5, '#D9B45A'); rect(c, 3, 5.5, 14, 0.5, '#F2DC90');
   } else if (outfit === 'hoodie') {
     // hood pulled up around the face
     ellipse(c, 10, 6, 5.5, 4, shirtDark, true);
@@ -324,14 +327,14 @@ export function drawPickaxe(ctx, hx, hy, angle) {
   line(ctx, ex + px * 3, ey + py * 3, ex + px * 4, ey + py * 4, '#E6E9EF', 1);
 }
 
-// Smith's hammer: handle and a heavy head across its end.
-export function drawHammer(ctx, hx, hy, angle) {
-  const len = 12;
-  const ex = hx + Math.cos(angle) * len, ey = hy + Math.sin(angle) * len;
-  line(ctx, hx, hy, ex, ey, '#8A5A2B', 1);
-  const px = -Math.sin(angle), py = Math.cos(angle);
-  line(ctx, ex - px * 3, ey - py * 3, ex + px * 3, ey + py * 3, '#5E636D', 3);
-  line(ctx, ex - px * 3, ey - py * 3, ex + px * 3, ey + py * 3, '#9EA3AD', 1);
+// Gardener's shears held at (hx, hy), facing right; open: 0 closed .. 1 wide open.
+export function drawShears(ctx, hx, hy, open) {
+  const px = hx + 4, a = 0.08 + open * 0.4;
+  for (const sgn of [-1, 1]) {
+    line(ctx, hx, hy + sgn * 1, px, hy, '#C8263B', 1);
+    line(ctx, px, hy, px + Math.cos(a) * 8, hy + sgn * Math.sin(a) * 8, '#C9CED6', 1);
+  }
+  rect(ctx, px - 0.5, hy - 0.5, 1, 1, '#5E636D');
 }
 
 // Chemist's beaker, tilted by angle (0 = upright, positive = pouring forward).

@@ -26,16 +26,16 @@ Prototype for U-Hackathon 2026 (Bangkok). It runs on demo data (six example goal
 
 Each funnel picks a look; the data and behaviour are the same.
 
-![The six themes: mine, lab, forge, love, code, money](docs/img/themes.png)
+![The six themes: mine, lab, garden, love, code, money](docs/img/themes.png)
 
 | Theme | Agents | Work piece | Tanks fill with | Results |
 |---|---|---|---|---|
 | `mine` | miners with pickaxes | ore rock | ore and gems, richer by stage | ore carts |
 | `lab` | chemists pouring reagents | Petri dish | liquid, deeper colour by stage | flasks |
-| `forge` | smiths with hammers | anvil | bars laid like bricks: iron, copper, silver, gold, platinum | chests |
+| `garden` | gardeners with shears | bush | sprouts, buds, white, yellow and red flowers | flower pots |
 | `love` | cupids with bows | bed | flowers, love letters, hearts, kisses, rings: pink to red | hearts |
 | `code` | hackers on laptops | keyboard | scrolling code | chips |
-| `money` | bankers with stamps | contract | banknotes, gold at the end | money bags |
+| `money` | bankers with stamps | contract | silver coins, banknotes, silver bars, gold bars, bitcoins | money bags |
 
 ## Agents
 
