@@ -256,7 +256,7 @@ export class Scene {
         gaugeFace(c, cx, gy, project(f).zones[k + 1], Math.sin(t * 3 + fi + k) * 0.015);
         // The plate under each gauge is what the agents work on; only the output zone's has text
         // on it: when the next result is due.
-        theme.plate(c, cx - 18, gy + GAUGE_R + 1, 36, 11);
+        theme.plate(c, cx - 13, gy + GAUGE_R + 1, 26, 11);
       }
       const pr = project(f);
       f.stages.forEach((s, j) => {
