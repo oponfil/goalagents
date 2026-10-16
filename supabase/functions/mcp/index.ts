@@ -24,6 +24,11 @@ Plans: free has up to 3 funnels with up to 3 stages each and one agent per zone;
 Report only counts, dates and links: the items themselves stay in the person's own sources.
 Link to the list: whenever the funnel's items are kept in a table or list that opens by a URL (Google Sheets, Notion, Airtable, a GitHub file…), give that URL as the funnel's source_url (in upsert_funnel or report_counts) — the dashboard shows it as a sheet on top of the funnel and opens it on click. One link per funnel. Keep the list where a link can open it when you can. If it only exists on your machine or you have no such place, leave source_url empty and say so to the person; it is optional.`
 
+// Tool inputs are strict: a field a tool doesn't take (say, from an agent that remembers an older
+// version of the tools) is an error that sends the agent back to the current descriptions.
+const BAD_REQUEST = 'Invalid request: it has fields this tool does not take. The tools may have changed since you loaded them: read the current tool descriptions and server instructions, then send the request again in that form.'
+const req = <T extends z.ZodRawShape>(shape: T) => z.strictObject(shape, { error: BAD_REQUEST })
+
 const text = (v: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(v, null, 1) }] })
 const fail = (msg: string) => { throw new Error(msg) }
 const check = <T>({ data, error }: { data: T; error: { message: string } | null }) => {
@@ -106,14 +111,14 @@ function server(db: Db) {
   s.registerTool('list_funnels', {
     title: 'List funnels',
     description: 'The person\'s plan with its limits, and their goal funnels: stages with counts, results, goal, agents present and open questions.',
-    inputSchema: z.object({}),
+    inputSchema: req({}),
     annotations: { readOnlyHint: true },
   }, async () => text({ ...(await plan(db)), funnels: await funnels(db) }))
 
   s.registerTool('upsert_funnel', {
     title: 'Create or update a funnel',
     description: 'Create a goal funnel or change its title, result name, goal, theme or stages. Stages keep their counts by key; stages left out are removed. Free plan: up to 3 funnels of up to 3 stages; Pro: up to 10 funnels of up to 5 stages.',
-    inputSchema: z.object({
+    inputSchema: req({
       id: funnelId,
       title: z.string().min(1).max(60).describe('Column title, e.g. "Job Search"'),
       result: forms.describe('Name of one result: [singular, plural], e.g. ["offer", "offers"]; Russian: [1, 2-4, 5+]'),
@@ -121,7 +126,7 @@ function server(db: Db) {
       goal_every_days: z.number().positive().max(3650).describe('Pace: one result every N days'),
       source_url: z.string().url().regex(/^https?:\/\//).nullable().optional().describe('Link to the table or list with this funnel\'s items (Google Sheet, Notion, Airtable…). Give it whenever the list opens by a URL; null removes it, leaving it out keeps it'),
       theme: z.enum(THEMES).optional().describe('Look: mine (miners, ore), lab (chemists, flasks), garden (gardeners, flowers), love (cupids, hearts), code (hackers, chips), money (bankers, coins, banknotes, gold bars, bitcoins). Default mine'),
-      stages: z.array(z.object({
+      stages: z.array(req({
         key: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/).describe('Stable key, e.g. "applied"'),
         label: forms.describe('[singular, plural], e.g. ["interview", "interviews"]'),
       })).min(2).max(5).describe('Stages top to bottom'),
@@ -149,7 +154,7 @@ function server(db: Db) {
     description: 'Current counts after your work: how many items are at each stage (cumulative is fine), and optionally the results so far. ' +
       'The dashboard computes flows, tank fill and gauges from these reports (automatic). Optionally set them yourself (manual): ' +
       'fill_percent per stage, pace and flow_per_day per zone; null switches that one back to automatic.',
-    inputSchema: z.object({
+    inputSchema: req({
       funnel_id: funnelId,
       counts: z.record(z.string(), z.number().int().nonnegative()).default({}).describe('{ stage_key: count }'),
       results: z.number().int().nonnegative().optional().describe('Results so far'),
@@ -195,7 +200,7 @@ function server(db: Db) {
   s.registerTool('add_result', {
     title: 'Add a result',
     description: 'One more result came out of the funnel (an offer, a paper, a term sheet…).',
-    inputSchema: z.object({ funnel_id: funnelId }),
+    inputSchema: req({ funnel_id: funnelId }),
   }, async ({ funnel_id }) => {
     const f = await funnelRow(db, funnel_id)
     const { results } = check(await db.from('funnels').select('results').eq('id', f.id).single()) as { results: number }
@@ -208,7 +213,7 @@ function server(db: Db) {
   s.registerTool('set_agent_state', {
     title: 'Set your state',
     description: 'Show where you are and what you are doing: work (working now), sleep (until next_run_at), ask (waiting for the person; give a question, then poll get_answer with the returned question_id).',
-    inputSchema: z.object({
+    inputSchema: req({
       funnel_id: funnelId,
       agent,
       zone: z.number().int().min(0).max(5).describe('0 = inflow above the first stage, k = into stage k, n = output below the last stage'),
@@ -247,7 +252,7 @@ function server(db: Db) {
   s.registerTool('get_answer', {
     title: 'Get the answer',
     description: 'The person\'s answer to your question, or null if not answered yet. wait_seconds (up to 50) waits for it.',
-    inputSchema: z.object({
+    inputSchema: req({
       question_id: z.string().uuid(),
       wait_seconds: z.number().int().min(0).max(50).default(0),
     }),
@@ -265,7 +270,7 @@ function server(db: Db) {
   s.registerTool('clear_agent', {
     title: 'Leave the funnel',
     description: 'You leave the funnel (no scheduled next run).',
-    inputSchema: z.object({ funnel_id: funnelId, agent }),
+    inputSchema: req({ funnel_id: funnelId, agent }),
     annotations: { idempotentHint: true },
   }, async ({ funnel_id, agent }) => {
     const f = await funnelRow(db, funnel_id)
@@ -276,7 +281,7 @@ function server(db: Db) {
   s.registerTool('delete_funnel', {
     title: 'Delete a funnel',
     description: 'Delete a funnel with its stages, history, agents and questions. Only when the person asks for it.',
-    inputSchema: z.object({ funnel_id: funnelId }),
+    inputSchema: req({ funnel_id: funnelId }),
     annotations: { destructiveHint: true },
   }, async ({ funnel_id }) => {
     const f = await funnelRow(db, funnel_id)
