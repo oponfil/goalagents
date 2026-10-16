@@ -234,6 +234,7 @@ const STRINGS = {
   'login.badEmail': L('That email address does not look right. Check it and try again.', 'Похоже, в адресе ошибка. Проверьте его и попробуйте ещё раз.', '这个邮箱地址似乎不对。请检查后重试。', 'ที่อยู่อีเมลดูไม่ถูกต้อง ตรวจสอบแล้วลองอีกครั้ง'),
   'login.tooMany': L('Too many links asked for. Wait a few minutes and try again.', 'Слишком много запросов ссылки. Подождите несколько минут и попробуйте снова.', '请求链接次数过多。请等几分钟再试。', 'ขอลิงก์บ่อยเกินไป รอสักครู่แล้วลองอีกครั้ง'),
   'login.sendFailed': L('Could not send the link. Check the address, or continue with Google.', 'Не удалось отправить ссылку. Проверьте адрес или войдите через Google.', '无法发送链接。请检查地址，或使用 Google 登录。', 'ส่งลิงก์ไม่สำเร็จ ตรวจสอบที่อยู่ หรือเข้าสู่ระบบด้วย Google'),
+  'login.again': L((s) => `Send again in ${s} s`, (s) => `Отправить ещё раз через ${s} с`, (s) => `${s} 秒后可重新发送`, (s) => `ส่งอีกครั้งได้ใน ${s} วินาที`),
   'login.check': L((email) => `Check ${email} for a sign-in link.`, (email) => `Проверьте ${email}: там ссылка для входа.`, (email) => `请查看 ${email} 中的登录链接。`, (email) => `ตรวจสอบ ${email} เพื่อดูลิงก์เข้าสู่ระบบ`),
 
   // OAuth consent

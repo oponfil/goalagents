@@ -86,6 +86,19 @@
     };
     document.head.append(gis);
 
+    // After a link is sent the button rests for a minute, counting down: Supabase refuses a second
+    // link to the same address sooner anyway, and the first one is usually on its way.
+    const COOLDOWN = 60;
+    function cooldown(button) {
+      let left = COOLDOWN;
+      const tick = () => {
+        if (left <= 0) { button.disabled = false; button.textContent = t('login.send'); return; }
+        button.textContent = t('login.again', left--);
+        setTimeout(tick, 1000);
+      };
+      tick();
+    }
+
     document.getElementById('email-form').addEventListener('submit', async e => {
       e.preventDefault();
       const email = document.getElementById('email').value.trim(), button = e.target.querySelector('button');
@@ -98,9 +111,9 @@
       button.disabled = true;
       say(t('login.sending'));
       const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: afterSignIn() } });
+      if (!error) { say(t('login.check', email), 'ok'); return cooldown(button); }
       button.disabled = false;
-      if (!error) say(t('login.check', email), 'ok');
-      else if (error.code === 'email_address_invalid' || error.code === 'validation_failed') say(t('login.badEmail'), 'error');
+      if (error.code === 'email_address_invalid' || error.code === 'validation_failed') say(t('login.badEmail'), 'error');
       else if (error.status === 429 || /rate_limit/.test(error.code || '')) say(t('login.tooMany'), 'error');
       else say(t('login.sendFailed'), 'error');
     });
