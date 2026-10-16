@@ -123,7 +123,8 @@ export class Scene {
       f.stages.forEach((s, j) => {
         const lw = tankW(j, n), x = cx - lw / 2, y = tankTop(j);
         c.fillStyle = theme.frame; c.fillRect(x, y, lw, LH);
-        c.fillStyle = '#16314F'; c.fillRect(x + 2, y + 2, lw - 4, LH - 4);
+        // The empty part of a tank is the theme's own dark ground, without items.
+        c.fillStyle = theme.tankBg; c.fillRect(x + 2, y + 2, lw - 4, LH - 4);
       });
       c.fillStyle = '#7D828C'; c.fillRect(cx - 4, zoneTop(n - 1) + ZH, 9, 3);
     });
@@ -234,9 +235,9 @@ export class Scene {
         const lw = tankW(j, n), x = cx - lw / 2, y = tankTop(j), inner = lw - 4;
         const fill = pr.fill[j];
         if (fill == null) {
-          // Unknown how much is needed: murky diagonal streaks instead of a water level.
+          // Unknown how much is needed: light diagonal streaks over the empty tank instead of a level.
           c.save(); c.beginPath(); c.rect(x + 2, y + 2, inner, LH - 4); c.clip();
-          c.fillStyle = '#24476E';
+          c.fillStyle = 'rgba(255,255,255,0.13)';
           for (let d = -LH; d < inner; d += 6) for (let i = 0; i < LH; i += 2) c.fillRect(x + 2 + d + i, y + 2 + i, 2, 2);
           c.restore();
         } else {

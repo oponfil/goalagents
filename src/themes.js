@@ -376,12 +376,12 @@ function resultBag(c, x, y, empty) {
 }
 
 export const THEMES = {
-  mine: { emptyAlpha: 0.3, backdrop: backMine, frame: '#8A6238', zone: zoneMine, tank: tankMine, plate: plateMine, result: resultCart, outfit: 'helmet', tool: 'pickaxe', spark: '#FFE38A', accent: '#FFD866' },
-  lab: { emptyAlpha: 0.3, backdrop: backLab, frame: '#9FD3FF', zone: zoneLab, tank: tankLab, plate: plateLab, result: resultFlask, outfit: 'goggles', tool: 'beaker', spark: '#B585F2', accent: '#C4A3F5' },
-  forge: { emptyAlpha: 0.3, backdrop: backForge, frame: '#8E939D', zone: zoneForge, tank: tankForge, plate: plateForge, result: resultChest, outfit: 'band', tool: 'hammer', spark: '#FF9A3C', accent: '#F2C14E' },
-  love: { backdrop: backLove, frame: '#F28AB8', zone: zoneLove, tank: tankLove, plate: plateLove, result: resultHeart, outfit: 'wings', tool: 'bow', spark: '#F28AB8', accent: '#F28AB8' },
-  code: { emptyAlpha: 0.3, backdrop: backCode, frame: '#3CF27A', zone: zoneCode, tank: tankCode, plate: plateCode, result: resultChip, outfit: 'hoodie', tool: 'laptop', spark: '#3CF27A', accent: '#7CF0B0' },
-  money: { backdrop: backMoney, frame: '#D9A520', zone: zoneMoney, tank: tankMoney, plate: plateMoney, result: resultBag, outfit: 'suit', tool: 'stamp', spark: '#FFD866', accent: '#9FE870' },
+  mine: { tankBg: '#2A2420', emptyAlpha: 0.3, backdrop: backMine, frame: '#8A6238', zone: zoneMine, tank: tankMine, plate: plateMine, result: resultCart, outfit: 'helmet', tool: 'pickaxe', spark: '#FFE38A', accent: '#FFD866' },
+  lab: { tankBg: '#122233', emptyAlpha: 0.3, backdrop: backLab, frame: '#9FD3FF', zone: zoneLab, tank: tankLab, plate: plateLab, result: resultFlask, outfit: 'goggles', tool: 'beaker', spark: '#B585F2', accent: '#C4A3F5' },
+  forge: { tankBg: '#2A1A12', emptyAlpha: 0.3, backdrop: backForge, frame: '#8E939D', zone: zoneForge, tank: tankForge, plate: plateForge, result: resultChest, outfit: 'band', tool: 'hammer', spark: '#FF9A3C', accent: '#F2C14E' },
+  love: { tankBg: '#3A1A30', backdrop: backLove, frame: '#F28AB8', zone: zoneLove, tank: tankLove, plate: plateLove, result: resultHeart, outfit: 'wings', tool: 'bow', spark: '#F28AB8', accent: '#F28AB8' },
+  code: { tankBg: '#06100A', emptyAlpha: 0.3, backdrop: backCode, frame: '#3CF27A', zone: zoneCode, tank: tankCode, plate: plateCode, result: resultChip, outfit: 'hoodie', tool: 'laptop', spark: '#3CF27A', accent: '#7CF0B0' },
+  money: { tankBg: '#14201A', backdrop: backMoney, frame: '#D9A520', zone: zoneMoney, tank: tankMoney, plate: plateMoney, result: resultBag, outfit: 'suit', tool: 'stamp', spark: '#FFD866', accent: '#9FE870' },
 };
 
 export const themeOf = f => THEMES[f.theme] || THEMES.mine;
