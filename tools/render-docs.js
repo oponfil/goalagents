@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=3cb24732';
-import { Scene, CW, H } from '../src/scene.js?v=3cb24732';
-import { THEMES } from '../src/themes.js?v=3cb24732';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=3cb24732';
+import { AGENTS, FUNNELS } from '../src/data.js?v=37d7cad7';
+import { Scene, CW, H } from '../src/scene.js?v=37d7cad7';
+import { THEMES } from '../src/themes.js?v=37d7cad7';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=37d7cad7';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -66,7 +66,11 @@ function themesSheet() {
     else { drawBow(g, hx, hy, 0.6); drawArrow(g, hx + 1, hy); }
     // A funnel tank as on the board: a thin trapezoid, its pieces piled from the bottom middle
     // (a liquid in the lab), about half full.
-    const tx = 90, ty = 54, TH = 26, half = row => Math.round(74 - 22 * row / (TH - 1));
+    // The sides slope as gently as on the board (7 units each over the tank's height).
+    const tx = 90, ty = 54, TH = 26, half = row => Math.round(74 - 7 * row / (TH - 1));
+    // Which stage's pieces each sample shows: gold for the mine, blue floppies for code, banknotes
+    // for money, the middle stage elsewhere.
+    const [sj, sn] = { mine: [3, 5], code: [0, 5], money: [1, 5] }[name] || [1, 3];
     for (let row = 0; row < TH; row++) {
       const h = half(row);
       g.fillStyle = th.frame;
@@ -82,7 +86,7 @@ function themesSheet() {
           if (px + P.w <= tx + hw) cells.push({ x: px, y: top, score: row * 1.6 + Math.abs(px + P.w / 2 - tx) / P.w * 0.7 });
         }
       }
-      cells.sort((a, b) => a.score - b.score).slice(0, Math.round(cells.length * 0.5)).forEach((cell, m) => P.draw(g, cell.x, cell.y, 1, 3, m));
+      cells.sort((a, b) => a.score - b.score).slice(0, Math.round(cells.length * 0.5)).forEach((cell, m) => P.draw(g, cell.x, cell.y, sj, sn, m));
     } else {
       g.save(); g.beginPath();
       for (let row = 12; row < TH - 1; row++) { const h = half(row) - 1; g.rect(tx - h, ty + row, h * 2, 1); }
