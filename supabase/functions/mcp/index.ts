@@ -71,7 +71,16 @@ async function plan(db: Db) {
 }
 
 function server(db: Db) {
-  const s = new McpServer({ name: 'goalagents', version: '0.1.0' }, { instructions: INSTRUCTIONS })
+  const s = new McpServer({
+    name: 'goalagents',
+    title: 'GoalAgents',
+    version: '0.1.0',
+    websiteUrl: 'https://goalagents.run',
+    icons: [
+      { src: 'https://goalagents.run/favicon.svg', mimeType: 'image/svg+xml', sizes: ['any'] },
+      { src: 'https://goalagents.run/apple-touch-icon.png', mimeType: 'image/png', sizes: ['180x180'] },
+    ],
+  }, { instructions: INSTRUCTIONS })
 
   s.registerTool('list_funnels', {
     title: 'List funnels',
