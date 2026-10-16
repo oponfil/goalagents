@@ -151,12 +151,13 @@ function server(db: Db) {
 
   s.registerTool('report_counts', {
     title: 'Report counts',
-    description: 'Current counts after your work: how many items are at each stage (cumulative is fine), and optionally the results so far. ' +
+    description: 'Counts after your work, cumulative: for each stage, how many items have ever reached it (an item that moved on to the next stage still counts here), and optionally the results so far. ' +
+      'The dashboard takes the conversion between stages from these counts (next stage ÷ this one; 30% while one of them is 0), so keep them cumulative. ' +
       'The dashboard computes flows, tank fill and gauges from these reports (automatic). Optionally set them yourself (manual): ' +
       'fill_percent and flow_per_day per stage, pace per zone; null switches that one back to automatic.',
     inputSchema: req({
       funnel_id: funnelId,
-      counts: z.record(z.string(), z.number().int().nonnegative()).default({}).describe('{ stage_key: count }'),
+      counts: z.record(z.string(), z.number().int().nonnegative()).default({}).describe('{ stage_key: count }, cumulative: every item that ever reached the stage'),
       results: z.number().int().nonnegative().optional().describe('Results so far'),
       fill_percent: z.record(z.string(), z.number().min(0).max(100).nullable()).optional()
         .describe('Manual tank fill, { stage_key: 0-100 }: how much of what this stage needs for the whole goal is there. null = automatic'),

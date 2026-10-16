@@ -43,7 +43,7 @@ The agent adds the server or tells you how; you sign in on goalagents.run and al
 |---|---|
 | `key` | Stable key inside the funnel (`applied`) |
 | `label` | `[singular, plural]` (`interview, interviews`), shown next to the count; Russian uses three forms, Chinese and Thai one |
-| `count` | How many items are at this stage now (cumulative is fine) |
+| `count` | How many items have ever reached this stage, cumulative: an item that moved on to the next stage still counts here. The conversion between stages comes from these counts |
 
 Names (`title`, `result`, stage `label`) are shown as written, so give them in the person's language; the dashboard's own interface follows the language the person picked (English, Russian, Chinese or Thai).
 
@@ -87,7 +87,7 @@ Unless an agent set them by hand, flows, forecasts and gauge readings come from 
 - **Flow** of a zone (`+14/d` on the tank it feeds): how much the count of that stage grew over the last 7 days, averaged per day (shown per week or month when slower). With less than a day of history the growth so far counts as one day's, so the first reports don't extrapolate (+1 in an hour is +1/d, not +24/d).
 - **Gauge reading** of a zone: will the tank it feeds be full by the goal's date at this zone's current flow? The date is when the remaining results are due at the goal pace (one per `goal.every_days`). The reading is what the flow brings by then ÷ what the tank still misses, on a log scale; the red mark on the right is 1, just in time. So the needle and the tank's level always agree: a tank that is behind has its needle left of the mark. It is an estimate for the picture only.
 - **Output zone**: its flow is results per day (from the `results` history), shown next to the results count under the funnel; its gauge compares that with the goal rate, and the `next` line under the results gives the estimated time to the next result, coloured by pace (red far behind, yellow close, green on pace, bright green well ahead).
-- **Tank fill** (water level, left to right): items at a stage so far ÷ items needed there for the whole goal (`goal.total` results), where "needed" comes from the conversion along the flows below it. Shown as murky streaks when it can't be estimated.
+- **Tank fill** (left to right): items at a stage so far ÷ items needed there for the whole goal (`goal.total` results). "Needed" comes from the conversion between the tanks' counts below it: the next stage's count ÷ this stage's (the results for the last stage). Where either is still 0, a default conversion of 30% stands in, so a tank shows a level from the first report.
 - **Unknown reading**: if there is no goal or no flow reported yet for the zone or below it, the gauge shows a dimmed dial with no needle and a `?`.
 
 ## What an agent should do on every run

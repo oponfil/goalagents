@@ -532,15 +532,20 @@ export class Scene {
 // Rough projection for the gauges and tanks, from the funnel's own numbers (visual only, not a
 // forecast model).
 // Tank fill: items at a stage so far ÷ items needed there for the whole goal (goal.total results).
-// "Needed" uses the conversion along the flows (out of a stage ÷ into it).
+// "Needed" uses the conversion between the tanks' counts, which agents keep cumulative: of the
+// items that reached a stage, the share that reached the next one (the results for the last
+// stage). Where a stage or the next one is still at 0 the conversion is unknown and a default of
+// 30% stands in, so every tank shows a level from the first report.
 // Gauge of a zone: will the tank it feeds be full by the goal's date at this zone's flow? The date
 // is when the remaining results are due at the goal pace (one per goal.every days). The reading is
 // what the flow brings by then ÷ what the tank still misses: 1 is on the red mark, so the needle and
 // the tank's level tell the same story. The output zone's "tank" is the results row.
 // A reading is null (empty gauge) when it can't be estimated: no goal, or a flow not reported yet.
+const DEFAULT_CONVERSION = 0.3;
 function project(f) {
   const st = f.stages, n = st.length, every = f.goal?.every, total = f.goal?.total, fl = f.flows;
-  const conv = st.map((s, j) => (fl[j] > 0 && fl[j + 1] != null ? Math.min(1, fl[j + 1] / fl[j]) : null));
+  const next = j => (j + 1 < n ? st[j + 1].count : f.cubes);
+  const conv = st.map((s, j) => (s.count > 0 && next(j) > 0 ? Math.min(1, next(j) / s.count) : DEFAULT_CONVERSION));
   const need = st.map((s, j) => {
     const c = conv.slice(j);
     if (!(total > 0) || c.includes(null)) return null;
