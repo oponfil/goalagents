@@ -137,10 +137,8 @@ export class Scene {
         // The empty part of a tank is the theme's own dark ground, without items.
         c.fillStyle = theme.tankBg; c.fillRect(x + 2, y + 2, lw - 4, LH - 4);
       });
-      // Below the last tank there is no tank to stand on: a ledge as wide as it is the output zone's floor.
-      const lw = tankW(n - 1, n), fy = zoneTop(n - 1) + ZH;
-      c.fillStyle = theme.frame; c.fillRect(cx - lw / 2, fy, lw, 3);
-      c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(cx - lw / 2, fy + 2, lw, 1);
+      // Below the last tank the pipe just ends; results drip out of it.
+      c.fillStyle = '#7D828C'; c.fillRect(cx - 4, zoneTop(n - 1) + ZH, 9, 3);
     });
   }
 
