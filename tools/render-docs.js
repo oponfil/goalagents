@@ -138,7 +138,7 @@ async function ogCard(board) {
 
 // One funnel with labels on its right, each with a line to the part it explains: the README's guide
 // to reading the board. The Job Search demo funnel after a few seconds, while Grok still sleeps.
-function funnelGuide() {
+function funnelGuide({ labels = true } = {}) {
   const scale = 2, dpr = 2, K = scale * dpr, TH = 22, side = 440, f0 = FUNNELS[0];
   // The agents the arrows point at stand on the left, by the labels, so no arrow crosses anything
   // on its way; the agent sharing a zone with them goes right.
@@ -149,15 +149,18 @@ function funnelGuide() {
   for (let i = 0; i < 5 * 30; i++) scene.update(1 / 30);
   scene.render();
   const src = scene.canvas, fw = CW * K;
-  const [c, g] = canvas(side + fw, TH * K + src.height);
+  // Without labels (the landing page writes them as text, in the page's language) the picture is
+  // just the funnel.
+  const left = labels ? side : 0;
+  const [c, g] = canvas(left + fw, TH * K + src.height);
   g.fillStyle = '#1B1714'; g.fillRect(0, 0, c.width, c.height);
-  g.drawImage(src, 0, 0, fw, src.height, side, TH * K, fw, src.height);
-  g.drawImage(scene.titleStrip(0, TH), side, 0, fw, TH * K);
+  g.drawImage(src, 0, 0, fw, src.height, left, TH * K, fw, src.height);
+  g.drawImage(scene.titleStrip(0, TH), left, 0, fw, TH * K);
   g.font = `600 ${19 * dpr}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillStyle = '#F4EDE1'; g.fillText(f0.title, side + fw / 2, TH * K / 2);
+  g.fillStyle = '#F4EDE1'; g.fillText(f0.title, left + fw / 2, TH * K / 2);
 
   // Points in the scene's logical coordinates → picture pixels.
-  const P = (x, y) => [side + x * K, TH * K + y * K];
+  const P = (x, y) => [left + x * K, TH * K + y * K];
   const f = scene.funnels[0], n = f.stages.length, cx = scene.cx(0);
   const stage = j => scene.hits.find(h => h.type === 'stage' && h.j === j);
   const agent = (id, state) => scene.agents.find(a => a.agent === id && a.state === state);
@@ -176,6 +179,11 @@ function funnelGuide() {
     [P(cx - 45, resultsY + 8), 'Results', 'One per result the goal needs; filled ones are done.'],
     [P(cx - 23, resultsY + 54), 'Prediction', 'When the next result is due at the current pace.'],
   ];
+  // The landing page's labels point at the same places: each as a fraction of the picture.
+  if (!labels) {
+    const points = notes.map(([[x, y], head]) => `${head}: x ${(x / c.width).toFixed(3)}, y ${(y / c.height).toFixed(3)}`);
+    return Object.assign(c, { points });
+  }
   const wrap = (text, w) => {
     const lines = [''];
     for (const word of text.split(' ')) {
@@ -212,7 +220,9 @@ try {
   // ?only=funnel renders just the funnel guide, leaving the other pictures as they are.
   if (new URLSearchParams(location.search).get('only') === 'funnel') {
     await save(funnelGuide(), 'funnel.png');
-    throw Object.assign(new Error(), { done: 'Saved docs/img/funnel.png' });
+    const plain = funnelGuide({ labels: false });
+    await save(plain, 'funnel-plain.png');
+    throw Object.assign(new Error(), { done: 'Saved docs/img/funnel.png and funnel-plain.png. Points: ' + plain.points.join('; ') });
   }
   await save(agentsSheet(), 'agents.png');
   await save(themesSheet(), 'themes.png');
@@ -220,6 +230,7 @@ try {
   await save(board, 'overview.png');
   await save(await ogCard(board), 'og.png');
   await save(funnelGuide(), 'funnel.png');
+  await save(funnelGuide({ labels: false }), 'funnel-plain.png');
   status.textContent = 'Saved docs/img/agents.png, themes.png, overview.png, og.png and funnel.png';
 } catch (e) {
   status.textContent = e.done || 'Failed: ' + e.message;

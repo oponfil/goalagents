@@ -88,6 +88,24 @@ const STRINGS = {
   'home.p3h': L('Answer from anywhere', 'Отвечайте откуда угодно', '随时随地回复', 'ตอบได้จากทุกที่'),
   'home.p3': L('When an agent needs you, it raises a hand. Reply from your phone and it gets back to work.', 'Когда агенту нужны вы, он поднимает руку. Ответьте с телефона — и он вернётся к работе.', '当智能体需要你时，它会举手。用手机回复，它就继续工作。', 'เมื่อเอเจนต์ต้องการคุณ มันจะยกมือ ตอบจากมือถือแล้วมันจะกลับไปทำงานต่อ'),
 
+  // The landing page's funnel: what each part is
+  'guide.sheet.h': L('Sheet', 'Таблица', '表格', 'ตาราง'),
+  'guide.sheet': L('The table where the agents keep track of everything: each item and its status. Click to open it.', 'Таблица, где агенты ведут учёт всего: каждой позиции и её статуса. Нажмите, чтобы открыть.', '智能体记录一切的表格：每一项及其状态。点击即可打开。', 'ตารางที่เอเจนต์ใช้ติดตามทุกอย่าง: แต่ละรายการและสถานะของมัน คลิกเพื่อเปิด'),
+  'guide.tank.h': L('Tank', 'Бак', '储罐', 'ถัง'),
+  'guide.tank': L('Items at this stage so far, and +N a day. The fill is the share the goal needs.', 'Сколько позиций дошло до этого этапа и +N в день. Заполнение — доля того, что нужно для цели.', '到达这个阶段的数量，以及每天 +N。填充表示达成目标所需的比例。', 'จำนวนรายการที่ถึงขั้นนี้แล้ว และ +N ต่อวัน ระดับที่เติมคือสัดส่วนที่เป้าหมายต้องการ'),
+  'guide.question.h': L('Question', 'Вопрос', '问题', 'คำถาม'),
+  'guide.question': L('An agent waits for your answer. Click it to reply.', 'Агент ждёт вашего ответа. Нажмите, чтобы ответить.', '智能体在等你回复。点击即可回复。', 'เอเจนต์กำลังรอคำตอบจากคุณ คลิกเพื่อตอบ'),
+  'guide.asleep.h': L('Asleep', 'Спит', '休眠', 'หลับอยู่'),
+  'guide.asleep': L('Resting until its next run; the timer counts down.', 'Отдыхает до следующего запуска; таймер отсчитывает время.', '休息到下次运行；计时器在倒数。', 'พักจนถึงรอบถัดไป ตัวจับเวลากำลังนับถอยหลัง'),
+  'guide.work.h': L('Agent at work', 'Агент за работой', '工作中的智能体', 'เอเจนต์กำลังทำงาน'),
+  'guide.work': L('+N is what its current run added. Click for its last runs.', '+N — сколько добавил текущий запуск. Нажмите, чтобы увидеть последние запуски.', '+N 是本次运行新增的数量。点击查看最近的运行。', '+N คือสิ่งที่รอบปัจจุบันเพิ่มเข้ามา คลิกเพื่อดูการรันล่าสุด'),
+  'guide.gauge.h': L('Gauge', 'Манометр', '仪表', 'มาตรวัด'),
+  'guide.gauge': L('On pace for the goal? The red mark is just in time.', 'Успеваете к цели? Красная отметка — точно в срок.', '能按时达成目标吗？红色刻度表示刚好赶上。', 'ทันเป้าหมายไหม? ขีดสีแดงคือทันพอดี'),
+  'guide.results.h': L('Results', 'Результаты', '成果', 'ผลลัพธ์'),
+  'guide.results': L('One per result the goal needs; filled ones are done.', 'По одному на каждый нужный результат; заполненные — уже получены.', '目标需要的每个成果一个；已填满的表示已完成。', 'หนึ่งช่องต่อผลลัพธ์ที่เป้าหมายต้องการ ช่องที่เต็มคือได้แล้ว'),
+  'guide.prediction.h': L('Prediction', 'Прогноз', '预测', 'การคาดการณ์'),
+  'guide.prediction': L('When the next result is due at the current pace.', 'Когда будет следующий результат при текущем темпе.', '按当前速度，下一个成果何时到来。', 'ผลลัพธ์ถัดไปจะมาเมื่อไรตามจังหวะปัจจุบัน'),
+
   // Connecting an agent
   'connect.h1': L('Connect an agent', 'Подключите агента', '连接一个智能体', 'เชื่อมต่อเอเจนต์'),
   'connect.empty.h1': L('Connect your agents', 'Подключите своих агентов', '连接你的智能体', 'เชื่อมต่อเอเจนต์ของคุณ'),
