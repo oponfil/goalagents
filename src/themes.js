@@ -2,7 +2,7 @@
 // the zone walls, what fills the tanks, the result items, and the agents' outfit and tool.
 //   mine  — miners with pickaxes striking ore, tanks of ore and gems, treasure chests
 //   lab   — chemists pouring into a Petri dish, tanks of liquid, flasks
-//   garden — gardeners snipping a flower bed with shears, tanks of flowers, flower pots
+//   garden — gardeners snipping a flower bed with shears, tanks of sprouts, buds and flowers, flower pots
 //   love  — cupids shooting at a bed, tanks of hearts, big hearts
 //   code  — hackers in hoodies typing on laptops over a keyboard, tanks of code, chips
 //   money — bankers stamping a contract, tanks of coins, banknotes, silver and gold bars, bitcoins; money bags
@@ -234,22 +234,25 @@ function resultFlask(c, x, y, empty) {
 }
 
 function resultTreasure(c, x, y, empty) {
-  // A treasure chest: shut and dark while still to come; open with gold and gems once it's in.
-  rect(c, x + 1, y + 9, 14, 10, '#6B3E1A'); rect(c, x + 2, y + 10, 12, 8, '#8A5426');
-  rect(c, x + 1, y + 13, 14, 1.5, '#D9A520'); rect(c, x + 4, y + 9, 1.5, 10, '#B07A30'); rect(c, x + 10.5, y + 9, 1.5, 10, '#B07A30');
+  // A treasure chest with a low base: shut while still to come; open and heaped with gold and gems
+  // once it's in.
+  rect(c, x, y + 13, 16, 6, '#6B3E1A'); rect(c, x + 1, y + 14, 14, 4, '#8A5426');
+  rect(c, x, y + 13, 16, 1, '#D9A520'); rect(c, x + 3, y + 13, 1.5, 6, '#B07A30'); rect(c, x + 11.5, y + 13, 1.5, 6, '#B07A30');
   if (empty) {
-    // closed rounded lid with a lock
-    rect(c, x + 1, y + 6, 14, 3, '#7A4A20'); rect(c, x + 2, y + 5, 12, 1, '#7A4A20'); rect(c, x + 2, y + 5, 12, 0.5, '#9C6230');
-    rect(c, x + 7, y + 8, 2, 3, '#B07A30'); rect(c, x + 7.5, y + 9, 1, 1, '#3A2414');
+    rect(c, x, y + 9.5, 16, 3.5, '#7A4A20'); rect(c, x + 1, y + 8.5, 14, 1, '#7A4A20'); rect(c, x + 1, y + 8.5, 14, 0.5, '#9C6230');
+    rect(c, x + 7, y + 12, 2, 3, '#B07A30'); rect(c, x + 7.5, y + 13, 1, 1, '#3A2414');
     return;
   }
-  // lid thrown back, a heap of gold coins and gems over the rim
-  rect(c, x + 1, y + 2.5, 14, 4, '#7A4A20'); rect(c, x + 1, y + 2.5, 14, 0.5, '#9C6230'); rect(c, x + 2, y + 3.5, 12, 2.5, '#4A2A10');
-  blob(c, x + 8, y + 5.5, 4, t => 3 + t * 4, '#D9A520');
-  blob(c, x + 8, y + 5.5, 3, t => 2 + t * 3.5, '#FFD24A');
-  [[4, 7.5], [6.5, 6.5], [9, 7], [11, 8], [7.5, 8.3]].forEach(([dx, dy]) => rect(c, x + dx, y + dy, 1, 0.5, '#FFF6C9'));
-  rect(c, x + 5, y + 7, 1.5, 1.5, '#E8345E'); rect(c, x + 10, y + 6.5, 1.5, 1.5, '#3FC7DA'); rect(c, x + 7.5, y + 5.5, 1.5, 1.5, '#7CF0B0');
-  rect(c, x + 7, y + 12, 2, 3, '#F2C14E');
+  // lid thrown back behind a big heap of gold coins
+  rect(c, x, y + 3, 16, 5, '#7A4A20'); rect(c, x, y + 3, 16, 0.5, '#9C6230'); rect(c, x + 1, y + 4, 14, 3.5, '#4A2A10');
+  blob(c, x + 8, y + 5, 8.5, t => 3 + Math.sqrt(t) * 5.5, '#B8860B');
+  blob(c, x + 8, y + 5.5, 7.5, t => 2.5 + Math.sqrt(t) * 5, '#F2C14E');
+  [[3, 11], [5.5, 9], [8, 7], [10.5, 9.5], [12.5, 11.5], [7, 11], [9.5, 12]].forEach(([dx, dy]) => {
+    rect(c, x + dx, y + dy, 1.5, 0.5, '#FFF6C9'); rect(c, x + dx, y + dy + 0.5, 1.5, 0.5, '#D9A520');
+  });
+  rect(c, x + 4.5, y + 10, 2, 2, '#E8345E'); rect(c, x + 5, y + 10, 0.5, 0.5, '#FFB8CC');
+  rect(c, x + 10.5, y + 8, 2, 2, '#3FC7DA'); rect(c, x + 11, y + 8, 0.5, 0.5, '#B8F4FF');
+  rect(c, x + 7.5, y + 5.5, 1.5, 1.5, '#7CF0B0');
 }
 
 function resultHeart(c, x, y, empty) {
@@ -373,14 +376,18 @@ function backGarden(c, x, w, h, r) {
   }
 }
 
-// Flowers on stems, a different colour per stage: white, yellow, pink, red, then purple at the bottom.
+// Growing from seed to bloom, top stages to bottom: sprouts, buds, then pink, red and purple flowers.
 function tankGarden(c, x, y, w, h, j, n) {
   rect(c, x, y, w, h, '#16240F');
-  const col = byDepth(['#F4EDE1', '#FFD24A', '#F28AB8', '#E8345E', '#B585F2'], j, n);
+  const kind = byDepth(['sprout', 'bud', '#F28AB8', '#E8345E', '#B585F2'], j, n);
   for (let fy = y + 1, row = 0; fy < y + h - 4; fy += 6.5, row++) {
     for (let fx = x + (row % 2 ? 4 : 0.5); fx < x + w - 6; fx += 7.5) {
-      rect(c, fx + 2.5, fy + 4, 0.5, 2.5, '#3E7A30'); rect(c, fx + 3, fy + 5, 1.5, 1, '#6BB84E');
-      flower(c, fx, fy - 0.5, 1, col);
+      if (kind === 'sprout') pixmap(c, fx + 0.5, fy + 0.5, 1, ['L...L', '.L.L.', '..S..', '..S..', '.DDD.'], { L: '#8FD46A', S: '#4E8A3A', D: '#5A3A22' });
+      else if (kind === 'bud') pixmap(c, fx + 0.5, fy, 1, ['..P..', '.PPP.', '.LPL.', 'L.S.L', '..S..', '..S..'], { P: '#F28AB8', L: '#6BB84E', S: '#3E7A30' });
+      else {
+        rect(c, fx + 2.5, fy + 4, 0.5, 2.5, '#3E7A30'); rect(c, fx + 3, fy + 5, 1.5, 1, '#6BB84E');
+        flower(c, fx, fy - 0.5, 1, kind);
+      }
     }
   }
 }

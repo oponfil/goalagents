@@ -21,6 +21,11 @@ export const sceneHeight = funnels => Math.max(H, ...funnels.map(f =>
 // is the same pyramid; stages in between are spaced evenly.
 const tankW = (j, n) => Math.round((156 - (n > 1 ? j * 80 / (n - 1) : 0)) / 2) * 2;
 const GAUGE_R = 9;
+// The work piece under each gauge (anvil, flower bed…) sits right on the tank below, and the gauge
+// right on it; agents stand on the tank's top edge as on a floor.
+const PLATE_H = 11;
+const plateTop = k => zoneTop(k) + ZH - PLATE_H;
+const gaugeY = k => plateTop(k) - GAUGE_R - 1;
 export const DAY_SECONDS = 2;
 const PER_ROW = 10;  // result items per row under a funnel, the same for every theme
 const FONT = '"Rubik", system-ui, sans-serif';
@@ -69,10 +74,10 @@ export class Scene {
   fi(f) { return this.funnels.indexOf(f); }
   cx(fi) { return fi * CW + CW / 2; }
   spot(a, kind) {
-    const cx = this.cx(this.fi(a.f)), floor = zoneTop(a.zone) + ZH - 3, R = a.side === 'R';
+    const cx = this.cx(this.fi(a.f)), floor = zoneTop(a.zone) + ZH, R = a.side === 'R';
     if (kind === 'work') return { x: R ? cx + 18 : cx - 38, y: floor - MINER_H };
-    if (kind === 'ask') return { x: R ? cx + 32 : cx - 52, y: floor - MINER_H };
-    return { x: R ? cx + 46 : cx - 74, y: floor - 10 * P };
+    if (kind === 'ask') return { x: R ? cx + 26 : cx - 46, y: floor - MINER_H };
+    return { x: R ? cx + 14 : cx - 42, y: floor - 10 * P };
   }
 
   resize(scale, dpr) {
@@ -124,7 +129,7 @@ export class Scene {
           if (f.source_url) this.sheets(c, cx, y - 26);
           this.hopper(c, cx, y - 8, y + 1);
         }
-        gaugeRim(c, cx, y + 4 + GAUGE_R + 2);
+        gaugeRim(c, cx, gaugeY(k));
       }
       f.stages.forEach((s, j) => {
         const lw = tankW(j, n), x = cx - lw / 2, y = tankTop(j);
@@ -132,7 +137,10 @@ export class Scene {
         // The empty part of a tank is the theme's own dark ground, without items.
         c.fillStyle = theme.tankBg; c.fillRect(x + 2, y + 2, lw - 4, LH - 4);
       });
-      c.fillStyle = '#7D828C'; c.fillRect(cx - 4, zoneTop(n - 1) + ZH, 9, 3);
+      // Below the last tank there is no tank to stand on: a ledge as wide as it is the output zone's floor.
+      const lw = tankW(n - 1, n), fy = zoneTop(n - 1) + ZH;
+      c.fillStyle = theme.frame; c.fillRect(cx - lw / 2, fy, lw, 3);
+      c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(cx - lw / 2, fy + 2, lw, 1);
     });
   }
 
@@ -251,12 +259,12 @@ export class Scene {
       if (f.source_url) this.hits.push(this.sourceHit(fi));
       const cx = this.cx(fi), n = f.stages.length, theme = themeOf(f);
       for (let k = -1; k < n; k++) {
-        const y = zoneTop(k), fl = f.flows[k + 1], gy = y + 4 + GAUGE_R + 2;
+        const y = zoneTop(k), fl = f.flows[k + 1], gy = gaugeY(k);
         this.drops(c, cx, y + 4, y + ZH, fl, fi * 3 + k);
         gaugeFace(c, cx, gy, project(f).zones[k + 1], Math.sin(t * 3 + fi + k) * 0.015);
         // The plate under each gauge is what the agents work on; only the output zone's has text
         // on it: when the next result is due.
-        theme.plate(c, cx - 13, gy + GAUGE_R + 1, 26, 11);
+        theme.plate(c, cx - 13, plateTop(k), 26, PLATE_H);
       }
       const pr = project(f);
       f.stages.forEach((s, j) => {
@@ -427,7 +435,7 @@ export class Scene {
       });
       const pr = project(f);
       for (let k = -1; k < n; k++) {
-        if (pr.zones[k + 1] == null) T('?', cx, zoneTop(k) + 4 + GAUGE_R + 2.5, 7.5, '#2B2B2B', 'center', 700);
+        if (pr.zones[k + 1] == null) T('?', cx, gaugeY(k) + 0.5, 7.5, '#2B2B2B', 'center', 700);
       }
       const ry = flasksY(n) + Math.ceil(f.goal.total / PER_ROW) * 22 + 8;
       // Under the results, one thing per line: what they are, how many and how fast (as on a tank),
