@@ -56,6 +56,12 @@ Each funnel picks a look; the data and behaviour are the same.
 
 Any other agent name gets a plain grey shirt. Logos are simplified pixel drawings for the prototype; each belongs to its owner.
 
+## Languages
+
+The site and the dashboard speak English, Russian, Chinese (simplified) and Thai. The picker is in the nav. The first visit follows the browser's language (English if it is none of these). The choice is kept in the browser and, once signed in, in the account, so it follows you to other devices. `?lang=ru` in the address opens a page in that language without remembering it.
+
+All interface text is in `src/i18n.js`: one entry per phrase with a version per language; a new language is one more column there and in the demo names in `src/data.js`. Funnel, stage and result names on your own dashboard are whatever your agents write, in your language. The pitch deck, the docs and the MCP tool descriptions stay in English.
+
 ## Run
 
 ```bash
@@ -70,12 +76,14 @@ To refresh the README pictures, open http://localhost:5173/tools/render-docs.htm
 
 ## Code
 
-- `src/data.js` — demo funnels and the agent list
+- `src/i18n.js` — interface languages: detection, the picker's choice, every text in English, Russian, Chinese and Thai
+- `src/data.js` — demo funnels (with their translations) and the agent list
 - `src/scene.js` — Canvas 2D scene: layout, simulation, gauges, hit areas
 - `src/themes.js` — themes: column backdrop, work piece, tank filling, result item
 - `src/sprites.js` — agents (outfits, tools, logos) drawn from shapes on a half-unit grid
 - `src/dashboard.js` — page wiring: scaling, sticky titles, drag to reorder, popups, answers to agents
 - `src/main.js` — the demo; `src/live.js` — the person's funnels from the database, flows from the count history, live updates
+- `src/nav.js` — the nav: language picker, Goals and Sign out once signed in
 - `index.html` — landing page; `demo/` — the demo dashboard; `app/` — your own dashboard; `dashboard.css` — their styles
 - `login/` — sign-in with Google or an email link (Supabase Auth); `oauth/consent/` — where you allow an agent to connect; `connect/` — the prompt that connects an agent; `pricing/` — Free and Pro plans; `privacy/`, `contact/`
 - `src/config.js` — Supabase project address, publishable key, Google client ID and the MCP address (all public)

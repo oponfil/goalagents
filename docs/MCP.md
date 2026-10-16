@@ -45,6 +45,8 @@ The agent adds the server or tells you how; you sign in on goalagents.run and al
 | `label` | `[singular, plural]` (`interview, interviews`), shown next to the count; Russian uses three forms, Chinese and Thai one |
 | `count` | How many items are at this stage now (cumulative is fine) |
 
+Names (`title`, `result`, stage `label`) are shown as written, so give them in the person's language; the dashboard's own interface follows the language the person picked (English, Russian, Chinese or Thai).
+
 Only counts, dates and links are stored. Item lists (vacancies, people, papers) stay in the person's own sources.
 
 **Zone** — the mining area around a tank where agents work. Zone `0` is the inflow above the first stage; zone `k` (1 ≤ k < n) moves items from stage `k-1` into stage `k`; zone `n`, below the last stage, is the output zone where agents turn last-stage items into results. A zone holds **at most two agents** on Pro (left and right of the pipe) and one on the free plan; the server rejects more.
