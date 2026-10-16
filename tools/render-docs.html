@@ -12,7 +12,7 @@
 <body>
   <p id="status">Rendering…</p>
   <!-- The pictures are in English whatever the browser's language. -->
-  <script>if (new URLSearchParams(location.search).get('lang') !== 'en') location.replace('?lang=en');</script>
+  <script>{ const q = new URLSearchParams(location.search); if (q.get('lang') !== 'en') { q.set('lang', 'en'); location.replace('?' + q); } }</script>
   <script type="module" src="render-docs.js"></script>
 </body>
 </html>

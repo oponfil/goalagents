@@ -12,6 +12,8 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 
 ## How to read it
 
+<img src="docs/img/funnel.png" alt="One funnel with labels: the sheet, a tank, a question, a sleeping agent, an agent at work, a gauge, results and the prediction" width="620">
+
 | On screen | Meaning |
 |---|---|
 | Tank, its number and `+N/d` | How many items have reached this stage (cumulative) and how many it gains per day (average over the last 7 days; an agent can set it). The fill, left to right, is the share of what this stage needs for the whole goal; that need comes from the conversion between the tanks' counts (next ÷ this), 30% while a count is still 0. Hover a tank for its name |

@@ -136,15 +136,91 @@ async function ogCard(board) {
   return c;
 }
 
+// One funnel with labels on its right, each with a line to the part it explains: the README's guide
+// to reading the board. The Job Search demo funnel after a few seconds, while Grok still sleeps.
+function funnelGuide() {
+  const scale = 2, dpr = 2, K = scale * dpr, TH = 22, side = 440, f0 = FUNNELS[0];
+  // The agents the arrows point at stand on the left, by the labels, so no arrow crosses anything
+  // on its way; the agent sharing a zone with them goes right.
+  const sides = new Map([['claude', 'L'], ['gemini', 'R'], ['grok', 'L'], ['deepseek', 'R'], ['mistral', 'L'], ['qwen', 'R']]
+    .map(([id, sd]) => [`${f0.title}|${id}`, sd]));
+  const scene = new Scene(document.createElement('canvas'), [f0], { sides });
+  scene.resize(scale, dpr);
+  for (let i = 0; i < 5 * 30; i++) scene.update(1 / 30);
+  scene.render();
+  const src = scene.canvas, fw = CW * K;
+  const [c, g] = canvas(side + fw, TH * K + src.height);
+  g.fillStyle = '#1B1714'; g.fillRect(0, 0, c.width, c.height);
+  g.drawImage(src, 0, 0, fw, src.height, side, TH * K, fw, src.height);
+  g.drawImage(scene.titleStrip(0, TH), side, 0, fw, TH * K);
+  g.font = `600 ${19 * dpr}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = '#F4EDE1'; g.fillText(f0.title, side + fw / 2, TH * K / 2);
+
+  // Points in the scene's logical coordinates → picture pixels.
+  const P = (x, y) => [side + x * K, TH * K + y * K];
+  const f = scene.funnels[0], n = f.stages.length, cx = scene.cx(0);
+  const stage = j => scene.hits.find(h => h.type === 'stage' && h.j === j);
+  const agent = (id, state) => scene.agents.find(a => a.agent === id && a.state === state);
+  const s0 = stage(0), last = stage(n - 1);
+  const ask = agent('claude', 'ask'), sleep = scene.spot(agent('grok', 'sleep'), 'rest'), work = scene.spot(agent('mistral', 'work'), 'work');
+  const src0 = scene.hits.find(h => h.type === 'source');
+  const gauge = stage(3), resultsY = last.y + last.h + 40 + 9;
+  // Each arrow ends on the left edge of what it explains.
+  const notes = [
+    [P(src0.x + 3, src0.y + 14), 'Sheet', 'The table where the agents keep track of everything: each item and its status. Click to open it.'],
+    [P(s0.x + 1, s0.y + 15), 'Tank', 'Items at this stage so far, and +N a day. The fill is the share the goal needs.'],
+    [P(ask.bubble.x, ask.bubble.y + 11), 'Question', 'An agent waits for your answer. Click it to reply.'],
+    [P(sleep.x - 1, sleep.y + 1), 'Asleep', 'Resting until its next run; the timer counts down.'],
+    [P(work.x + 1, work.y + 20), 'Agent at work', '+N is what its current run added. Click for its last runs.'],
+    [P(cx - 9, gauge.y + gauge.h + 15), 'Gauge', 'On pace for the goal? The red mark is just in time.'],
+    [P(cx - 45, resultsY + 8), 'Results', 'One per result the goal needs; filled ones are done.'],
+    [P(cx - 23, resultsY + 54), 'Prediction', 'When the next result is due at the current pace.'],
+  ];
+  const wrap = (text, w) => {
+    const lines = [''];
+    for (const word of text.split(' ')) {
+      const tryLine = lines[lines.length - 1] ? lines[lines.length - 1] + ' ' + word : word;
+      if (g.measureText(tryLine).width > w && lines[lines.length - 1]) lines.push(word); else lines[lines.length - 1] = tryLine;
+    }
+    return lines;
+  };
+  // A label beside its arrow: the heading on the arrow's level, the text under it. The arrow runs
+  // straight across from the label column to the point.
+  let bottom = 0;
+  notes.sort((a, b) => a[0][1] - b[0][1]).forEach(([[tx, ty], head, text]) => {
+    g.font = `500 22px ${FONT}`;
+    const lines = wrap(text, side - 130), lh = 28, h = 36 + lines.length * lh, x = 70;
+    const top = Math.max(bottom + 16, ty - 16);
+    bottom = top + h;
+    g.textAlign = 'left'; g.textBaseline = 'top';
+    g.font = `700 28px ${FONT}`; g.fillStyle = '#F2C14E'; g.fillText(head, x, top);
+    const hw = g.measureText(head).width;
+    g.font = `500 22px ${FONT}`; g.fillStyle = '#D8CFC2';
+    lines.forEach((l, i) => g.fillText(l, x, top + 36 + i * lh));
+    const y = ty, x0 = x + hw + 14, x1 = tx - 4, head2 = 14;
+    g.strokeStyle = '#F2C14E'; g.lineWidth = 3;
+    g.beginPath(); g.moveTo(x0, y); g.lineTo(x1 - head2 + 2, y); g.stroke();
+    g.fillStyle = '#F2C14E';
+    g.beginPath(); g.moveTo(x1, y); g.lineTo(x1 - head2, y - 8); g.lineTo(x1 - head2, y + 8); g.closePath(); g.fill();
+  });
+  return c;
+}
+
 const status = document.getElementById('status');
 try {
   await document.fonts.ready;
+  // ?only=funnel renders just the funnel guide, leaving the other pictures as they are.
+  if (new URLSearchParams(location.search).get('only') === 'funnel') {
+    await save(funnelGuide(), 'funnel.png');
+    throw Object.assign(new Error(), { done: 'Saved docs/img/funnel.png' });
+  }
   await save(agentsSheet(), 'agents.png');
   await save(themesSheet(), 'themes.png');
   const board = overview();
   await save(board, 'overview.png');
   await save(await ogCard(board), 'og.png');
-  status.textContent = 'Saved docs/img/agents.png, themes.png, overview.png and og.png';
+  await save(funnelGuide(), 'funnel.png');
+  status.textContent = 'Saved docs/img/agents.png, themes.png, overview.png, og.png and funnel.png';
 } catch (e) {
-  status.textContent = 'Failed: ' + e.message;
+  status.textContent = e.done || 'Failed: ' + e.message;
 }
