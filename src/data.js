@@ -3,7 +3,8 @@
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
   claude: { name: 'Claude', color: '#D97757', chat: 'https://claude.ai', app: url => url.replace(/^https:\/\/claude\.ai/, 'claude://claude.ai') },
-  chatgpt: { name: 'ChatGPT', color: '#10A37F', chat: 'https://chatgpt.com' },
+  // The ChatGPT desktop app opens on codex:// links (it has no chatgpt:// scheme).
+  chatgpt: { name: 'ChatGPT', color: '#10A37F', chat: 'https://chatgpt.com', app: () => 'codex://' },
   grok: { name: 'Grok', color: '#1A1A1A', chat: 'https://grok.com' },
   gemini: { name: 'Gemini', color: '#4285F4', chat: 'https://gemini.google.com' },
   deepseek: { name: 'DeepSeek', color: '#4D6BFE', chat: 'https://chat.deepseek.com' },
@@ -23,8 +24,8 @@ export function agentInfo(id) {
   return { name: id, color: '#8A8F98', chat: '' };
 }
 
-// Where "Open" and "Reply" go: the agent's desktop app when it has a link scheme (Claude),
-// otherwise its chat in the browser.
+// Where "Open" and "Reply" go: the agent's desktop app when it has a link scheme (Claude,
+// ChatGPT), otherwise its chat in the browser. App links fall back to the web chat (dashboard.js).
 export const chatLink = (info, url) => (url && info.app ? info.app(url) : url);
 
 // A button in the agent's own colour, with text that stays readable on it.

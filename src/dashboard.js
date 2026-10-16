@@ -4,8 +4,26 @@ import { agentInfo, agentButton, chatLink, plural } from './data.js';
 import { Scene, CW, fmtCount } from './scene.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
-// Web chats open in a new tab; app links (claude://) hand over to the app without an empty tab.
-const opens = url => (/^https?:/.test(url) ? 'target="_blank" rel="noopener"' : '');
+// Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
+// empty tab and remember the web chat to fall back to.
+const opens = (url, web) => (/^https?:/.test(url) ? 'target="_blank" rel="noopener"' : `data-web="${esc(web)}"`);
+
+// No app on this computer: the app link does nothing and the page keeps the focus, so after a
+// moment the web chat opens instead.
+function openApp(e) {
+  const link = e.target.closest('a[data-web]');
+  if (!link) return;
+  e.preventDefault();
+  let left = false;
+  const away = () => { left = true; };
+  window.addEventListener('blur', away, { once: true });
+  document.addEventListener('visibilitychange', away, { once: true });
+  location.href = link.href;
+  setTimeout(() => {
+    window.removeEventListener('blur', away);
+    if (!left && link.dataset.web) window.open(link.dataset.web, '_blank', 'noopener');
+  }, 1500);
+}
 
 // opts.live: counts come from the agents, not the demo simulation.
 // opts.clock(scene): text for the right corner of the header.
@@ -16,6 +34,7 @@ export function mountDashboard(funnels, opts = {}) {
   const track = document.getElementById('titles-track');
   const clock = document.getElementById('day');
   const pop = document.getElementById('pop');
+  pop.addEventListener('click', openApp);
   let scene = new Scene(canvas, funnels, { live: opts.live });
 
   // Funnel order is the viewer's own arrangement, kept in this browser only.
@@ -129,16 +148,16 @@ export function mountDashboard(funnels, opts = {}) {
         <p>${esc(needText)}</p>${source}`;
     }
     const a = h.a, info = agentInfo(a.agent), f = a.f;
-    const chat = chatLink(info, a.chat || info.chat), paint = agentButton(info);
+    const web = a.chat || info.chat, chat = chatLink(info, web), paint = agentButton(info);
     const who = esc(info.name);
     const where = `${esc(f.title)}: ${esc(scene.zoneName(a))}`;
     if (h.type === 'ask') {
       const reply = opts.onAnswer
         ? `<textarea class="answer" rows="3" maxlength="2000" placeholder="Your answer"></textarea>
           <button class="btn primary send" style="${paint}">Send answer</button>
-          ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat)}>Open ${esc(info.name)}</a>` : ''}
+          ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>Open ${esc(info.name)}</a>` : ''}
           <div class="pop-msg"></div>`
-        : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat)}>Reply in ${esc(info.name)}</a>`;
+        : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>Reply in ${esc(info.name)}</a>`;
       return `<div class="pop-title">${who} is waiting for you</div>
         <div class="pop-sub">${where}</div>
         <p>${esc(a.question)}</p>${reply}`;
@@ -148,7 +167,7 @@ export function mountDashboard(funnels, opts = {}) {
         : 'is working';
     return `<div class="pop-title">${who} ${state}</div>
       <div class="pop-sub">${where}</div>
-      ${chat ? `<a class="btn" style="${paint}" href="${esc(chat)}" ${opens(chat)}>Open ${esc(info.name)}</a>` : ''}`;
+      ${chat ? `<a class="btn" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>Open ${esc(info.name)}</a>` : ''}`;
   }
 
   function bindAnswer(a) {
