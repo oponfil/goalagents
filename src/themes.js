@@ -451,17 +451,13 @@ const pieceLove = {
     byDepth([flower, letter, heart, lips, ring], j, n)(c, x, y, 0.75, col);
   },
 };
-// Code: devices, bigger by stage: phones, tablets, laptops, monitors, then servers.
+// Code: floppy disks, a colour per stage: a case, a metal shutter on top, a white label below.
 const pieceCode = {
-  w: 6.5, h: 6,
+  w: 5.5, h: 5.5,
   draw(c, x, y, j, n) {
-    const kind = byDepth(['phone', 'tablet', 'laptop', 'monitor', 'server'], j, n);
-    const body = '#3A3F48', edge = '#1E2228', glow = '#3CF27A', screen = '#5CF0F0';
-    if (kind === 'phone') { rect(c, x + 1.5, y + 0.5, 3, 5, edge); rect(c, x + 2, y + 1, 2, 3.5, screen); rect(c, x + 2.5, y + 5, 1, 0.5, body); }
-    else if (kind === 'tablet') { rect(c, x + 0.5, y + 0.5, 5, 5, edge); rect(c, x + 1, y + 1, 4, 3.5, screen); rect(c, x + 2.5, y + 5, 1, 0.5, body); }
-    else if (kind === 'laptop') { rect(c, x + 1, y + 1, 4.5, 3.5, edge); rect(c, x + 1.5, y + 1.5, 3.5, 2.5, glow); rect(c, x, y + 4.5, 6.5, 1, body); }
-    else if (kind === 'monitor') { rect(c, x, y + 0.5, 6, 4, edge); rect(c, x + 0.5, y + 1, 5, 3, screen); rect(c, x + 2.5, y + 4.5, 1, 1, body); rect(c, x + 1.5, y + 5.5, 3, 0.5, body); }
-    else { rect(c, x + 0.5, y, 5, 6, edge); rect(c, x + 1, y + 0.5, 4, 1.5, body); rect(c, x + 1, y + 2.5, 4, 1.5, body); rect(c, x + 1.5, y + 1, 0.5, 0.5, glow); rect(c, x + 1.5, y + 3, 0.5, 0.5, '#F2C14E'); rect(c, x + 1, y + 4.5, 4, 1, body); }
+    const col = byDepth(['#3A6AD0', '#3CA05A', '#D8A020', '#D85A30', '#9B4BD0'], j, n);
+    rect(c, x, y, 5, 5, col); rect(c, x + 1.5, y, 2, 1.5, '#C8CED8'); rect(c, x + 2.5, y + 0.5, 0.5, 0.5, '#1E2228');
+    rect(c, x + 1, y + 2.5, 3, 2, '#F4EDE1'); rect(c, x + 1.5, y + 3, 2, 0.5, '#8A8A8A');
   },
 };
 const pieceMoney = {

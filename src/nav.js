@@ -1,7 +1,7 @@
 // The nav on every page: the language picker, and once signed in, "Sign in" becomes "Goals" with
 // "Sign out" next to it. A signed-in person's language is kept in their account too.
-import { supabase, siteUrl } from './auth.js?v=3d2eac2a';
-import { t, lang, chosen, LANGS, SHORT, setLang, onLangSaved, adoptLang } from './i18n.js?v=3d2eac2a';
+import { supabase, siteUrl } from './auth.js?v=ae51300f';
+import { t, lang, chosen, LANGS, SHORT, setLang, onLangSaved, adoptLang } from './i18n.js?v=ae51300f';
 
 const links = document.querySelector('nav .links');
 const signin = document.querySelector('.links a.signin');

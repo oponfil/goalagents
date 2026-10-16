@@ -1,6 +1,6 @@
 // The prompt that connects GoalAgents to any agent, with a copy icon on its block.
-import { MCP_URL } from './config.js?v=3d2eac2a';
-import { t } from './i18n.js?v=3d2eac2a';
+import { MCP_URL } from './config.js?v=ae51300f';
+import { t } from './i18n.js?v=ae51300f';
 
 export const CONNECT_PROMPT = t('connect.prompt', MCP_URL);
 
