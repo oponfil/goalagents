@@ -90,3 +90,7 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 .links label.notify { display: flex; align-items: center; gap: 5px; color: var(--muted); cursor: pointer; white-space: nowrap; }
 .links label.notify:hover, .links label.notify:has(input:checked) { color: var(--text); }
 .links label.notify input { margin: 0; accent-color: #F2C14E; cursor: pointer; }
+/* Rubik has no Vietnamese letters: Vietnamese pages use Be Vietnam Pro, a font of the same shape. */
+html:lang(vi) body { font-family: "Be Vietnam Pro", system-ui, sans-serif; }
+/* Japanese: Noto Sans JP before the Chinese font, so kanji take their Japanese shapes. */
+html:lang(ja) body { font-family: "Rubik", "Noto Sans JP", system-ui, sans-serif; }

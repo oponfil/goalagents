@@ -105,6 +105,11 @@ body {
   padding: 12px 14px;
   font-size: 14px;
   line-height: 1.45;
+  /* Several questions can be taller than the screen: the popup scrolls. */
+  max-height: calc(100vh - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 #pop p { margin: 8px 0 12px; }
 #pop .close {
@@ -229,3 +234,7 @@ body {
 .links label.notify { display: flex; align-items: center; gap: 5px; color: var(--muted); cursor: pointer; white-space: nowrap; }
 .links label.notify:hover, .links label.notify:has(input:checked) { color: var(--text); }
 .links label.notify input { margin: 0; accent-color: #F2C14E; cursor: pointer; }
+/* Rubik has no Vietnamese letters: Vietnamese pages use Be Vietnam Pro, a font of the same shape. */
+html:lang(vi) { --font: "Be Vietnam Pro", system-ui, sans-serif; }
+/* Japanese: Noto Sans JP before the Chinese font, so kanji take their Japanese shapes. */
+html:lang(ja) { --font: "Rubik", "Noto Sans JP", system-ui, sans-serif; }

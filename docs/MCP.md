@@ -29,7 +29,7 @@ The agent adds the server or tells you how; you sign in on goalagents.run and al
 |---|---|
 | `id` | Stable id, chosen by the agent (`job-search`) |
 | `title` | Column title (`Job Search`) |
-| `result` | Name of one result: `[singular, plural]` (`offer, offers`); Russian uses three forms `[1, 2–4, 5+]`; Chinese and Thai use one |
+| `result` | Name of one result: `[singular, plural]` (`offer, offers`); Russian uses three forms `[1, 2–4, 5+]`, Spanish two like English; Chinese, Japanese, Thai and Vietnamese use one |
 | `theme` | Look of the column: `mine` (miners, ore, treasure chests), `lab` (chemists, liquids, flasks), `garden` (gardeners, sprouts and flowers, flower pots), `love` (cupids, hearts), `code` (hackers, code, chips), `money` (bankers; pennies, banknotes, silver and gold bars, bitcoins; money bags). Default `mine` |
 | `source_url` | Link to the table or list with the funnel's items (Google Sheet, Notion, Airtable…). One per funnel. Optional, but an agent gives it whenever its list opens by a URL; the dashboard then draws spreadsheet sheets in the hopper on top, and a click opens the link |
 | `goal.total` | How many results the goal needs |
@@ -42,10 +42,10 @@ The agent adds the server or tells you how; you sign in on goalagents.run and al
 | Field | Meaning |
 |---|---|
 | `key` | Stable key inside the funnel (`applied`) |
-| `label` | `[singular, plural]` (`interview, interviews`), shown next to the count; Russian uses three forms, Chinese and Thai one |
+| `label` | `[singular, plural]` (`interview, interviews`), shown next to the count; Russian uses three forms, Spanish two; Chinese, Japanese, Thai and Vietnamese one |
 | `count` | How many items have ever reached this stage, cumulative: an item that moved on to the next stage still counts here. The conversion between stages comes from these counts |
 
-Names (`title`, `result`, stage `label`) are shown as written, so give them in the person's language; the dashboard's own interface follows the language the person picked (English, Russian, Chinese or Thai).
+Names (`title`, `result`, stage `label`) are shown as written, so give them in the person's language; the dashboard's own interface follows the language the person picked (English, Russian, Spanish, Chinese, Japanese, Thai or Vietnamese).
 
 Only counts, dates and links are stored. Item lists (vacancies, people, papers) stay in the person's own sources.
 

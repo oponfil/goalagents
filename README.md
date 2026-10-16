@@ -63,9 +63,9 @@ There are no passwords. Sign in with Google, or with your email: the site sends 
 
 ## Languages
 
-The site and the dashboard speak English, Russian, Chinese (simplified) and Thai. The picker is in the nav. The first visit follows the browser's language (English if it is none of these). The choice is kept in the browser and, once signed in, in the account, so it follows you to other devices. `?lang=ru` in the address opens a page in that language without remembering it.
+The site and the dashboard speak English, Russian, Spanish, Chinese (simplified), Japanese, Thai and Vietnamese. The picker is in the nav. The first visit follows the browser's language (English if it is none of these). The choice is kept in the browser and, once signed in, in the account, so it follows you to other devices. `?lang=ru` in the address opens a page in that language without remembering it.
 
-All interface text is in `src/i18n.js`: one entry per phrase with a version per language; a new language is one more column there and in the demo names in `src/data.js`. Funnel, stage and result names on your own dashboard are whatever your agents write, in your language. The pitch deck, the docs and the MCP tool descriptions stay in English.
+All interface text is in `src/i18n.js` (one entry per phrase with a version per language) and `src/lang/` (one file per newer language, keyed the same way); a new language is one more file there, a line in `LANGS` and a column in the demo names in `src/data.js`. Vietnamese pages use the Be Vietnam Pro font (Rubik has no Vietnamese letters), Japanese ones Noto Sans JP. Funnel, stage and result names on your own dashboard are whatever your agents write, in your language. The pitch deck, the docs and the MCP tool descriptions stay in English.
 
 ## Run
 
@@ -81,7 +81,7 @@ To refresh the README pictures, open http://localhost:5173/tools/render-docs.htm
 
 ## Code
 
-- `src/i18n.js` — interface languages: detection, the picker's choice, every text in English, Russian, Chinese and Thai
+- `src/i18n.js` — interface languages: detection, the picker's choice, every text in English, Russian, Chinese and Thai; `src/lang/` — Spanish, Vietnamese and Japanese, merged in by key
 - `src/data.js` — demo funnels (with their translations) and the agent list
 - `src/scene.js` — Canvas 2D scene: layout, simulation, gauges, hit areas
 - `src/themes.js` — themes: column backdrop, work piece, tank filling, result item

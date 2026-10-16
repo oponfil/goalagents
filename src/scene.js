@@ -1,7 +1,7 @@
 import { agentInfo, plural } from './data.js';
 import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js';
 import { themeOf } from './themes.js';
-import { t as tr } from './i18n.js';
+import { t as tr, lang } from './i18n.js';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -35,7 +35,11 @@ const OUT_LIFT = 5;
 const gaugeY = (k, out) => zoneTop(k) + 4 + GAUGE_R + 2 - (out ? OUT_LIFT : 0);
 export const DAY_SECONDS = 2;
 const PER_ROW = 10;  // result items per row under a funnel, the same for every theme
-const FONT = '"Rubik", "Noto Sans Thai", "Noto Sans SC", system-ui, sans-serif';
+// As on the page: Vietnamese needs Be Vietnam Pro (Rubik has no Vietnamese letters), Japanese takes
+// Noto Sans JP before the Chinese font.
+const FONT = lang === 'vi' ? '"Be Vietnam Pro", system-ui, sans-serif'
+  : lang === 'ja' ? '"Rubik", "Noto Sans JP", system-ui, sans-serif'
+    : '"Rubik", "Noto Sans Thai", "Noto Sans SC", system-ui, sans-serif';
 
 const PERIODS = ['d', 'w', 'h'];
 

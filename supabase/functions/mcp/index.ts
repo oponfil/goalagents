@@ -146,14 +146,14 @@ function server(db: Db, caller: Caller) {
     inputSchema: req({
       id: funnelId,
       title: z.string().min(1).max(60).describe('Column title, e.g. "Job Search"'),
-      result: forms.describe('Name of one result: [singular, plural], e.g. ["offer", "offers"]; Russian: [1, 2-4, 5+]; Chinese, Thai and other languages without plural forms: one form'),
+      result: forms.describe('Name of one result: [singular, plural], e.g. ["offer", "offers"]; Russian: [1, 2-4, 5+]; Spanish: [singular, plural]; Chinese, Japanese, Thai, Vietnamese and other languages without plural forms: one form'),
       goal_total: z.number().int().min(1).max(100).describe('How many results the goal needs (1-100)'),
       goal_every_days: z.number().positive().max(3650).describe('Pace: one result every N days'),
       source_url: z.string().url().regex(/^https?:\/\//).nullable().optional().describe('Link to the table or list with this funnel\'s items (Google Sheet, Notion, Airtable…). Give it whenever the list opens by a URL; null removes it, leaving it out keeps it'),
       theme: z.enum(THEMES).optional().describe('Look: mine (miners, ore), lab (chemists, flasks), garden (gardeners, flowers), love (cupids, hearts), code (hackers, chips), money (bankers, coins, banknotes, gold bars, bitcoins). Default mine'),
       stages: z.array(req({
         key: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/).describe('Stable key, e.g. "applied"'),
-        label: forms.describe('[singular, plural], e.g. ["interview", "interviews"]; Russian: [1, 2-4, 5+]; Chinese, Thai: one form'),
+        label: forms.describe('[singular, plural], e.g. ["interview", "interviews"]; Russian: [1, 2-4, 5+]; Spanish: [singular, plural]; Chinese, Japanese, Thai, Vietnamese: one form'),
       })).min(2).max(5).describe('Stages top to bottom'),
     }),
     annotations: { idempotentHint: true },

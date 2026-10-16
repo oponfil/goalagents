@@ -31,6 +31,24 @@ const WORDS: Record<string, Words> = {
     answer: 'Ответить на дашборде',
     why: 'Это письмо пришло, потому что в меню на goalagents.run отмечено «Письма». Снимите галочку, чтобы письма больше не приходили.',
   },
+  es: {
+    subject: (who, q) => `${who} pregunta: ${q}`,
+    body: (who, funnel) => `${who} en «${funnel}» espera tu respuesta:`,
+    answer: 'Responder en el panel',
+    why: 'Recibes este correo porque «Avisos» está marcado en el menú de goalagents.run. Desmárcalo para dejar de recibirlos.',
+  },
+  vi: {
+    subject: (who, q) => `${who} hỏi: ${q}`,
+    body: (who, funnel) => `${who} trong “${funnel}” đang chờ bạn trả lời:`,
+    answer: 'Trả lời trên bảng',
+    why: 'Bạn nhận được email này vì mục “Thông báo” đang được chọn trong menu trên goalagents.run. Bỏ chọn để ngừng nhận.',
+  },
+  ja: {
+    subject: (who, q) => `${who} からの質問：${q}`,
+    body: (who, funnel) => `「${funnel}」の ${who} があなたの返事を待っています：`,
+    answer: 'ボードで返事する',
+    why: 'goalagents.run のメニューで「メール通知」がオンになっているため、このメールが届きました。オフにすると届かなくなります。',
+  },
   zh: {
     subject: (who, q) => `${who} 提问：${q}`,
     body: (who, funnel) => `${who} 在「${funnel}」中等待你的回复：`,

@@ -1,11 +1,17 @@
 // Interface languages. The language comes from the person's choice (kept in this browser, and in
 // their account once signed in), else from the browser, else English. Every text of the interface
-// lives in STRINGS, one entry per key with a version per language; a new language is a new column.
+// lives in STRINGS, one entry per key with a version per language. English, Russian, Chinese and
+// Thai are columns here; Spanish, Vietnamese and Japanese are kept in src/lang/ and merged in below. A new
+// language is a file there and a line in LANGS.
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-export const LANGS = { en: 'English', ru: 'Русский', zh: '中文', th: 'ไทย' };
-export const SHORT = { en: 'EN', ru: 'RU', zh: '中文', th: 'ไทย' };
+import es from './lang/es.js';
+import vi from './lang/vi.js';
+import ja from './lang/ja.js';
+
+export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
+export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
 const KEY = 'goalagents-lang';
 
 // Whether the person picked a language in this browser (rather than it coming from the browser).
@@ -26,8 +32,8 @@ function detect() {
 }
 export const lang = detect();
 
-// Plural category of n in this language: one, few, many or other (English: one/other; Chinese and
-// Thai: always other).
+// Plural category of n in this language: one, few, many or other (English, Spanish: one/other;
+// Chinese, Japanese, Thai, Vietnamese: always other).
 const rules = new Intl.PluralRules(lang);
 export const pluralOf = n => rules.select(n);
 
@@ -265,6 +271,10 @@ const STRINGS = {
   'consent.allow': L('Allow', 'Разрешить', '允许', 'อนุญาต'),
   'consent.deny': L('Deny', 'Отклонить', '拒绝', 'ปฏิเสธ'),
 };
+
+for (const [code, table] of Object.entries({ es, vi, ja })) {
+  for (const [key, text] of Object.entries(table)) if (STRINGS[key]) STRINGS[key][code] = text;
+}
 
 // The text for key in the current language (English if missing); functions take args.
 export function t(key, ...args) {
