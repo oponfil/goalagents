@@ -50,9 +50,15 @@ function vignette(slide) {
   else if (theme.tool === 'beaker') {
     drawBeaker(c, hx, hy, 1.1, '#B585F2');
     for (let k = 0; k < 3; k++) { const q = k / 3 + 0.15; c.fillStyle = '#B585F2'; c.fillRect(hx + 5 + q * (pipeX - hx - 5), hy - 4 + q * q * 10, 1.5, 1.5); }
-  } else if (theme.tool === 'laptop') drawLaptop(c, hx - 3, hy + 2, 0.3);
+  } else if (theme.tool === 'laptop') {
+    // Bits fly from the laptop into the pipe.
+    drawLaptop(c, hx - 3, hy + 2, 0.3);
+    c.fillStyle = '#3CF27A';
+    for (const u of [0.2, 0.5, 0.8]) c.fillRect(hx + 5 + u * (pipeX - hx - 5), hy - 3 - Math.sin(u * Math.PI) * 4, 1, 1.5);
+  }
   else if (theme.tool === 'stamp') drawStamp(c, hx - 1, hy + 4, 0.4);
-  else { drawBow(c, hx, hy, 0.6); drawArrow(c, hx + 1, hy); }
+  // The arrow is on its way from the bow into the pipe.
+  else { drawBow(c, hx, hy, 0); drawArrow(c, hx + 3 + 0.6 * (pipeX - hx - 3), hy); }
 }
 
 const slides = [...document.querySelectorAll('.slide')];
