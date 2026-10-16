@@ -14,9 +14,9 @@ const zoneTop = k => (k < 0 ? TOP : tankTop(k) + LH);
 // Result items sit a little below the end of the last pipe.
 const flasksY = n => zoneTop(n - 1) + ZH + 9;
 export const H = flasksY(MAX_STAGES) + 50;
-// Tall enough for the longest column: its tanks, the rows of result items and the two lines under them.
+// Tall enough for the longest column: its tanks, the rows of result items and the four lines under them.
 export const sceneHeight = funnels => Math.max(H, ...funnels.map(f =>
-  flasksY(f.stages.length) + Math.ceil((f.goal?.total || 0) / PER_ROW) * 22 + 30));
+  flasksY(f.stages.length) + Math.ceil((f.goal?.total || 0) / PER_ROW) * 22 + 52));
 // Tanks narrow from 156 at the top to 76 at the bottom whatever their number, so every funnel
 // is the same pyramid; stages in between are spaced evenly.
 const tankW = (j, n) => Math.round((156 - (n > 1 ? j * 80 / (n - 1) : 0)) / 2) * 2;
@@ -425,22 +425,20 @@ export class Scene {
         if (pr.zones[k + 1] == null) T('?', cx, zoneTop(k) + 4 + GAUGE_R + 2.5, 7.5, '#2B2B2B', 'center', 700);
       }
       const ry = flasksY(n) + Math.ceil(f.goal.total / PER_ROW) * 22 + 8;
-      // Under the results, as on a tank: how many came out and how fast; then the goal and when the
-      // next result is due (coloured by pace against the goal).
-      const segs = (parts, y) => {
-        const w = parts.map(([str, size, , weight]) => { g.font = `${weight} ${size * S}px ${FONT}`; return g.measureText(str).width; });
-        let x = cx * S - w.reduce((p, v) => p + v, 0) / 2;
-        g.textAlign = 'left'; g.textBaseline = 'middle';
-        parts.forEach(([str, size, color, weight], i) => {
-          g.font = `${weight} ${size * S}px ${FONT}`; g.fillStyle = color; g.fillText(str, x, y * S); x += w[i];
-        });
-      };
-      const outFlow = f.flows[n];
-      segs([[`${f.cubes} ${plural(f.cubes, f.result)}`, 9, f.cubes ? themeOf(f).accent : '#8C8276', 600],
-        ...(outFlow == null ? [] : [[' ' + fmtFlow(outFlow, unit), 8.5, '#9FE870', 700]])], ry);
-      if (f.cubes >= f.goal.total) T('goal reached ✓', cx, ry + 11, 8, '#3CF27A', 'center', 700);
-      else segs([[`goal: ${f.goal.total}, 1 per ${fmtEta(f.goal.every).slice(1)} · next `, 7.5, '#B8AE9F', 500],
-        [fmtEta(pr.eta), 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 700]], ry + 11);
+      // Under the results, one thing per line: what they are, how many and how fast (as on a tank),
+      // when the next one is due (coloured by pace against the goal), and the goal.
+      const name = plural(5, f.result), num = String(f.cubes), outFlow = f.flows[n];
+      T(name.charAt(0).toUpperCase() + name.slice(1), cx, ry, 8, '#D8CFC2', 'center', 600);
+      g.font = `700 ${12 * S}px ${FONT}`; const wNum = g.measureText(num).width;
+      const flowText = outFlow == null ? '' : fmtFlow(outFlow, unit);
+      g.font = `700 ${8.5 * S}px ${FONT}`; const wFlow = flowText ? g.measureText(flowText).width + 3 * S : 0;
+      const x0 = cx * S - (wNum + wFlow) / 2;
+      g.textAlign = 'left'; g.textBaseline = 'middle';
+      g.font = `700 ${12 * S}px ${FONT}`; g.fillStyle = f.cubes ? themeOf(f).accent : '#8C8276'; g.fillText(num, x0, (ry + 12) * S);
+      if (flowText) { g.font = `700 ${8.5 * S}px ${FONT}`; g.fillStyle = '#9FE870'; g.fillText(flowText, x0 + wNum + 3 * S, (ry + 12) * S); }
+      if (f.cubes >= f.goal.total) T('goal reached ✓', cx, ry + 24, 8, '#3CF27A', 'center', 700);
+      else T(`next ${fmtEta(pr.eta)}`, cx, ry + 24, 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 'center', 700);
+      T(`goal: ${f.goal.total}, 1 per ${fmtEta(f.goal.every).slice(1)}`, cx, ry + 35, 7.5, '#B8AE9F', 'center', 500);
     });
     for (const a of this.agents) {
       if (a.state !== 'sleep') continue;
