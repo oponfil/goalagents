@@ -16,7 +16,9 @@ const flasksY = n => zoneTop(n - 1) + ZH + 9;
 export const H = flasksY(MAX_STAGES) + 50;
 // Tall enough for the longest column: its tanks, the rows of result items and the four lines under them.
 export const sceneHeight = funnels => Math.max(H, ...funnels.map(f =>
-  flasksY(f.stages.length) + Math.ceil((f.goal?.total || 0) / PER_ROW) * 22 + 52));
+  flasksY(f.stages.length) + Math.ceil(slots(f) / PER_ROW) * 22 + 52));
+// Result items under a funnel: one per result the goal needs, and more once agents go past it.
+const slots = f => Math.max(f.goal?.total || 0, f.cubes || 0);
 // Tanks narrow from 156 at the top to 76 at the bottom whatever their number, so every funnel
 // is the same pyramid; stages in between are spaced evenly.
 const tankW = (j, n) => Math.round((156 - (n > 1 ? j * 80 / (n - 1) : 0)) / 2) * 2;
@@ -236,9 +238,9 @@ export class Scene {
         let k = Math.floor(f.acc[i]);
         if (!k) continue;
         f.acc[i] -= k;
-        if (i === n) k = Math.min(k, Math.max(0, f.goal.total - f.cubes));
-        if (!k) continue;
         if (i === n) f.cubes += k; else f.stages[i].count += k;
+        // Results past the goal add rows: the scene grows down to fit them.
+        if (i === n && this.scale && sceneHeight(this.funnels) > this.H) { this.H = sceneHeight(this.funnels); this.resize(this.scale, this.dpr); }
         // Credit the items to an agent at work in the zone that feeds this stage.
         const crew = this.agents.filter(a => a.f === f && a.zone === i - 1 && a.state === 'work');
         if (crew.length) crew[Math.floor(Math.random() * crew.length)].added += k;
@@ -296,8 +298,8 @@ export class Scene {
         this.hits.push({ x, y, w: lw, h: LH, type: 'stage', fi, j });
       });
       // One result item per result the goal needs (chests, flasks, pots…): filled ones are done,
-      // empty ones are still to come.
-      const total = f.goal.total;
+      // empty ones are still to come. Past the goal, new results keep adding rows.
+      const total = slots(f);
       for (let i = 0; i < total; i++) {
         const row = Math.floor(i / PER_ROW), inRow = Math.min(PER_ROW, total - row * PER_ROW), col = i % PER_ROW;
         const empty = i >= f.cubes;
@@ -441,7 +443,7 @@ export class Scene {
       for (let k = -1; k < n; k++) {
         if (pr.zones[k + 1] == null) T('?', cx, gaugeY(k, k === n - 1) + 0.5, 7.5, '#2B2B2B', 'center', 700);
       }
-      const ry = flasksY(n) + Math.ceil(f.goal.total / PER_ROW) * 22 + 8;
+      const ry = flasksY(n) + Math.ceil(slots(f) / PER_ROW) * 22 + 8;
       // Under the results, one thing per line: what they are, how many and how fast (as on a tank),
       // when the next one is due (coloured by pace against the goal), and the goal.
       const name = plural(5, f.result), num = String(f.cubes), outFlow = f.flows[n];
@@ -455,7 +457,8 @@ export class Scene {
       if (flowText) { g.font = `700 ${8.5 * S}px ${FONT}`; g.fillStyle = '#9FE870'; g.fillText(flowText, x0 + wNum + 3 * S, (ry + 12) * S); }
       if (f.cubes >= f.goal.total) T('goal reached ✓', cx, ry + 24, 8, '#3CF27A', 'center', 700);
       else T(`next ${fmtEta(pr.eta)}`, cx, ry + 24, 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 'center', 700);
-      T(`goal: ${f.goal.total}, 1 per ${fmtEta(f.goal.every).slice(1)}`, cx, ry + 35, 7.5, '#B8AE9F', 'center', 500);
+      // Once the goal is reached, "goal reached ✓" replaces the goal line.
+      if (f.cubes < f.goal.total) T(`goal: ${f.goal.total}, 1 per ${fmtEta(f.goal.every).slice(1)}`, cx, ry + 35, 7.5, '#B8AE9F', 'center', 500);
     });
     for (const a of this.agents) {
       if (a.state !== 'sleep') continue;
@@ -473,7 +476,7 @@ export class Scene {
     for (const a of this.agents) {
       if (!a.added || a.state === 'walk') continue;
       const R = a.side === 'R', p = this.spot(a, a.state === 'sleep' ? 'rest' : a.state);
-      const x = a.state === 'sleep' ? (R ? p.x + 40 : p.x - 10) : R ? p.x + 26 : p.x - 6;
+      const x = a.state === 'sleep' ? (R ? p.x + 33 : p.x - 5) : R ? p.x + 26 : p.x - 6;
       const y = a.state === 'sleep' ? p.y + 8 : p.y + 4;
       shadowed(() => T('+' + fmtCount(a.added), x, y, 8, '#9FE870', 'center', 700));
     }
