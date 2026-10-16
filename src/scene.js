@@ -25,10 +25,11 @@ const GAUGE_R = 9;
 // pipe between it and the gauge; agents stand on the tank's top edge as on a floor.
 const PLATE_H = 11;
 const plateTop = k => zoneTop(k) + ZH - PLATE_H;
-// Below the last tank there is no tank to sit on: the plate sits right under the gauge and the pipe
-// runs on past it to where results drip out.
-const outPlateTop = k => zoneTop(k) + 4 + 2 * GAUGE_R + 3;
-const gaugeY = k => zoneTop(k) + 4 + GAUGE_R + 2;
+const outPlateTop = k => plateTop(k) - OUT_LIFT;
+// Below the last tank there is no tank to sit on: gauge and plate move up together (the same gap
+// between them as everywhere) so the pipe runs on past the plate to where results drip out.
+const OUT_LIFT = 5;
+const gaugeY = (k, out) => zoneTop(k) + 4 + GAUGE_R + 2 - (out ? OUT_LIFT : 0);
 export const DAY_SECONDS = 2;
 const PER_ROW = 10;  // result items per row under a funnel, the same for every theme
 const FONT = '"Rubik", system-ui, sans-serif';
@@ -132,7 +133,7 @@ export class Scene {
           if (f.source_url) this.sheets(c, cx, y - 26);
           this.hopper(c, cx, y - 8, y + 1);
         }
-        gaugeRim(c, cx, gaugeY(k));
+        gaugeRim(c, cx, gaugeY(k, k === n - 1));
       }
       f.stages.forEach((s, j) => {
         const lw = tankW(j, n), x = cx - lw / 2, y = tankTop(j);
@@ -260,7 +261,7 @@ export class Scene {
       if (f.source_url) this.hits.push(this.sourceHit(fi));
       const cx = this.cx(fi), n = f.stages.length, theme = themeOf(f);
       for (let k = -1; k < n; k++) {
-        const y = zoneTop(k), fl = f.flows[k + 1], gy = gaugeY(k);
+        const y = zoneTop(k), fl = f.flows[k + 1], gy = gaugeY(k, k === n - 1);
         this.drops(c, cx, y + 4, y + ZH, fl, fi * 3 + k);
         gaugeFace(c, cx, gy, project(f).zones[k + 1], Math.sin(t * 3 + fi + k) * 0.015);
         // The plate under each gauge is what the agents work on; only the output zone's has text
@@ -436,7 +437,7 @@ export class Scene {
       });
       const pr = project(f);
       for (let k = -1; k < n; k++) {
-        if (pr.zones[k + 1] == null) T('?', cx, gaugeY(k) + 0.5, 7.5, '#2B2B2B', 'center', 700);
+        if (pr.zones[k + 1] == null) T('?', cx, gaugeY(k, k === n - 1) + 0.5, 7.5, '#2B2B2B', 'center', 700);
       }
       const ry = flasksY(n) + Math.ceil(f.goal.total / PER_ROW) * 22 + 8;
       // Under the results, one thing per line: what they are, how many and how fast (as on a tank),

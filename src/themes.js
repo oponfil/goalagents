@@ -202,13 +202,15 @@ function plateLove(c, x, y, w, h) {
 }
 
 function plateCode(c, x, y, w, h) {
-  // A small server rack: three units stacked in a dark case, each with status lights and vents.
+  // A small server rack: three units stacked in a dark case, status lights scattered along each
+  // (still; the same rack everywhere).
   rect(c, x + 1, y, w - 2, h, '#14181E'); rect(c, x + 1, y, w - 2, 0.5, '#4A525C');
+  const lights = [[0, 3, 7, 12, 16], [1, 5, 9, 14, 18], [2, 4, 10, 13, 17]];
   for (let u = 0; u < 3; u++) {
     const uy = y + 1 + u * 3.3;
     rect(c, x + 2, uy, w - 4, 2.8, '#2A323C'); rect(c, x + 2, uy, w - 4, 0.5, '#3E4852');
-    rect(c, x + 3, uy + 1, 1, 1, '#3CF27A'); rect(c, x + 5, uy + 1, 1, 1, u === 1 ? '#F2C14E' : '#3CF27A');
-    for (let vx = x + 9; vx < x + w - 3; vx += 2) rect(c, vx, uy + 1, 1, 1.3, '#151A20');
+    for (let i = 0; i < 20; i += 2) rect(c, x + 3 + i, uy + 1, 1, 1.3, '#151A20');
+    lights[u].forEach((i, k) => rect(c, x + 3 + i, uy + 1, 1, 1, (u + k) % 4 === 1 ? '#F2C14E' : '#3CF27A'));
   }
 }
 
