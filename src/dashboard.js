@@ -173,12 +173,18 @@ export function mountDashboard(funnels, opts = {}) {
     const missed = scene.overdue(a)
       ? `<p class="pop-note warn">${esc(t('board.missed', fmtDuration(scene.t - a.wakeAt), fmtDuration(scene.t + (a.seenAgo || 0))))}</p>` : '';
     if (h.type === 'ask') {
-      // Each open question with its own answer box (the demo links to the agent's chat instead).
-      const open = chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.product || info.name))}</a>` : '';
+      // Each open question with its own answer box and, beside Send, the chat it was asked from (or
+      // the agent's chat): an agent working in several chats asks from each. The demo links to the
+      // agent's chat instead.
+      const openBtn = url => {
+        const link = chatLink(info, url);
+        return link ? `<a class="btn" href="${esc(link)}" ${opens(link, url)}>${esc(t('board.open', info.product || info.name))}</a>` : '';
+      };
       const asks = a.questions.map(q => `<div class="ask" data-qid="${esc(q.id)}"><p>${esc(q.question)}</p>${opts.onAnswer
         ? `<textarea class="answer" rows="3" maxlength="2000" placeholder="${esc(t('board.answer'))}"></textarea>
-          <button class="btn primary send" style="${paint}">${esc(t('board.send'))}</button><div class="pop-msg"></div>` : ''}</div>`).join('');
-      const reply = opts.onAnswer ? open
+          <div class="ask-buttons"><button class="btn primary send" style="${paint}">${esc(t('board.send'))}</button>${openBtn(q.chat || web)}</div>
+          <div class="pop-msg"></div>` : ''}</div>`).join('');
+      const reply = opts.onAnswer ? ''
         : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.replyIn', info.product || info.name))}</a>`;
       // Standing, the agent is waiting and takes the answer at once; asleep, only on its next run.
       const asleep = a.state === 'sleep', left = scene.sleepLeft(a);

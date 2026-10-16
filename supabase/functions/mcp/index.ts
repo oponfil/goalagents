@@ -22,7 +22,7 @@ const agent = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,31}$/)
 const INSTRUCTIONS = `GoalAgents shows the person their goals as funnels and the agents working them.
 A funnel is one goal (e.g. "Job Search") with 2-5 stages top to bottom (jobs found → applied → interview → final round) and a result at the bottom (offer).
 Zones: 0 is the inflow above the first stage, zone k moves stage k-1 into stage k, zone n (below the last stage) turns the last stage into results. At most two agents per zone on Pro, one on the free plan.
-On every run: first thing, before any other work, set_agent_state(work) in your zone (this starts the run's counter, shown by you on the dashboard; 5 minutes past your next_run_at without it the dashboard warns the person that you did not wake up); after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question) and poll get_answer: while you are in ask the person sees you waiting and expects you to take the answer at once. If you go to sleep before it comes, the question stays on the dashboard and the person is told you will pick the answer up on your next run, so call get_answer then. If the person answers you somewhere else instead (in your chat), call close_question so the dashboard stops showing the question; at the end set_agent_state(sleep, next_run_at) or clear_agent.
+On every run: first thing, before any other work, set_agent_state(work) in your zone (this starts the run's counter, shown by you on the dashboard; 5 minutes past your next_run_at without it the dashboard warns the person that you did not wake up); after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question, chat_url of this conversation when you know it) and poll get_answer: while you are in ask the person sees you waiting and expects you to take the answer at once. If you go to sleep before it comes, the question stays on the dashboard and the person is told you will pick the answer up on your next run, so call get_answer then. If the person answers you somewhere else instead (in your chat), call close_question so the dashboard stops showing the question; at the end set_agent_state(sleep, next_run_at) or clear_agent.
 Plans: free has up to 3 funnels with up to 3 stages each and one agent per zone; Pro has up to 10 funnels with up to 5 stages each and two agents per zone. list_funnels tells which plan the person has.
 Report only counts, dates and links: the items themselves stay in the person's own sources.
 Link to the list: whenever the funnel's items are kept in a table or list that opens by a URL (Google Sheets, Notion, Airtable, a GitHub file…), give that URL as the funnel's source_url (in upsert_funnel or report_counts) — the dashboard shows it as a sheet on top of the funnel and opens it on click. One link per funnel. Keep the list where a link can open it when you can. If it only exists on your machine or you have no such place, leave source_url empty and say so to the person; it is optional.`
@@ -78,7 +78,7 @@ async function funnels(db: Db, key?: string) {
     .select(`key, title, theme, source_url, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day, updated_at,
       stages (key, position, label, count, fill_percent, pace, flow_per_day),
       presence (agent, zone, state, next_run_at, chat_url, question_id, run_added, updated_at),
-      questions (id, agent, question, answer, asked_at, answered_at)`)
+      questions (id, agent, question, answer, asked_at, answered_at, chat_url)`)
     .order('created_at')
   if (key) q = q.eq('key', key)
   const rows = check(await q) as any[]
@@ -246,7 +246,7 @@ function server(db: Db, caller: Caller) {
       state: z.enum(['work', 'sleep', 'ask']),
       next_run_at: z.string().datetime({ offset: true }).optional().describe('For sleep: ISO time of your next run'),
       question: z.string().min(1).max(1000).optional().describe('For ask: what you need from the person'),
-      chat_url: z.string().url().optional().describe('Link to your chat or session'),
+      chat_url: z.string().url().regex(/^https?:\/\//).optional().describe('Link to this conversation (e.g. https://chatgpt.com/c/…, https://claude.ai/chat/…) when you know it. With ask it is kept with the question, so the person\'s "Open" under it leads to this very chat'),
       added: z.number().int().min(0).max(1e9).optional().describe('How many items you added this run, when you know it better than the counts show (e.g. when items also left your stage). Leave it out and the dashboard counts it from report_counts'),
     }),
   }, async (a) => {
@@ -260,7 +260,7 @@ function server(db: Db, caller: Caller) {
       // news: no second email for it.
       const again = check(await db.from('questions').select('id').eq('funnel_id', f.id).eq('agent', a.agent)
         .eq('question', a.question).is('answered_at', null).limit(1)) as unknown[]
-      const q = check(await db.from('questions').insert({ funnel_id: f.id, agent: a.agent, question: a.question })
+      const q = check(await db.from('questions').insert({ funnel_id: f.id, agent: a.agent, question: a.question, chat_url: a.chat_url ?? null })
         .select('id').single()) as { id: string }
       question_id = q.id
       if (!again.length) notify(caller, f.id, a.agent, a.question!)

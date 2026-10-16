@@ -50,7 +50,7 @@ function toScene(f, reports, now) {
         wakeIn: p.state === 'sleep' && p.next_run_at ? (Date.parse(p.next_run_at) - now) / 1000 : null,
         // Seconds since the agent last changed its state (its last word, for an overdue one).
         seenAgo: (now - Date.parse(p.updated_at)) / 1000,
-        questions: qs.map(q => ({ id: q.id, question: q.question })),
+        questions: qs.map(q => ({ id: q.id, question: q.question, chat: q.chat_url })),
         chat: p.chat_url,
         // What this run added (the last run's, while the agent sleeps); null = not known.
         added: p.run_added,
@@ -66,7 +66,7 @@ export async function loadFunnels() {
       .select(`id, title, theme, source_url, result, goal_total, goal_every_days, results, output_pace, output_flow_per_day,
         stages (key, position, label, count, fill_percent, pace, flow_per_day),
         presence (agent, zone, state, next_run_at, question_id, chat_url, run_added, updated_at),
-        questions (id, agent, question, asked_at, answered_at)`)
+        questions (id, agent, question, asked_at, answered_at, chat_url)`)
       .order('created_at'),
     supabase.from('count_reports')
       .select('funnel_id, stage_key, value, at')

@@ -4,8 +4,9 @@ import { lang } from './i18n.js';
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
   claude: { name: 'Claude', color: '#D97757', chat: 'https://claude.ai', app: url => url.replace(/^https:\/\/claude\.ai/, 'claude://claude.ai') },
-  // The ChatGPT desktop app opens on codex:// links (it has no chatgpt:// scheme).
-  chatgpt: { name: 'ChatGPT', color: '#10A37F', chat: 'https://chatgpt.com', app: () => 'codex://' },
+  // The ChatGPT desktop app opens on codex:// links (it has no chatgpt:// scheme), but only on its
+  // start screen: a link to one conversation stays on the web, where it opens that conversation.
+  chatgpt: { name: 'ChatGPT', color: '#10A37F', chat: 'https://chatgpt.com', app: url => (/^https:\/\/chatgpt\.com\/./.test(url) ? url : 'codex://') },
   grok: { name: 'Grok', color: '#1A1A1A', chat: 'https://grok.com' },
   gemini: { name: 'Gemini', color: '#4285F4', chat: 'https://gemini.google.com' },
   deepseek: { name: 'DeepSeek', color: '#4D6BFE', chat: 'https://chat.deepseek.com' },

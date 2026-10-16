@@ -156,7 +156,7 @@ body {
 #pop button.btn.primary { background: #D97757; }
 #pop button.btn:disabled { opacity: 0.5; cursor: default; }
 #pop .ask + .ask { border-top: 1px solid var(--border); margin-top: 10px; padding-top: 4px; }
-#pop .ask .send { margin-bottom: 4px; }
+#pop .ask-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
 #pop details.runs { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; font-size: 13px; }
 #pop details.runs summary { cursor: pointer; color: var(--muted); }
 #pop details.runs summary:hover { color: var(--text); }
