@@ -451,15 +451,17 @@ const pieceLove = {
     byDepth([flower, letter, heart, lips, ring], j, n)(c, x, y, 0.75, col);
   },
 };
-// Code: little snippets, a dark block with two or three coloured lines like highlighted source;
-// the line colours change by stage.
+// Code: devices, bigger by stage: phones, tablets, laptops, monitors, then servers.
 const pieceCode = {
-  w: 6, h: 4.5,
-  draw(c, x, y, j, n, i = 0) {
-    const [a, b] = byDepth([['#3CF27A', '#2E8A50'], ['#F0F05C', '#8A8A20'], ['#FFB866', '#A85A18'], ['#5CF0F0', '#18A0A8'], ['#7CB8FF', '#2A6AD0']], j, n);
-    rect(c, x, y, 5.5, 4, '#1E4A2E'); rect(c, x + 0.25, y + 0.25, 5, 3.5, '#10261A');
-    const l = [3.5, 2, 3, 4, 2.5][i % 5], m = [2, 3.5, 1.5, 2.5, 3][i % 5];
-    rect(c, x + 0.5, y + 0.5, l, 0.5, a); rect(c, x + 1.5, y + 1.75, m, 0.5, b); rect(c, x + 0.5, y + 3, Math.min(4.5, l + 0.5), 0.5, a);
+  w: 6.5, h: 6,
+  draw(c, x, y, j, n) {
+    const kind = byDepth(['phone', 'tablet', 'laptop', 'monitor', 'server'], j, n);
+    const body = '#3A3F48', edge = '#1E2228', glow = '#3CF27A', screen = '#5CF0F0';
+    if (kind === 'phone') { rect(c, x + 1.5, y + 0.5, 3, 5, edge); rect(c, x + 2, y + 1, 2, 3.5, screen); rect(c, x + 2.5, y + 5, 1, 0.5, body); }
+    else if (kind === 'tablet') { rect(c, x + 0.5, y + 0.5, 5, 5, edge); rect(c, x + 1, y + 1, 4, 3.5, screen); rect(c, x + 2.5, y + 5, 1, 0.5, body); }
+    else if (kind === 'laptop') { rect(c, x + 1, y + 1, 4.5, 3.5, edge); rect(c, x + 1.5, y + 1.5, 3.5, 2.5, glow); rect(c, x, y + 4.5, 6.5, 1, body); }
+    else if (kind === 'monitor') { rect(c, x, y + 0.5, 6, 4, edge); rect(c, x + 0.5, y + 1, 5, 3, screen); rect(c, x + 2.5, y + 4.5, 1, 1, body); rect(c, x + 1.5, y + 5.5, 3, 0.5, body); }
+    else { rect(c, x + 0.5, y, 5, 6, edge); rect(c, x + 1, y + 0.5, 4, 1.5, body); rect(c, x + 1, y + 2.5, 4, 1.5, body); rect(c, x + 1.5, y + 1, 0.5, 0.5, glow); rect(c, x + 1.5, y + 3, 0.5, 0.5, '#F2C14E'); rect(c, x + 1, y + 4.5, 4, 1, body); }
   },
 };
 const pieceMoney = {

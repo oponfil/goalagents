@@ -35,7 +35,7 @@ Each funnel picks a look; the data and behaviour are the same.
 | `lab` | chemists pouring reagents | Petri dish | liquid, deeper colour by stage | flasks |
 | `garden` | gardeners with shears | flower bed | sprouts, buds, then pink, red and purple flowers | flower pots |
 | `love` | cupids with bows | bed | flowers, love letters, hearts, kisses, rings: pink to red | hearts |
-| `code` | hackers on laptops | server rack | ones and zeros, a colour per stage | chips |
+| `code` | hackers on laptops | server rack | phones, tablets, laptops, monitors, servers | chips |
 | `money` | bankers with stamps | contract | copper pennies, banknotes, silver bars, gold bars, bitcoins | money bags |
 
 ## Agents
