@@ -6,13 +6,13 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=4fc07f4f';
-import vi from './lang/vi.js?v=4fc07f4f';
-import ja from './lang/ja.js?v=4fc07f4f';
+import es from './lang/es.js?v=6ecccb9b';
+import vi from './lang/vi.js?v=6ecccb9b';
+import ja from './lang/ja.js?v=6ecccb9b';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
-const KEY = 'goalagents-lang';
+const KEY = 'goalcraft-lang';
 
 // Whether the person picked a language in this browser (rather than it coming from the browser).
 let picked = null;
@@ -56,7 +56,7 @@ export function adoptLang(code) {
 // Flows on the board are counted per hour, day or week: one unit for every funnel, picked in the
 // profile menu, per day until then. Kept in this browser; saveFlowRemote (set by nav.js once signed
 // in) also keeps it in the account. The board reads flowUnit on every frame, so a change shows at once.
-const FLOW_KEY = 'goalagents-flow';
+const FLOW_KEY = 'goalcraft-flow';
 export const FLOW_UNITS = ['h', 'd', 'w'];
 let flowPicked = null;
 try { flowPicked = localStorage.getItem(FLOW_KEY); } catch {}
@@ -89,7 +89,7 @@ const STRINGS = {
   'flow.d': L('per day', 'в день', '每天', 'ต่อวัน'),
   'flow.w': L('per week', 'в неделю', '每周', 'ต่อสัปดาห์'),
   'nav.lang': L('Language', 'Язык', '语言', 'ภาษา'),
-  'footer.built': L('© 2026 GoalAgents', '© 2026 GoalAgents', '© 2026 GoalAgents', '© 2026 GoalAgents'),
+  'footer.built': L('© 2026 Goalcraft', '© 2026 Goalcraft', '© 2026 Goalcraft', '© 2026 Goalcraft'),
   'footer.deck': L('Pitch deck', 'Презентация', '路演文稿', 'พิตช์เด็ค'),
   'footer.privacy': L('Privacy', 'Конфиденциальность', '隐私', 'ความเป็นส่วนตัว'),
   'footer.contact': L('Contact', 'Контакты', '联系', 'ติดต่อ'),
@@ -131,25 +131,25 @@ const STRINGS = {
   'connect.h1': L('Connect an agent', 'Подключите агента', '连接一个智能体', 'เชื่อมต่อเอเจนต์'),
   'connect.empty.h1': L('Connect your agents', 'Подключите своих агентов', '连接你的智能体', 'เชื่อมต่อเอเจนต์ของคุณ'),
   'connect.intro': L(
-    'Paste this into your agent: Claude, ChatGPT, Cursor or any other that supports MCP. It connects GoalAgents, or tells you how.',
-    'Вставьте это в своего агента: Claude, ChatGPT, Cursor или любого другого с поддержкой MCP. Он подключит GoalAgents или подскажет, как это сделать.',
-    '把这段话粘贴给你的智能体：Claude、ChatGPT、Cursor 或任何支持 MCP 的智能体。它会连接 GoalAgents，或告诉你怎么做。',
-    'วางข้อความนี้ในเอเจนต์ของคุณ: Claude, ChatGPT, Cursor หรือเอเจนต์อื่นที่รองรับ MCP มันจะเชื่อมต่อ GoalAgents หรือบอกวิธีให้คุณ'),
+    'Paste this into your agent: Claude, ChatGPT, Cursor or any other that supports MCP. It connects Goalcraft, or tells you how.',
+    'Вставьте это в своего агента: Claude, ChatGPT, Cursor или любого другого с поддержкой MCP. Он подключит Goalcraft или подскажет, как это сделать.',
+    '把这段话粘贴给你的智能体：Claude、ChatGPT、Cursor 或任何支持 MCP 的智能体。它会连接 Goalcraft，或告诉你怎么做。',
+    'วางข้อความนี้ในเอเจนต์ของคุณ: Claude, ChatGPT, Cursor หรือเอเจนต์อื่นที่รองรับ MCP มันจะเชื่อมต่อ Goalcraft หรือบอกวิธีให้คุณ'),
   'connect.after': L(
-    'When the agent connects, a GoalAgents page asks you to sign in and allow it. Then tell the agent which goal to work on, and its funnel appears in <a href="../app/">Goals</a>. Connect as many agents as you like, one by one.',
-    'Когда агент подключается, страница GoalAgents попросит войти и разрешить доступ. Потом скажите агенту, над какой целью работать, и её воронка появится в разделе <a href="../app/">Цели</a>. Подключайте сколько угодно агентов, по одному.',
-    '智能体连接时，GoalAgents 页面会请你登录并授权。然后告诉它要推进哪个目标，它的漏斗就会出现在<a href="../app/">目标</a>里。可以逐个连接任意多个智能体。',
-    'เมื่อเอเจนต์เชื่อมต่อ หน้า GoalAgents จะขอให้คุณเข้าสู่ระบบและอนุญาต จากนั้นบอกเอเจนต์ว่าจะทำเป้าหมายไหน แล้วกรวยของมันจะปรากฏใน<a href="../app/">เป้าหมาย</a> เชื่อมต่อเอเจนต์ได้มากเท่าที่ต้องการ ทีละตัว'),
+    'When the agent connects, a Goalcraft page asks you to sign in and allow it. Then tell the agent which goal to work on, and its funnel appears in <a href="../app/">Goals</a>. Connect as many agents as you like, one by one.',
+    'Когда агент подключается, страница Goalcraft попросит войти и разрешить доступ. Потом скажите агенту, над какой целью работать, и её воронка появится в разделе <a href="../app/">Цели</a>. Подключайте сколько угодно агентов, по одному.',
+    '智能体连接时，Goalcraft 页面会请你登录并授权。然后告诉它要推进哪个目标，它的漏斗就会出现在<a href="../app/">目标</a>里。可以逐个连接任意多个智能体。',
+    'เมื่อเอเจนต์เชื่อมต่อ หน้า Goalcraft จะขอให้คุณเข้าสู่ระบบและอนุญาต จากนั้นบอกเอเจนต์ว่าจะทำเป้าหมายไหน แล้วกรวยของมันจะปรากฏใน<a href="../app/">เป้าหมาย</a> เชื่อมต่อเอเจนต์ได้มากเท่าที่ต้องการ ทีละตัว'),
   'connect.empty.after': L(
     'Then tell it which goal to work on, and your funnels appear here. Not sure what it will look like? <a href="../demo/">See the demo</a>.',
     'Потом скажите ему, над какой целью работать, и ваши воронки появятся здесь. Хотите посмотреть, как это выглядит? <a href="../demo/">Откройте демо</a>.',
     '然后告诉它要推进哪个目标，你的漏斗就会出现在这里。想先看看效果？<a href="../demo/">查看演示</a>。',
     'จากนั้นบอกมันว่าจะทำเป้าหมายไหน แล้วกรวยของคุณจะปรากฏที่นี่ อยากเห็นหน้าตาก่อน? <a href="../demo/">ดูเดโม</a>'),
   'connect.prompt': L(
-    (url) => `Connect this MCP server for me: ${url} (GoalAgents, remote, sign-in with OAuth). If you can't connect it yourself, tell me exactly how to do it in this app.`,
-    (url) => `Подключи мне этот MCP-сервер: ${url} (GoalAgents, удалённый, вход через OAuth). Если не можешь подключить сам, объясни точно, как это сделать в этом приложении.`,
-    (url) => `请帮我连接这个 MCP 服务器：${url}（GoalAgents，远程，通过 OAuth 登录）。如果你无法自己连接，请准确告诉我在这个应用里该怎么做。`,
-    (url) => `ช่วยเชื่อมต่อ MCP เซิร์ฟเวอร์นี้ให้หน่อย: ${url} (GoalAgents, รีโมต, เข้าสู่ระบบด้วย OAuth) ถ้าเชื่อมต่อเองไม่ได้ ช่วยบอกวิธีทำในแอปนี้อย่างละเอียด`),
+    (url) => `Connect this MCP server for me: ${url} (Goalcraft, remote, sign-in with OAuth). If you can't connect it yourself, tell me exactly how to do it in this app.`,
+    (url) => `Подключи мне этот MCP-сервер: ${url} (Goalcraft, удалённый, вход через OAuth). Если не можешь подключить сам, объясни точно, как это сделать в этом приложении.`,
+    (url) => `请帮我连接这个 MCP 服务器：${url}（Goalcraft，远程，通过 OAuth 登录）。如果你无法自己连接，请准确告诉我在这个应用里该怎么做。`,
+    (url) => `ช่วยเชื่อมต่อ MCP เซิร์ฟเวอร์นี้ให้หน่อย: ${url} (Goalcraft, รีโมต, เข้าสู่ระบบด้วย OAuth) ถ้าเชื่อมต่อเองไม่ได้ ช่วยบอกวิธีทำในแอปนี้อย่างละเอียด`),
   'copy': L('Copy', 'Копировать', '复制', 'คัดลอก'),
   'copied': L('Copied', 'Скопировано', '已复制', 'คัดลอกแล้ว'),
   'copy.manual': L('Select the text and copy it', 'Выделите текст и скопируйте', '请选中文字并复制', 'เลือกข้อความแล้วคัดลอก'),
@@ -242,16 +242,16 @@ const STRINGS = {
     'เมื่อคุณเข้าสู่ระบบด้วย Google หรือลิงก์ทางอีเมล เราเก็บที่อยู่อีเมลและรหัสผู้ใช้ของคุณ จาก Google เรายังได้รับชื่อและรูปโปรไฟล์ แต่ไม่นำไปใช้อย่างอื่น เมื่อเอเจนต์ของคุณเชื่อมต่อ เราเก็บกรวย ตัวเลข ผลลัพธ์ และสถานะเอเจนต์ที่พวกมันรายงาน'),
   'privacy.h.why': L('Why', 'Зачем', '为什么', 'ทำไม'),
   'privacy.why': L(
-    'Only to sign you in and show your dashboard. We do not sell your data, show ads or share it with third parties, except the services that run GoalAgents: Supabase (database and sign-in) and GitHub Pages (hosting).',
-    'Только чтобы вы могли войти и видеть свою доску. Мы не продаём данные, не показываем рекламу и не передаём данные третьим лицам, кроме сервисов, на которых работает GoalAgents: Supabase (база данных и вход) и GitHub Pages (хостинг).',
-    '仅用于让你登录并显示你的看板。我们不出售你的数据、不展示广告，也不与第三方共享，运行 GoalAgents 的服务除外：Supabase（数据库和登录）和 GitHub Pages（托管）。',
-    'เพื่อให้คุณเข้าสู่ระบบและแสดงแดชบอร์ดเท่านั้น เราไม่ขายข้อมูล ไม่แสดงโฆษณา และไม่แบ่งปันกับบุคคลที่สาม ยกเว้นบริการที่ใช้รัน GoalAgents: Supabase (ฐานข้อมูลและการเข้าสู่ระบบ) และ GitHub Pages (โฮสติ้ง)'),
+    'Only to sign you in and show your dashboard. We do not sell your data, show ads or share it with third parties, except the services that run Goalcraft: Supabase (database and sign-in) and GitHub Pages (hosting).',
+    'Только чтобы вы могли войти и видеть свою доску. Мы не продаём данные, не показываем рекламу и не передаём данные третьим лицам, кроме сервисов, на которых работает Goalcraft: Supabase (база данных и вход) и GitHub Pages (хостинг).',
+    '仅用于让你登录并显示你的看板。我们不出售你的数据、不展示广告，也不与第三方共享，运行 Goalcraft 的服务除外：Supabase（数据库和登录）和 GitHub Pages（托管）。',
+    'เพื่อให้คุณเข้าสู่ระบบและแสดงแดชบอร์ดเท่านั้น เราไม่ขายข้อมูล ไม่แสดงโฆษณา และไม่แบ่งปันกับบุคคลที่สาม ยกเว้นบริการที่ใช้รัน Goalcraft: Supabase (ฐานข้อมูลและการเข้าสู่ระบบ) และ GitHub Pages (โฮสติ้ง)'),
   'privacy.h.google': L('Google data', 'Данные Google', 'Google 数据', 'ข้อมูลจาก Google'),
   'privacy.google': L(
-    'GoalAgents asks Google only for your email and basic profile. Its use of information received from Google APIs follows the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.',
-    'GoalAgents запрашивает у Google только почту и базовый профиль. Использование информации, полученной через API Google, соответствует <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, включая требования Limited Use.',
-    'GoalAgents 只向 Google 请求你的邮箱和基本资料。对从 Google API 获得的信息的使用遵循 <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>，包括 Limited Use 要求。',
-    'GoalAgents ขอจาก Google เพียงอีเมลและโปรไฟล์พื้นฐาน การใช้ข้อมูลที่ได้รับจาก Google API เป็นไปตาม <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a> รวมถึงข้อกำหนด Limited Use'),
+    'Goalcraft asks Google only for your email and basic profile. Its use of information received from Google APIs follows the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.',
+    'Goalcraft запрашивает у Google только почту и базовый профиль. Использование информации, полученной через API Google, соответствует <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, включая требования Limited Use.',
+    'Goalcraft 只向 Google 请求你的邮箱和基本资料。对从 Google API 获得的信息的使用遵循 <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>，包括 Limited Use 要求。',
+    'Goalcraft ขอจาก Google เพียงอีเมลและโปรไฟล์พื้นฐาน การใช้ข้อมูลที่ได้รับจาก Google API เป็นไปตาม <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a> รวมถึงข้อกำหนด Limited Use'),
   'privacy.h.delete': L('Deleting your data', 'Удаление данных', '删除你的数据', 'การลบข้อมูลของคุณ'),
   'privacy.delete': L(
     'Write to <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a> and we will delete your account and everything your agents reported.',
@@ -261,15 +261,15 @@ const STRINGS = {
 
   // Contact
   'contact.h1': L('Contact', 'Контакты', '联系', 'ติดต่อ'),
-  'contact.who': L('GoalAgents is made by Oleg Ponfilenok.', 'GoalAgents делает Олег Понфиленок.', 'GoalAgents 由 Oleg Ponfilenok 打造。', 'GoalAgents สร้างโดย Oleg Ponfilenok'),
+  'contact.who': L('Goalcraft is made by Oleg Ponfilenok.', 'Goalcraft делает Олег Понфиленок.', 'Goalcraft 由 Oleg Ponfilenok 打造。', 'Goalcraft สร้างโดย Oleg Ponfilenok'),
   'contact.h.write': L('Write to us', 'Напишите нам', '给我们写信', 'เขียนถึงเรา'),
   'contact.write': L('Questions, ideas, bugs or a partnership: <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>.', 'Вопросы, идеи, ошибки или партнёрство: <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>.', '问题、想法、错误或合作：<a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>。', 'คำถาม ไอเดีย บั๊ก หรือความร่วมมือ: <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>'),
   'contact.h.code': L('Code', 'Код', '代码', 'โค้ด'),
   'contact.code': L(
-    'The code and the MCP protocol are on <a href="https://github.com/oponfil/goalagents" target="_blank" rel="noopener">GitHub</a>. Issues and pull requests are welcome.',
-    'Код и протокол MCP — на <a href="https://github.com/oponfil/goalagents" target="_blank" rel="noopener">GitHub</a>. Issues и pull requests приветствуются.',
-    '代码和 MCP 协议在 <a href="https://github.com/oponfil/goalagents" target="_blank" rel="noopener">GitHub</a> 上，欢迎提交 issue 和 pull request。',
-    'โค้ดและโปรโตคอล MCP อยู่บน <a href="https://github.com/oponfil/goalagents" target="_blank" rel="noopener">GitHub</a> ยินดีรับ issue และ pull request'),
+    'The code and the MCP protocol are on <a href="https://github.com/oponfil/goalcraft" target="_blank" rel="noopener">GitHub</a>. Issues and pull requests are welcome.',
+    'Код и протокол MCP — на <a href="https://github.com/oponfil/goalcraft" target="_blank" rel="noopener">GitHub</a>. Issues и pull requests приветствуются.',
+    '代码和 MCP 协议在 <a href="https://github.com/oponfil/goalcraft" target="_blank" rel="noopener">GitHub</a> 上，欢迎提交 issue 和 pull request。',
+    'โค้ดและโปรโตคอล MCP อยู่บน <a href="https://github.com/oponfil/goalcraft" target="_blank" rel="noopener">GitHub</a> ยินดีรับ issue และ pull request'),
 
   // Sign in
   'login.h1': L('Sign in', 'Вход', '登录', 'เข้าสู่ระบบ'),
@@ -298,7 +298,7 @@ const STRINGS = {
   'consent.anApp': L('An app', 'Приложение', '一个应用', 'แอปหนึ่ง'),
   'consent.theApp': L('the app', 'приложение', '该应用', 'แอป'),
   'consent.h1': L((name) => `Connect ${name}?`, (name) => `Подключить ${name}?`, (name) => `连接 ${name}？`, (name) => `เชื่อมต่อ ${name}?`),
-  'consent.wants': L((name, email) => `${name} wants to work with your GoalAgents as ${email}.`, (name, email) => `${name} хочет работать с вашим GoalAgents от имени ${email}.`, (name, email) => `${name} 想以 ${email} 的身份使用你的 GoalAgents。`, (name, email) => `${name} ต้องการทำงานกับ GoalAgents ของคุณในชื่อ ${email}`),
+  'consent.wants': L((name, email) => `${name} wants to work with your Goalcraft as ${email}.`, (name, email) => `${name} хочет работать с вашим Goalcraft от имени ${email}.`, (name, email) => `${name} 想以 ${email} 的身份使用你的 Goalcraft。`, (name, email) => `${name} ต้องการทำงานกับ Goalcraft ของคุณในชื่อ ${email}`),
   'consent.p1': L('See your goal funnels, counts and agents', 'Видеть ваши воронки, счётчики и агентов', '查看你的目标漏斗、计数和智能体', 'ดูกรวยเป้าหมาย ตัวเลข และเอเจนต์ของคุณ'),
   'consent.p2': L('Create and change funnels, report progress and results', 'Создавать и менять воронки, сообщать о прогрессе и результатах', '创建和修改漏斗，汇报进度和成果', 'สร้างและแก้ไขกรวย รายงานความคืบหน้าและผลลัพธ์'),
   'consent.p3': L('Show itself at work and ask you questions', 'Показывать себя за работой и задавать вам вопросы', '展示自己的工作并向你提问', 'แสดงตัวขณะทำงานและถามคำถามคุณ'),

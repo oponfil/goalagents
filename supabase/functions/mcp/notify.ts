@@ -1,11 +1,11 @@
 // Email to the person when an agent asks them a question, if they ticked "Email me" in the nav
-// (user_metadata.notify_email). Sent through ImprovMX SMTP from noreply@goalagents.run, the
+// (user_metadata.notify_email). Sent through ImprovMX SMTP from noreply@goalcraft.ai, the
 // same sender as the sign-in links; the password is the SMTP_PASS function secret. Port 465:
 // edge functions cannot reach port 587.
 import nodemailer from 'npm:nodemailer@6.9.16'
 
-const FROM = 'noreply@goalagents.run'
-const APP = 'https://goalagents.run/app/'
+const FROM = 'noreply@goalcraft.ai'
+const APP = 'https://goalcraft.ai/app/'
 
 const NAMES: Record<string, string> = {
   claude: 'Claude', chatgpt: 'ChatGPT', grok: 'Grok', gemini: 'Gemini', deepseek: 'DeepSeek',
@@ -23,43 +23,43 @@ const WORDS: Record<string, Words> = {
     subject: (who, q) => `${who} asks: ${q}`,
     body: (who, funnel) => `${who} in “${funnel}” is waiting for your answer:`,
     answer: 'Answer on the dashboard',
-    why: 'You get this because “Email me” is ticked in the menu on goalagents.run. Untick it to stop these emails.',
+    why: 'You get this because “Email me” is ticked in the menu on goalcraft.ai. Untick it to stop these emails.',
   },
   ru: {
     subject: (who, q) => `${who} спрашивает: ${q}`,
     body: (who, funnel) => `${who} в «${funnel}» ждёт вашего ответа:`,
     answer: 'Ответить на дашборде',
-    why: 'Это письмо пришло, потому что в меню на goalagents.run отмечено «Письма». Снимите галочку, чтобы письма больше не приходили.',
+    why: 'Это письмо пришло, потому что в меню на goalcraft.ai отмечено «Письма». Снимите галочку, чтобы письма больше не приходили.',
   },
   es: {
     subject: (who, q) => `${who} pregunta: ${q}`,
     body: (who, funnel) => `${who} en «${funnel}» espera tu respuesta:`,
     answer: 'Responder en el panel',
-    why: 'Recibes este correo porque «Avisos» está marcado en el menú de goalagents.run. Desmárcalo para dejar de recibirlos.',
+    why: 'Recibes este correo porque «Avisos» está marcado en el menú de goalcraft.ai. Desmárcalo para dejar de recibirlos.',
   },
   vi: {
     subject: (who, q) => `${who} hỏi: ${q}`,
     body: (who, funnel) => `${who} trong “${funnel}” đang chờ bạn trả lời:`,
     answer: 'Trả lời trên bảng',
-    why: 'Bạn nhận được email này vì mục “Thông báo” đang được chọn trong menu trên goalagents.run. Bỏ chọn để ngừng nhận.',
+    why: 'Bạn nhận được email này vì mục “Thông báo” đang được chọn trong menu trên goalcraft.ai. Bỏ chọn để ngừng nhận.',
   },
   ja: {
     subject: (who, q) => `${who} からの質問：${q}`,
     body: (who, funnel) => `「${funnel}」の ${who} があなたの返事を待っています：`,
     answer: 'ボードで返事する',
-    why: 'goalagents.run のメニューで「メール通知」がオンになっているため、このメールが届きました。オフにすると届かなくなります。',
+    why: 'goalcraft.ai のメニューで「メール通知」がオンになっているため、このメールが届きました。オフにすると届かなくなります。',
   },
   zh: {
     subject: (who, q) => `${who} 提问：${q}`,
     body: (who, funnel) => `${who} 在「${funnel}」中等待你的回复：`,
     answer: '在看板上回复',
-    why: '你收到这封邮件，是因为在 goalagents.run 的菜单中勾选了“邮件通知”。取消勾选即可停止接收。',
+    why: '你收到这封邮件，是因为在 goalcraft.ai 的菜单中勾选了“邮件通知”。取消勾选即可停止接收。',
   },
   th: {
     subject: (who, q) => `${who} ถาม: ${q}`,
     body: (who, funnel) => `${who} ใน “${funnel}” กำลังรอคำตอบจากคุณ:`,
     answer: 'ตอบบนแดชบอร์ด',
-    why: 'คุณได้รับอีเมลนี้เพราะติ๊ก “แจ้งทางอีเมล” ไว้ในเมนูของ goalagents.run เอาติ๊กออกเพื่อหยุดรับอีเมลเหล่านี้',
+    why: 'คุณได้รับอีเมลนี้เพราะติ๊ก “แจ้งทางอีเมล” ไว้ในเมนูของ goalcraft.ai เอาติ๊กออกเพื่อหยุดรับอีเมลเหล่านี้',
   },
 }
 
@@ -75,7 +75,7 @@ export async function emailQuestion(to: string, lang: string | undefined, agent:
   const w = WORDS[lang ?? ''] ?? WORDS.en, who = nameOf(agent)
   const line = question.replace(/\s+/g, ' ').trim()
   await transport.sendMail({
-    from: `GoalAgents <${FROM}>`,
+    from: `Goalcraft <${FROM}>`,
     to,
     subject: w.subject(who, short(line, 80)),
     text: `${w.body(who, funnel)}\n\n${question}\n\n${w.answer}: ${APP}\n\n—\n${w.why}`,

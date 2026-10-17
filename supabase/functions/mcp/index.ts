@@ -1,5 +1,5 @@
-// GoalAgents MCP server: agents create goal funnels and report progress; the person watches it on
-// goalagents.run. Streamable HTTP, OAuth 2.1 through Supabase Auth. Every query runs as the
+// Goalcraft MCP server: agents create goal funnels and report progress; the person watches it on
+// goalcraft.ai. Streamable HTTP, OAuth 2.1 through Supabase Auth. Every query runs as the
 // signed-in person, so row-level security keeps each person's data their own.
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
 
@@ -19,7 +19,7 @@ const funnelId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/).describe('Funnel 
 const agent = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,31}$/)
   .describe('Who you are: claude, chatgpt, grok, gemini, deepseek, kimi, qwen, mistral, perplexity, hermes, or another lowercase name. Several agents of one kind in a funnel add a suffix: claude-search, claude-apply (shown as Claude with its logo)')
 
-const INSTRUCTIONS = `GoalAgents shows the person their goals as funnels and the agents working them.
+const INSTRUCTIONS = `Goalcraft shows the person their goals as funnels and the agents working them.
 A funnel is one goal (e.g. "Job Search") with 2-5 stages top to bottom (jobs found → applied → interview → final round) and a result at the bottom (offer).
 Zones: 0 is the inflow above the first stage, zone k moves stage k-1 into stage k, zone n (below the last stage) turns the last stage into results. At most two agents per zone on Pro, one on the free plan.
 Heartbeat: set_agent_state(work) is your sign of life. Send it first thing when you wake up and again every 5 minutes while you work. The dashboard waits twice that, 10 minutes of silence, then warns the person that you did not wake up (10 minutes past your next_run_at) or that it lost contact with you (10 minutes after your last signal).
@@ -125,13 +125,13 @@ function notify(caller: Caller, funnelId: string, agent: string, question: strin
 
 function server(db: Db, caller: Caller) {
   const s = new McpServer({
-    name: 'goalagents',
-    title: 'GoalAgents',
+    name: 'goalcraft',
+    title: 'Goalcraft',
     version: '0.1.0',
-    websiteUrl: 'https://goalagents.run',
+    websiteUrl: 'https://goalcraft.ai',
     icons: [
-      { src: 'https://goalagents.run/favicon.svg', mimeType: 'image/svg+xml', sizes: ['any'] },
-      { src: 'https://goalagents.run/apple-touch-icon.png', mimeType: 'image/png', sizes: ['180x180'] },
+      { src: 'https://goalcraft.ai/favicon.svg', mimeType: 'image/svg+xml', sizes: ['any'] },
+      { src: 'https://goalcraft.ai/apple-touch-icon.png', mimeType: 'image/png', sizes: ['180x180'] },
     ],
   }, { instructions: INSTRUCTIONS })
 

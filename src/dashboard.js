@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=4fc07f4f';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=4fc07f4f';
-import { t, lang } from './i18n.js?v=4fc07f4f';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=6ecccb9b';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=6ecccb9b';
+import { t, lang } from './i18n.js?v=6ecccb9b';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -42,7 +42,7 @@ export function mountDashboard(funnels, opts = {}) {
   let scene = new Scene(canvas, funnels, { live: opts.live });
 
   // Funnel order is the viewer's own arrangement, kept in this browser only.
-  const ORDER_KEY = opts.orderKey || 'goalagents-order';
+  const ORDER_KEY = opts.orderKey || 'goalcraft-order';
   const loadOrder = () => {
     try { const saved = JSON.parse(localStorage.getItem(ORDER_KEY)); if (Array.isArray(saved)) scene.applyOrder(saved); } catch {}
   };

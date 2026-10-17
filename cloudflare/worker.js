@@ -1,11 +1,11 @@
-// goalagents.run front for agents: the MCP server at /mcp and its sign-in under the same domain,
-// so an agent only ever sees goalagents.run. The site itself stays on GitHub Pages; this Worker
+// goalcraft.ai front for agents: the MCP server at /mcp and its sign-in under the same domain,
+// so an agent only ever sees goalcraft.ai. The site itself stays on GitHub Pages; this Worker
 // runs only on the routes below and passes the rest of the requests through.
-//   goalagents.run/mcp*          → the MCP server (Supabase Edge Function)
-//   goalagents.run/auth/*        → Supabase Auth (OAuth 2.1: register, authorize, token, keys)
-//   goalagents.run/.well-known/* → discovery documents that name goalagents.run everywhere
+//   goalcraft.ai/mcp*          → the MCP server (Supabase Edge Function)
+//   goalcraft.ai/auth/*        → Supabase Auth (OAuth 2.1: register, authorize, token, keys)
+//   goalcraft.ai/.well-known/* → discovery documents that name goalcraft.ai everywhere
 
-const SITE = 'https://goalagents.run';
+const SITE = 'https://goalcraft.ai';
 const SUPABASE = 'https://wbnmtecgahwzwvcqenlk.supabase.co';
 const MCP = `${SUPABASE}/functions/v1/mcp`;
 
@@ -19,10 +19,10 @@ const resourceMetadata = () => json({
   resource: `${SITE}/mcp`,
   authorization_servers: [SITE],
   bearer_methods_supported: ['header'],
-  resource_name: 'GoalAgents',
+  resource_name: 'Goalcraft',
 });
 
-// Supabase's own Auth metadata with every address moved to goalagents.run.
+// Supabase's own Auth metadata with every address moved to goalcraft.ai.
 async function authMetadata() {
   const res = await fetch(`${SUPABASE}/.well-known/oauth-authorization-server/auth/v1`);
   if (!res.ok) return json({ error: 'auth_metadata_unavailable' }, 502);

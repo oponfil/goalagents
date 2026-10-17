@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "goalagents",
+      "name": "goalcraft",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["serve.py", "5173"],
       "port": 5173

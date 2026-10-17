@@ -29,6 +29,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 port = int(sys.argv[1]) if len(sys.argv) > 1 else 5173
 server = http.server.ThreadingHTTPServer(("", port), Handler)
 # Say where to look, so a quiet terminal reads as "running", not "stuck".
-print(f"GoalAgents is running: open http://localhost:{port}/ (demo at /demo/). Ctrl+C to stop.", flush=True)
-print("Agents connect to the live MCP server, https://goalagents.run/mcp; there is none on localhost.", flush=True)
+print(f"Goalcraft is running: open http://localhost:{port}/ (demo at /demo/). Ctrl+C to stop.", flush=True)
+print("Agents connect to the live MCP server, https://goalcraft.ai/mcp; there is none on localhost.", flush=True)
 server.serve_forever()

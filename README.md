@@ -1,22 +1,22 @@
-# <img src="favicon.svg" alt="" width="32" height="32"> GoalAgents
+# <img src="favicon.svg" alt="" width="32" height="32"> Goalcraft
 
-Watch your AI agents work your goal funnels — [goalagents.run](https://goalagents.run) · [live demo](https://goalagents.run/demo/).
+Watch your AI agents work your goal funnels — [goalcraft.ai](https://goalcraft.ai) · [live demo](https://goalcraft.ai/demo/).
 
 Every goal is a vertical column of tanks, one per stage (jobs found → applied → interviews → offer). Between the tanks are work zones where agents — Claude, ChatGPT, Gemini and others — move items to the next stage. Results drop out at the bottom. You see the whole picture at once: how much is at each stage, how fast it flows, which agent is working, who is waiting for you, and when the next result is due.
 
 The dashboard is read-only. Agents create and update everything through an MCP server; you only watch, click for details, and jump into an agent's chat when it needs you. Protocol, data model and how the readings are estimated: [docs/MCP.md](docs/MCP.md).
 
-Live at [goalagents.run](https://goalagents.run): your own board under Goals, written by your agents through the MCP server, and a demo at [goalagents.run/demo](https://goalagents.run/demo/) on made-up data (`src/data.js`).
+Live at [goalcraft.ai](https://goalcraft.ai): your own board under Goals, written by your agents through the MCP server, and a demo at [goalcraft.ai/demo](https://goalcraft.ai/demo/) on made-up data (`src/data.js`).
 
 ## Connect an agent
 
-Paste this into your agent (Claude, ChatGPT, Cursor or any other that supports MCP), or copy it from [goalagents.run/connect](https://goalagents.run/connect/):
+Paste this into your agent (Claude, ChatGPT, Cursor or any other that supports MCP), or copy it from [goalcraft.ai/connect](https://goalcraft.ai/connect/):
 
 ```
-Connect this MCP server for me: https://goalagents.run/mcp (GoalAgents, remote, sign-in with OAuth). If you can't connect it yourself, tell me exactly how to do it in this app.
+Connect this MCP server for me: https://goalcraft.ai/mcp (Goalcraft, remote, sign-in with OAuth). If you can't connect it yourself, tell me exactly how to do it in this app.
 ```
 
-The agent adds the server or tells you how (Claude: Connectors → Add custom connector; Claude Code: `claude mcp add --transport http goalagents https://goalagents.run/mcp`; ChatGPT: Developer mode → Create). You sign in on goalagents.run and allow it; then tell it which goal to work on, and its funnel appears under Goals. Connect as many agents as you like, one at a time. Details: [docs/MCP.md](docs/MCP.md).
+The agent adds the server or tells you how (Claude: Connectors → Add custom connector; Claude Code: `claude mcp add --transport http goalcraft https://goalcraft.ai/mcp`; ChatGPT: Developer mode → Create). You sign in on goalcraft.ai and allow it; then tell it which goal to work on, and its funnel appears under Goals. Connect as many agents as you like, one at a time. Details: [docs/MCP.md](docs/MCP.md).
 
 ## How to read it
 
@@ -112,5 +112,5 @@ Scripts and stylesheets are loaded with a version in the address (`i18n.js?v=3f2
 - `index.html` — landing page; `demo/` — the demo dashboard; `app/` — your own dashboard; `dashboard.css` — their styles
 - `login/` — sign-in with Google or an email link (Supabase Auth); `oauth/consent/` — where you allow an agent to connect; `connect/` — the prompt that connects an agent; `pricing/` — Free and Pro plans; `privacy/`, `contact/`
 - `src/config.js` — Supabase project address, publishable key, Google client ID and the MCP address (all public)
-- `supabase/migrations/` — tables and row-level security; `supabase/functions/mcp/` — the MCP server; `cloudflare/worker.js` — serves it and its sign-in at goalagents.run (routes `/mcp*`, `/auth/*`, `/.well-known/*`)
+- `supabase/migrations/` — tables and row-level security; `supabase/functions/mcp/` — the MCP server; `cloudflare/worker.js` — serves it and its sign-in at goalcraft.ai (routes `/mcp*`, `/auth/*`, `/.well-known/*`)
 - `docs/MCP.md` — the MCP protocol agents use to write to the dashboard

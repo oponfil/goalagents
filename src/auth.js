@@ -1,9 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.117.2';
-import { SUPABASE_URL, SUPABASE_KEY } from './config.js?v=4fc07f4f';
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js?v=6ecccb9b';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Pages of this site, resolved from this file, so they work on goalagents.run and on localhost alike.
+// Pages of this site, resolved from this file, so they work on goalcraft.ai and on localhost alike.
 export const siteUrl = path => new URL('../' + path, import.meta.url).href;
 export const appUrl = () => siteUrl('app/');
 
