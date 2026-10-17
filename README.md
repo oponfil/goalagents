@@ -15,7 +15,7 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 | On screen | Meaning |
 |---|---|
 | Sheet on top | The funnel's list (Google Sheets, Notion, Airtable…), if its agents keep one; hover it to see where, click to open it |
-| Tank, its number and `+N/d` | How many items have reached this stage (cumulative) and how many it gains per day (average over the last 7 days; an agent can set it; `+0/d` until there are two reports to compare). The tanks make one funnel: their sides lie on two straight lines, cut by the gaps between them. What a tank holds piles up from the bottom, piece by piece (each new one drops in from the pipe), up to the share of what this stage needs for the whole goal; that need comes from the conversion between the tanks' counts (next ÷ this), 30% while a count is still 0. Hover a tank for its name |
+| Tank, its number and the small `+N` by it | How many items have reached this stage (cumulative) and how many it gains per day (average over the last 7 days; an agent can set it; `+0` until there are two reports to compare). Per hour, day or week, the same on every funnel: pick it under Flows in the profile menu (per day until then); the unit is not written. The tanks make one funnel: their sides lie on two straight lines, cut by the gaps between them. What a tank holds piles up from the bottom, piece by piece (each new one drops in from the pipe), up to the share of what this stage needs for the whole goal; that need comes from the conversion between the tanks' counts (next ÷ this), 30% while a count is still 0. Hover a tank for its name |
 | Agent with a tool | Working on that step |
 | Agent lying with a timer | Waiting for its next scheduled run |
 | Agent lying under an amber triangle with `2 h` | Did not wake up on time: its run was due more than 10 minutes ago and it has not reported since (agents report `work` first thing in a run; the same 10 minutes of silence as for an agent at work). Click it for when it was due and when it was last heard from, and check on the agent |
@@ -23,7 +23,7 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 | Agent at work under an amber triangle with `20m` | No word from it for that long: agents send a heartbeat when they wake up and every 5 minutes while they work, and the board waits twice that: after 10 minutes of silence it may have stopped without saying so |
 | Agent with a red `!` | Waiting for you; click to read the question and answer it. One `!` per open question (`!!` for two, up to four; from five, the number: `5!`), each answered on its own. Lying with a `!` bubble: it asked, then went to sleep, and takes your answer on its next run. The red badge in the header counts them |
 | `+N` by an agent | What its current run added (its last run's while it sleeps). Click the agent and open "Previous runs" for its last 10 runs: the time each started (no date: runs are frequent), how long it took and what it added |
-| Bottom zone and items | Results so far with their flow, when the next one is due, and the goal |
+| Bottom zone and items | Results so far in one line ("7 offers"), when the next one is due, and the goal: how many are still to add and how long that takes at the goal's pace, in the unit picked for flows (`goal: +23 in 46d` when flows are per day) |
 
 ## Themes
 
@@ -67,7 +67,7 @@ There are no passwords. Sign in with Google, or with your email: the site sends 
 
 The site and the dashboard speak English, Russian, Spanish, Chinese (simplified), Japanese, Thai and Vietnamese. The picker is in the nav. The first visit follows the browser's language (English if it is none of these). The choice is kept in the browser and, once signed in, in the account, so it follows you to other devices. `?lang=ru` in the address opens a page in that language without remembering it.
 
-Times and flows use one short unit right after the number, the same everywhere: `45s`, `15m`, `8h`, `3d`, `2w` (in Russian с, м, ч, д, н), flows as `+8/d` or `+1.4/w`. There are no months, so `m` is always minutes.
+Times use one short unit right after the number, the same everywhere: `45s`, `15m`, `8h`, `3d`, `2w` (in Russian с, м, ч, д, н). There are no months, so `m` is always minutes. Flows on the board are a bare `+8` in the unit picked in the profile menu.
 
 All interface text is in `src/i18n.js` (one entry per phrase with a version per language) and `src/lang/` (one file per newer language, keyed the same way); a new language is one more file there, a line in `LANGS` and a column in the demo names in `src/data.js`. Vietnamese pages use the Be Vietnam Pro font (Rubik has no Vietnamese letters), Japanese ones Noto Sans JP. Funnel, stage and result names on your own dashboard are whatever your agents write, in your language. The pitch deck, the docs and the MCP tool descriptions stay in English.
 

@@ -2,8 +2,8 @@
 // profile button (the Google photo, or a plain silhouette) whose menu holds the rarely used
 // settings: the language, email when an agent asks, and signing out. A signed-in person's language
 // is kept in their account too.
-import { supabase, siteUrl } from './auth.js?v=766f130b';
-import { t, lang, chosen, LANGS, SHORT, setLang, onLangSaved, adoptLang } from './i18n.js?v=766f130b';
+import { supabase, siteUrl } from './auth.js?v=fe97aa4f';
+import { t, lang, chosen, LANGS, SHORT, setLang, onLangSaved, adoptLang, FLOW_UNITS, flowUnit, setFlowUnit, onFlowSaved } from './i18n.js?v=fe97aa4f';
 
 const links = document.querySelector('nav .links');
 const signin = document.querySelector('.links a.signin');
@@ -33,6 +33,9 @@ if (session) {
   // written to the account.
   if (saved && !chosen) adoptLang(saved);
   else if (saved !== lang) supabase.auth.updateUser({ data: { lang } }).catch(() => {});
+  // The flow unit follows the account, which every change is written to.
+  onFlowSaved(unit => supabase.auth.updateUser({ data: { flow_unit: unit } }));
+  setFlowUnit(session.user.user_metadata?.flow_unit, { remote: false });
 }
 
 if (signin && session) {
@@ -66,6 +69,15 @@ if (signin && session) {
   langRow.className = 'row';
   langRow.append(document.createTextNode(t('nav.lang')), languagePicker(false));
 
+  // Flows on every funnel per hour, day or week.
+  const flowRow = document.createElement('label');
+  flowRow.className = 'row';
+  const flowPick = document.createElement('select');
+  flowPick.className = 'lang';
+  for (const u of FLOW_UNITS) flowPick.add(new Option(t(`flow.${u}`), u, false, u === flowUnit));
+  flowPick.addEventListener('change', () => setFlowUnit(flowPick.value));
+  flowRow.append(document.createTextNode(t('nav.flow')), flowPick);
+
   // Email when an agent asks a question, kept in the account so the MCP server sees it.
   const notify = document.createElement('label');
   notify.className = 'row check';
@@ -80,7 +92,12 @@ if (signin && session) {
   });
   notify.append(box, document.createTextNode(t('nav.notifyLong')));
   // The session can be older than a change made elsewhere: read the account's current settings.
-  supabase.auth.getUser().then(({ data }) => { if (data?.user && !box.disabled) box.checked = !!data.user.user_metadata?.notify_email; });
+  supabase.auth.getUser().then(({ data }) => {
+    const m = data?.user?.user_metadata;
+    if (!m) return;
+    if (!box.disabled) box.checked = !!m.notify_email;
+    if (FLOW_UNITS.includes(m.flow_unit)) { setFlowUnit(m.flow_unit, { remote: false }); flowPick.value = m.flow_unit; }
+  });
 
   const out = document.createElement('a');
   out.href = '#'; out.className = 'signout';
@@ -92,7 +109,7 @@ if (signin && session) {
     location.replace(siteUrl(''));
   });
 
-  menu.append(email, langRow, notify, out);
+  menu.append(email, langRow, flowRow, notify, out);
   profile.append(button, menu);
   signin.after(profile);
 

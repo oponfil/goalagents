@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=766f130b';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=766f130b';
-import { t, lang } from './i18n.js?v=766f130b';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=fe97aa4f';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=fe97aa4f';
+import { t, lang } from './i18n.js?v=fe97aa4f';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -220,9 +220,9 @@ export function mountDashboard(funnels, opts = {}) {
     const where = `${esc(f.title)}: ${from}<b class="run">+${fmtCount(n)}</b> ${esc(plural(n, into))}`;
     // Live only: the agent's last runs, loaded when the person opens them.
     const history = opts.runs ? `<details class="runs"><summary>${esc(t('board.runs'))}</summary><div class="runs-list"></div></details>` : '';
-    // Overdue: it should have run by now and has not been heard from.
+    // Overdue (it should have run by now) or silent at work: when it was last heard from.
     const missed = scene.overdue(a)
-      ? `<p class="pop-note warn">${esc(t('board.missed', fmtDuration(scene.t - a.wakeAt), fmtDuration(scene.t + (a.seenAgo || 0))))}</p>` : '';
+      ? `<p class="pop-note warn">${esc(t('board.lastSignal', fmtDuration(scene.t + (a.seenAgo || 0))))}</p>` : '';
     if (h.type === 'ask') {
       // Each open question with its own answer box and, beside Send, the chat it was asked from (or
       // the agent's chat): an agent working in several chats asks from each. The demo links to the
@@ -239,17 +239,20 @@ export function mountDashboard(funnels, opts = {}) {
         : `<a class="btn primary" style="${paint}" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.replyIn', info.product || info.name))}</a>`;
       // Standing, the agent is waiting and takes the answer at once; asleep, only on its next run.
       const asleep = a.state === 'sleep', left = scene.sleepLeft(a);
-      const when = left > 0 ? t('board.inTime', fmtDuration(left)) : t('board.whenRuns');
+      const when = left > 0 ? fmtDuration(left) : null;
       return `<div class="pop-title">${t(asleep ? 'board.askedAsleep' : 'board.asking', who)}</div>
         <div class="pop-sub">${where}</div>
         ${asleep && !missed ? `<p class="pop-note">${esc(t('board.nextRun', when))}</p>` : ''}${missed}${asks}${reply}${history}`;
     }
-    const lost = scene.lost(a) ? `<p class="pop-note warn">${esc(t('board.lostNote', fmtDuration(scene.silence(a))))}</p>` : '';
+    const lost = scene.lost(a) ? `<p class="pop-note warn">${esc(t('board.lastSignal', fmtDuration(scene.silence(a))))}</p>` : '';
+    // Asleep on time: when it wakes up.
+    const left = scene.sleepLeft(a);
+    const wakes = a.state === 'sleep' && !scene.overdue(a) && left > 0 ? `<p class="pop-note">${esc(t('board.wakesIn', fmtDuration(left)))}</p>` : '';
     const state = scene.overdue(a) ? 'board.overdue' : scene.lost(a) ? 'board.lost' : a.state === 'sleep' ? 'board.resting'
       : a.state === 'walk' ? (a.to === 'work' ? 'board.starting' : 'board.finished')
         : 'board.working';
     return `<div class="pop-title">${t(state, who)}</div>
-      <div class="pop-sub">${where}</div>${missed}${lost}
+      <div class="pop-sub">${where}</div>${wakes}${missed}${lost}
       ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.product || info.name))}</a>` : ''}${history}`;
   }
 

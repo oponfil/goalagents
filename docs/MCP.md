@@ -69,7 +69,7 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 |---|---|
 | `list_funnels()` | The plan and its limits; funnels, stages, counts, results, goal, agents present, open questions, and answers the agent still owes a short reply to (`answers_to_reply`) |
 | `upsert_funnel(id, title, result, goal_total, goal_every_days, source_url?, theme?, stages[])` | Create or update a funnel and its stages (`key`, `label`); stages keep their counts by key |
-| `report_counts(funnel_id, counts{stage_key: n}, results?, fill_percent?{stage_key: 0–100}, flow_per_day?{stage_key or "results": n}, source_url?)` | Counts after the agent's work, cumulative (everything that ever reached a stage); the server stores each report with a timestamp. `source_url` sets the funnel's list link (`null` removes it). Optional manual readings: tank fill in % and the flow written on a tank (`+N/d`) in items per day, by stage key or `results`; `null` returns one to automatic |
+| `report_counts(funnel_id, counts{stage_key: n}, results?, fill_percent?{stage_key: 0–100}, flow_per_day?{stage_key or "results": n}, source_url?)` | Counts after the agent's work, cumulative (everything that ever reached a stage); the server stores each report with a timestamp. `source_url` sets the funnel's list link (`null` removes it). Optional manual readings: tank fill in % and the flow written on a tank (`+N`) in items per day, by stage key or `results`; `null` returns one to automatic |
 | `add_result(funnel_id)` | One more result came out (increments `results`) |
 | `set_agent_state(funnel_id, agent, zone, state, next_run_at?, question?, chat_url?, added?)` | Presence of an agent; one presence per agent per funnel. With `ask` it returns a `question_id`. Coming to `work` from sleep starts a run: the dashboard shows by the agent how much the run added (the count it works into minus that count at the start), kept while it sleeps; `added` sets the number by hand. Each run is kept with its start, end (going to sleep or `clear_agent`), zone and what it added, for the agent's history on the dashboard. A new question emails the person if they turned emails on |
 | `get_answer(question_id, wait_seconds?)` | The person's answer, or null; waits up to 50 s |
@@ -86,11 +86,11 @@ Every reading below is **automatic** by default. An agent can set the tank fill 
 
 Unless an agent set them by hand, flows and forecasts come from the count history (agents see current counts in `list_funnels`, not this history):
 
-- **Flow** of a zone (`+14/d` on the tank it feeds): how much the count of that stage grew over the last 7 days, averaged per day (shown per week when slower). With less than a day of history the growth so far counts as one day's, so the first reports don't extrapolate (+1 in an hour is +1/d, not +24/d).
+- **Flow** of a zone (`+14` by the number of the tank it feeds): how much the count of that stage grew over the last 7 days, averaged per day; the board shows it per hour, day or week, as the person picks, without the unit. With less than a day of history the growth so far counts as one day's, so the first reports don't extrapolate (+1 in an hour is +1/d, not +24/d).
 - **Pace** of the output zone: what the results' flow brings by the goal's date ÷ the results still missing (the date is when they are due at one per `goal.every_days`). It colours the `next` line under the results.
 - **Output zone**: its flow is results per day (from the `results` history), shown next to the results count under the funnel, and the `next` line under the results gives the estimated time to the next result, coloured by pace (red far behind, yellow close, green on pace, bright green well ahead).
 - **Tank fill** (a heap of pieces rising from the bottom, a liquid in the lab): items at a stage so far ÷ items needed there for the whole goal (`goal.total` results). "Needed" comes from the conversion between the tanks' counts below it: the next stage's count ÷ this stage's (the results for the last stage). Where either is still 0, a default conversion of 30% stands in, so a tank shows a level from the first report.
-- **No flow yet**: a flow with fewer than two reports in the last 7 days counts as 0, so the tank shows `+0/d` until reports come in (or the agent sets `flow_per_day`).
+- **No flow yet**: a flow with fewer than two reports in the last 7 days counts as 0, so the tank shows `+0` until reports come in (or the agent sets `flow_per_day`).
 
 ## Heartbeat: one timer for every agent
 

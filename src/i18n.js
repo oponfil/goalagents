@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=766f130b';
-import vi from './lang/vi.js?v=766f130b';
-import ja from './lang/ja.js?v=766f130b';
+import es from './lang/es.js?v=fe97aa4f';
+import vi from './lang/vi.js?v=fe97aa4f';
+import ja from './lang/ja.js?v=fe97aa4f';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -53,6 +53,23 @@ export function adoptLang(code) {
   location.reload();
 }
 
+// Flows on the board are counted per hour, day or week: one unit for every funnel, picked in the
+// profile menu, per day until then. Kept in this browser; saveFlowRemote (set by nav.js once signed
+// in) also keeps it in the account. The board reads flowUnit on every frame, so a change shows at once.
+const FLOW_KEY = 'goalagents-flow';
+export const FLOW_UNITS = ['h', 'd', 'w'];
+let flowPicked = null;
+try { flowPicked = localStorage.getItem(FLOW_KEY); } catch {}
+export let flowUnit = FLOW_UNITS.includes(flowPicked) ? flowPicked : 'd';
+let saveFlowRemote = null;
+export const onFlowSaved = fn => { saveFlowRemote = fn; };
+export function setFlowUnit(unit, { remote = true } = {}) {
+  if (!FLOW_UNITS.includes(unit)) return;
+  flowUnit = unit;
+  try { localStorage.setItem(FLOW_KEY, unit); } catch {}
+  if (remote && saveFlowRemote) saveFlowRemote(unit).catch(() => {});
+}
+
 const L = (en, ru, zh, th) => ({ en, ru, zh, th });
 
 const STRINGS = {
@@ -67,6 +84,10 @@ const STRINGS = {
   'nav.profile': L('Profile', 'Профиль', '个人资料', 'โปรไฟล์'),
   'nav.notifyLong': L('Email me when an agent asks a question', 'Присылать письмо, когда агент задаёт вопрос', '智能体提问时给我发邮件', 'ส่งอีเมลเมื่อเอเจนต์ถามคำถาม'),
   'nav.signout': L('Sign out', 'Выйти', '退出', 'ออกจากระบบ'),
+  'nav.flow': L('Flows', 'Прирост', '增长', 'การเพิ่มขึ้น'),
+  'flow.h': L('per hour', 'в час', '每小时', 'ต่อชั่วโมง'),
+  'flow.d': L('per day', 'в день', '每天', 'ต่อวัน'),
+  'flow.w': L('per week', 'в неделю', '每周', 'ต่อสัปดาห์'),
   'nav.lang': L('Language', 'Язык', '语言', 'ภาษา'),
   'footer.built': L('© 2026 GoalAgents', '© 2026 GoalAgents', '© 2026 GoalAgents', '© 2026 GoalAgents'),
   'footer.deck': L('Pitch deck', 'Презентация', '路演文稿', 'พิตช์เด็ค'),
@@ -94,7 +115,7 @@ const STRINGS = {
   'guide.sheet.h': L('Sheet', 'Таблица', '表格', 'ตาราง'),
   'guide.sheet': L('The table where the agents keep track of everything.', 'Таблица, где агенты ведут учёт всего.', '智能体记录一切的表格。', 'ตารางที่เอเจนต์ใช้ติดตามทุกอย่าง'),
   'guide.tank.h': L('Tank', 'Бак', '储罐', 'ถัง'),
-  'guide.tank': L('Items at this stage so far, and +N a day.', 'Сколько позиций дошло до этого этапа и +N в день.', '到达这个阶段的数量，以及每天 +N。', 'จำนวนรายการที่ถึงขั้นนี้แล้ว และ +N ต่อวัน'),
+  'guide.tank': L('Items at this stage so far, and +N a day (or an hour, a week: your choice).', 'Сколько позиций дошло до этого этапа и +N в день (или в час, в неделю — как выберете).', '到达这个阶段的数量，以及每天 +N（也可选每小时、每周）。', 'จำนวนรายการที่ถึงขั้นนี้แล้ว และ +N ต่อวัน (หรือต่อชั่วโมง ต่อสัปดาห์ ตามที่เลือก)'),
   'guide.question.h': L('Question', 'Вопрос', '问题', 'คำถาม'),
   'guide.question': L('An agent waits for your answer. Click it to reply.', 'Агент ждёт вашего ответа. Нажмите, чтобы ответить.', '智能体在等你回复。点击即可回复。', 'เอเจนต์กำลังรอคำตอบจากคุณ คลิกเพื่อตอบ'),
   'guide.asleep.h': L('Asleep', 'Спит', '休眠', 'หลับอยู่'),
@@ -154,22 +175,20 @@ const STRINGS = {
     (n) => `${n} คำถามรอคำตอบจากคุณ`),
   'board.asking': L((who) => `${who} is waiting for you`, (who) => `${who} ждёт вашего ответа`, (who) => `${who} 在等你回复`, (who) => `${who} กำลังรอคุณ`),
   'board.askedAsleep': L((who) => `${who} asked you, then went to sleep`, (who) => `${who} задал вопрос и уснул`, (who) => `${who} 提了问题，然后睡着了`, (who) => `${who} ถามคุณแล้วเข้านอน`),
-  'board.nextRun': L((when) => `It will pick your answer up on its next run, ${when}.`, (when) => `Он заберёт ответ при следующем запуске, ${when}.`, (when) => `它会在下次运行时取走你的回复（${when}）。`, (when) => `มันจะรับคำตอบของคุณในรอบถัดไป ${when}`),
-  'board.inTime': L((t) => `in ${t}`, (t) => `через ${t}`, (t) => `${t}后`, (t) => `ในอีก ${t}`),
-  'board.whenRuns': L('when it next runs', 'когда запустится', '下次运行时', 'เมื่อมันรันครั้งถัดไป'),
-  'board.overdue': L((who) => `${who} did not wake up on time`, (who) => `${who} не проснулся по расписанию`, (who) => `${who} 没有按时醒来`, (who) => `${who} ไม่ตื่นตามเวลา`),
-  'board.missed': L(
-    (late, seen) => `Its next run was due ${late} ago; last heard from ${seen} ago.`,
-    (late, seen) => `Следующий запуск должен был быть ${late} назад, последний раз выходил на связь ${seen} назад.`,
-    (late, seen) => `它本应在 ${late}前运行；上次联系是 ${seen}前。`,
-    (late, seen) => `รอบถัดไปควรเริ่มเมื่อ ${late}ที่แล้ว ติดต่อครั้งล่าสุดเมื่อ ${seen}ที่แล้ว`),
+  'board.nextRun': L(
+    (t) => (t ? `It will pick your answer up when it wakes up, in ${t}.` : 'It will pick your answer up when it wakes up.'),
+    (t) => (t ? `Заберёт ответ, когда проснётся: через ${t}.` : 'Заберёт ответ, когда проснётся.'),
+    (t) => (t ? `它醒来后会取走你的回复：${t}后。` : '它醒来后会取走你的回复。'),
+    (t) => (t ? `จะรับคำตอบเมื่อตื่น: ในอีก ${t}` : 'จะรับคำตอบเมื่อตื่น')),
+  'board.overdue': L((who) => `${who} did not wake up on time`, (who) => `${who} не проснулся вовремя`, (who) => `${who} 没有按时醒来`, (who) => `${who} ไม่ตื่นตามเวลา`),
+  'board.lastSignal': L((ago) => `Last signal ${ago} ago.`, (ago) => `Последний сигнал ${ago} назад.`, (ago) => `最后一次信号是 ${ago}前。`, (ago) => `สัญญาณล่าสุดเมื่อ ${ago}ที่แล้ว`),
   'board.lost': L((who) => `No word from ${who}`, (who) => `${who} не выходит на связь`, (who) => `${who} 没有消息`, (who) => `ไม่มีสัญญาณจาก ${who}`),
-  'board.lostNote': L((ago) => `It is shown at work, but its last signal was ${ago} ago.`, (ago) => `Он числится за работой, но последний сигнал был ${ago} назад.`, (ago) => `它显示为工作中，但最后一次信号是 ${ago}前。`, (ago) => `แสดงว่ากำลังทำงาน แต่สัญญาณล่าสุดคือ ${ago}ที่แล้ว`),
   'board.runs': L('Previous runs', 'Предыдущие запуски', '之前的运行', 'การรันก่อนหน้า'),
   'board.runNow': L('running', 'идёт', '进行中', 'กำลังรัน'),
   'board.noRuns': L('No runs recorded yet.', 'Запусков пока не записано.', '还没有记录到运行。', 'ยังไม่มีการรันที่บันทึกไว้'),
   'board.runsFailed': L('Could not load the runs.', 'Не удалось загрузить запуски.', '无法加载运行记录。', 'โหลดการรันไม่สำเร็จ'),
-  'board.resting': L((who) => `${who} is resting until the next run`, (who) => `${who} отдыхает до следующего запуска`, (who) => `${who} 正在休息，等待下次运行`, (who) => `${who} กำลังพักจนถึงรอบถัดไป`),
+  'board.resting': L((who) => `${who} is asleep`, (who) => `${who} спит`, (who) => `${who} 在睡觉`, (who) => `${who} กำลังหลับ`),
+  'board.wakesIn': L((t) => `Wakes up in ${t}.`, (t) => `Проснётся через ${t}.`, (t) => `${t}后醒来。`, (t) => `จะตื่นในอีก ${t}`),
   'board.starting': L((who) => `${who} is starting a shift`, (who) => `${who} начинает смену`, (who) => `${who} 开始轮班`, (who) => `${who} กำลังเริ่มกะ`),
   'board.finished': L((who) => `${who} finished a shift`, (who) => `${who} закончил смену`, (who) => `${who} 结束了轮班`, (who) => `${who} จบกะแล้ว`),
   'board.working': L((who) => `${who} is working`, (who) => `${who} работает`, (who) => `${who} 正在工作`, (who) => `${who} กำลังทำงาน`),
@@ -180,7 +199,7 @@ const STRINGS = {
   'board.sheet': L((where) => `Open the list in ${where}`, (where) => `Открыть список в ${where}`, (where) => `在 ${where} 中打开列表`, (where) => `เปิดรายการใน ${where}`),
   'board.close': L('Close', 'Закрыть', '关闭', 'ปิด'),
   'board.goalReached': L('goal reached ✓', 'цель достигнута ✓', '目标已达成 ✓', 'ถึงเป้าหมายแล้ว ✓'),
-  'board.goal': L((total, every) => `goal: ${total}, 1 per ${every}`, (total, every) => `цель: ${total}, 1 за ${every}`, (total, every) => `目标：${total}，每 ${every} 1 个`, (total, every) => `เป้าหมาย: ${total}, 1 ต่อ ${every}`),
+  'board.goal': L((total, time) => `goal: +${total} in ${time}`, (total, time) => `цель: +${total} за ${time}`, (total, time) => `目标：${time} 内 +${total}`, (total, time) => `เป้าหมาย: +${total} ใน ${time}`),
   'board.next': L((eta) => `next ${eta}`, (eta) => `следующий ${eta}`, (eta) => `下一个 ${eta}`, (eta) => `ถัดไป ${eta}`),
 
   // Pricing

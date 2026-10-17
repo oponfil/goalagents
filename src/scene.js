@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=766f130b';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=766f130b';
-import { themeOf } from './themes.js?v=766f130b';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=766f130b';
+import { agentInfo, plural } from './data.js?v=fe97aa4f';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=fe97aa4f';
+import { themeOf } from './themes.js?v=fe97aa4f';
+import { t as tr, lang, fmtDuration, flowUnit } from './i18n.js?v=fe97aa4f';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -44,7 +44,6 @@ const FONT = lang === 'vi' ? '"Be Vietnam Pro", system-ui, sans-serif'
   : lang === 'ja' ? '"Rubik", "Noto Sans JP", system-ui, sans-serif'
     : '"Rubik", "Noto Sans Thai", "Noto Sans SC", system-ui, sans-serif';
 
-const PERIODS = ['d', 'w', 'h'];
 
 function rng(seed) {
   return () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
@@ -61,7 +60,6 @@ export class Scene {
     this.lo = document.createElement('canvas');
     this.lctx = this.lo.getContext('2d');
     this.bg = document.createElement('canvas');
-    this.period = 0;
     this.floaters = [];
     // What each tank already holds is kept when the data refreshes (a new scene), so only new pieces
     // drop in; pieces still in the air land at once. A page load starts from empty and fills up.
@@ -486,36 +484,38 @@ export class Scene {
       const p = this.spot(a, 'work');
       warn(a, fmtDuration(this.silence(a)), p.x + 10, p.y - 4);
     }
-    const unit = PERIODS[this.period];
+    // A number in the middle with its flow written small at its top right, like an exponent.
+    const withFlow = (num, flow, x, y, size, color, flowColor) => {
+      g.font = `700 ${size * S}px ${FONT}`;
+      const w = g.measureText(num).width / S;
+      T(num, x, y, size, color, 'center', 700);
+      if (flow) T(flow, x + w / 2 + 1, y - size * 0.42, size * 0.55, flowColor, 'left', 700);
+    };
     this.funnels.forEach((f, fi) => {
       const cx = this.cx(fi), n = f.stages.length;
       f.stages.forEach((s, j) => {
-        // The number is the same size in every tank; under it, how fast the tank fills (the flow of
-        // the zone above it). What the tank holds shows on hover.
-        const num = fmtCount(s.count), flow = fmtFlow(f.flows[j] ?? 0, unit);
-        // The count, and under it the flow, both in the middle of the tank.
-        shadowed(() => {
-          T(num, cx, tankTop(j) + LH / 2 - 5, 15, '#FFFFFF', 'center', 700);
-          if (flow) T(flow, cx, tankTop(j) + LH / 2 + 9, 8.5, f.flows[j] ? '#9FE870' : STALLED, 'center', 700);
-        });
+        // The number is the same size in every tank, in its middle; at its top right, how fast the
+        // tank fills (the flow of the zone above it). What the tank holds shows on hover.
+        const num = fmtCount(s.count), flow = fmtFlow(f.flows[j] ?? 0);
+        shadowed(() => withFlow(num, flow, cx, tankTop(j) + LH / 2, 15, '#FFFFFF', f.flows[j] ? '#9FE870' : STALLED));
       });
       const pr = project(f);
       const ry = flasksY(n) + Math.ceil(slots(f) / PER_ROW) * 22 + 8;
-      // Under the results, one thing per line: what they are, how many and how fast (as on a tank),
-      // when the next one is due (coloured by pace against the goal), and the goal.
-      const name = plural(5, f.result), num = String(f.cubes), outFlow = f.flows[n];
-      T(name.charAt(0).toUpperCase() + name.slice(1), cx, ry, 8, '#D8CFC2', 'center', 600);
-      g.font = `700 ${12 * S}px ${FONT}`; const wNum = g.measureText(num).width;
-      const flowText = fmtFlow(outFlow ?? 0, unit);
-      g.font = `700 ${8.5 * S}px ${FONT}`; const wFlow = flowText ? g.measureText(flowText).width + 3 * S : 0;
-      const x0 = cx * S - (wNum + wFlow) / 2;
-      g.textAlign = 'left'; g.textBaseline = 'middle';
-      g.font = `700 ${12 * S}px ${FONT}`; g.fillStyle = f.cubes ? themeOf(f).accent : '#8C8276'; g.fillText(num, x0, (ry + 12) * S);
-      if (flowText) { g.font = `700 ${8.5 * S}px ${FONT}`; g.fillStyle = outFlow ? '#9FE870' : STALLED; g.fillText(flowText, x0 + wNum + 3 * S, (ry + 12) * S); }
-      if (f.cubes >= f.goal.total) T(tr('board.goalReached'), cx, ry + 24, 8, '#3CF27A', 'center', 700);
-      else T(tr('board.next', fmtEta(pr.eta)), cx, ry + 24, 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 'center', 700);
-      // Once the goal is reached, "goal reached ✓" replaces the goal line.
-      if (f.cubes < f.goal.total) T(tr('board.goal', f.goal.total, fmtEta(f.goal.every).slice(1)), cx, ry + 35, 7.5, '#B8AE9F', 'center', 500);
+      // Under the results, one thing per line: how many and what they are ("7 offers"), when the next
+      // one is due (coloured by pace against the goal), and the goal: how many more, in how long.
+      const num = String(f.cubes), name = ' ' + plural(f.cubes, f.result);
+      g.font = `700 ${12 * S}px ${FONT}`; const wNum = g.measureText(num).width / S;
+      g.font = `600 ${9 * S}px ${FONT}`; const wName = g.measureText(name).width / S;
+      const x0 = cx - (wNum + wName) / 2;
+      T(num, x0, ry + 4, 12, f.cubes ? themeOf(f).accent : '#8C8276', 'left', 700);
+      T(name, x0 + wNum, ry + 4.5, 9, '#D8CFC2', 'left', 600);
+      if (f.cubes >= f.goal.total) T(tr('board.goalReached'), cx, ry + 18, 8, '#3CF27A', 'center', 700);
+      else {
+        T(tr('board.next', fmtEta(pr.eta)), cx, ry + 18, 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 'center', 700);
+        // The goal as what is still to add and how long that takes at the goal's pace.
+        const left = f.goal.total - f.cubes;
+        T(tr('board.goal', left, fmtInUnit(left * f.goal.every)), cx, ry + 29, 7.5, '#B8AE9F', 'center', 500);
+      }
     });
     for (const a of this.agents) {
       if (a.state !== 'sleep') continue;
@@ -683,19 +683,23 @@ function circle(c, cx, cy, r, col) {
   }
 }
 
-// Per-day flow shown in the chosen unit; slow flows step up to a longer unit (up to a week) so the
-// number stays ≥ 1 where it can.
-const UNITS = [['h', 1 / 24], ['d', 1], ['w', 7]];
+// A per-day flow in the unit the person picked (per hour, day or week, the same on every funnel),
+// as a bare "+N": the unit is not written. Under 1, one significant digit (+0.3, +0.04).
+const PER = { h: 1 / 24, d: 1, w: 7 };
 export const fmtCount = n => n.toLocaleString('en-US');
 
-function fmtFlow(perDay, key) {
-  const u = tr('units');
-  if (perDay == null) return '—';
-  if (!perDay) return `+0/${u[key]}`;
-  let i = UNITS.findIndex(x => x[0] === key);
-  while (i < UNITS.length - 1 && perDay * UNITS[i][1] < 0.95) i++;
-  const v = perDay * UNITS[i][1];
-  return `+${v >= 10 ? Math.round(v) : Math.round(v * 10) / 10}/${u[UNITS[i][0]]}`;
+function fmtFlow(perDay) {
+  if (perDay == null) return '';
+  const v = perDay * PER[flowUnit];
+  if (!v) return '+0';
+  return '+' + (v >= 10 ? Math.round(v) : v >= 1 ? Math.round(v * 10) / 10 : Number(v.toPrecision(1)));
+}
+
+// A span of days in the person's flow unit, so the goal reads in the same unit as the flows: 28d,
+// not 4w, when flows are per day.
+function fmtInUnit(days) {
+  const v = days / PER[flowUnit];
+  return (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10) + tr('units')[flowUnit];
 }
 
 const fmtEta = days => (days == null || !isFinite(days) ? '—' : '≈' + fmtDuration(days * 86400));

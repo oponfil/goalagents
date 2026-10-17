@@ -1,5 +1,5 @@
 // Demo data shown on the landing page. In the product this comes from agents via MCP.
-import { lang } from './i18n.js?v=766f130b';
+import { lang } from './i18n.js?v=fe97aa4f';
 
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
@@ -251,7 +251,7 @@ const DEMO = {
   'report': [['отчёт', 'отчёта', 'отчётов'], '报告', 'รายงาน', ['informe', 'informes'], 'báo cáo', '報告'],
   'triaged': [['разобран', 'разобрано', 'разобрано'], '已分类', 'คัดกรองแล้ว', ['clasificado', 'clasificados'], 'đã phân loại', 'トリアージ済み'],
   'accepted': [['принят', 'принято', 'принято'], '已接受', 'ได้รับการยอมรับ', ['aceptado', 'aceptados'], 'được chấp nhận', '受理'],
-  'term sheet': [['term sheet', 'term sheet', 'term sheet'], '投资意向书', 'เทิร์มชีต', ['term sheet', 'term sheets'], 'bản điều khoản', 'タームシート'],
+  'term sheet': [['термшит', 'термшита', 'термшитов'], '投资意向书', 'เทิร์มชีต', ['term sheet', 'term sheets'], 'bản điều khoản', 'タームシート'],
   'investor': [['инвестор', 'инвестора', 'инвесторов'], '投资人', 'นักลงทุน', ['inversor', 'inversores'], 'nhà đầu tư', '投資家'],
   'intro': [['знакомство', 'знакомства', 'знакомств'], '引荐', 'การแนะนำ', ['presentación', 'presentaciones'], 'lời giới thiệu', '紹介'],
   'meeting': [['встреча', 'встречи', 'встреч'], '会议', 'การประชุม', ['reunión', 'reuniones'], 'cuộc gặp', '面談'],
