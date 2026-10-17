@@ -67,7 +67,7 @@ export default {
   'board.inTime': (t) => `sau ${t}`,
   'board.whenRuns': 'khi nó chạy lần tới',
   'board.overdue': (who) => `${who} không thức dậy đúng giờ`,
-  'board.missed': (late, seen) => `Lần chạy tiếp theo lẽ ra đã bắt đầu ${late} trước, và đã ${seen} không có tin tức. Hãy kiểm tra tác tử: có thể lịch chạy bị lệch hoặc nó đã dừng.`,
+  'board.missed': (late, seen) => `Lần chạy tiếp theo lẽ ra đã bắt đầu ${late} trước; lần liên lạc cuối là ${seen} trước.`,
   'board.runs': 'Các lần chạy gần đây',
   'board.runNow': 'đang chạy',
   'board.noRuns': 'Chưa có lần chạy nào được ghi lại.',

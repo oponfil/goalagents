@@ -66,7 +66,7 @@ export default {
   'board.inTime': (t) => `en ${t}`,
   'board.whenRuns': 'cuando vuelva a ejecutarse',
   'board.overdue': (who) => `${who} no despertó a tiempo`,
-  'board.missed': (late, seen) => `Su próxima ejecución debía empezar hace ${late} y no da señales desde hace ${seen}. Revisa el agente: puede que su horario se haya movido o que se haya detenido.`,
+  'board.missed': (late, seen) => `Su próxima ejecución debía empezar hace ${late}; la última señal fue hace ${seen}.`,
   'board.runs': 'Últimas ejecuciones',
   'board.runNow': 'en curso',
   'board.noRuns': 'Aún no hay ejecuciones registradas.',

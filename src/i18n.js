@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=8dc61f91';
-import vi from './lang/vi.js?v=8dc61f91';
-import ja from './lang/ja.js?v=8dc61f91';
+import es from './lang/es.js?v=e24d1b66';
+import vi from './lang/vi.js?v=e24d1b66';
+import ja from './lang/ja.js?v=e24d1b66';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -156,10 +156,10 @@ const STRINGS = {
   'board.whenRuns': L('when it next runs', 'когда запустится', '下次运行时', 'เมื่อมันรันครั้งถัดไป'),
   'board.overdue': L((who) => `${who} did not wake up on time`, (who) => `${who} не проснулся по расписанию`, (who) => `${who} 没有按时醒来`, (who) => `${who} ไม่ตื่นตามเวลา`),
   'board.missed': L(
-    (late, seen) => `Its next run was due ${late} ago, and it has not been heard from for ${seen}. Check on the agent: its schedule may have slipped or it may have stopped.`,
-    (late, seen) => `Следующий запуск должен был быть ${late} назад, а последний раз агент выходил на связь ${seen} назад. Проверьте агента: возможно, сбилось расписание или он остановился.`,
-    (late, seen) => `它本应在 ${late}前运行，已有 ${seen}没有消息。请检查这个智能体：可能是计划出了问题，或者它已停止。`,
-    (late, seen) => `รอบถัดไปควรเริ่มเมื่อ ${late}ที่แล้ว และไม่มีการติดต่อมา ${seen}แล้ว ตรวจสอบเอเจนต์: กำหนดการอาจคลาดเคลื่อน หรือมันอาจหยุดทำงาน`),
+    (late, seen) => `Its next run was due ${late} ago; last heard from ${seen} ago.`,
+    (late, seen) => `Следующий запуск должен был быть ${late} назад, последний раз выходил на связь ${seen} назад.`,
+    (late, seen) => `它本应在 ${late}前运行；上次联系是 ${seen}前。`,
+    (late, seen) => `รอบถัดไปควรเริ่มเมื่อ ${late}ที่แล้ว ติดต่อครั้งล่าสุดเมื่อ ${seen}ที่แล้ว`),
   'board.runs': L('Last runs', 'Последние запуски', '最近的运行', 'การรันล่าสุด'),
   'board.runNow': L('running', 'идёт', '进行中', 'กำลังรัน'),
   'board.noRuns': L('No runs recorded yet.', 'Запусков пока не записано.', '还没有记录到运行。', 'ยังไม่มีการรันที่บันทึกไว้'),

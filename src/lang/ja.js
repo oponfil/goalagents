@@ -67,7 +67,7 @@ export default {
   'board.inTime': (t) => `${t}後`,
   'board.whenRuns': '次に実行されるとき',
   'board.overdue': (who) => `${who} が予定どおりに起きませんでした`,
-  'board.missed': (late, seen) => `次の実行は${late}前に始まるはずでしたが、${seen}連絡がありません。エージェントを確認してください：スケジュールがずれたか、止まっているかもしれません。`,
+  'board.missed': (late, seen) => `次の実行は${late}前の予定でした。最後の連絡は${seen}前です。`,
   'board.runs': '最近の実行',
   'board.runNow': '実行中',
   'board.noRuns': 'まだ実行の記録がありません。',

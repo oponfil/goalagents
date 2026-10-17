@@ -1,5 +1,5 @@
 // The person's own funnels, written by their agents through MCP, redrawn when the agents write.
-import { supabase } from './auth.js?v=8dc61f91';
+import { supabase } from './auth.js?v=e24d1b66';
 
 const DAY = 86400e3;
 const WINDOW_DAYS = 7;

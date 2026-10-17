@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=8dc61f91';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=8dc61f91';
-import { themeOf } from './themes.js?v=8dc61f91';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=8dc61f91';
+import { agentInfo, plural } from './data.js?v=e24d1b66';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=e24d1b66';
+import { themeOf } from './themes.js?v=e24d1b66';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=e24d1b66';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -52,7 +52,7 @@ function rng(seed) {
 
 export class Scene {
   // live: the agents report counts and states; nothing is simulated, agents keep their state.
-  constructor(canvas, funnels, { live = false, sides = null } = {}) {
+  constructor(canvas, funnels, { live = false, sides = null, heaps = null } = {}) {
     this.live = live;
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -63,7 +63,10 @@ export class Scene {
     this.bg = document.createElement('canvas');
     this.period = 0;
     this.floaters = [];
+    // What each tank already holds is kept when the data refreshes (a new scene), so only new pieces
+    // drop in; pieces still in the air land at once. A page load starts from empty and fills up.
     this.heaps = new Map();
+    for (const [key, h] of heaps || []) this.heaps.set(key, { ...h, shown: h.shown + h.falling.length, falling: [], next: 0 });
     this.sparks = [];
     this.hits = [];
     this.dropAt = null;
@@ -325,14 +328,7 @@ export class Scene {
         // that lies flat. A stage with items always shows a little.
         const rows = LH - 2, share = s.count > 0 ? Math.min(1, Math.max(pr.fill[j] ?? 0, 0.02)) : 0;
         if (theme.piece) this.drawHeap(c, f, fi, j, cx, y, share, theme);
-        else {
-          const level = Math.round(rows * share);
-          if (level > 0) {
-            c.save(); c.beginPath();
-            for (let r = rows - level; r < rows; r++) { const hw = tankHalf(j, n, r + 1) - 1; c.rect(cx - hw, y + 1 + r, hw * 2, 1); }
-            c.clip(); theme.tank(c, x - 20, y + 1, lw + 40, rows, j, n, t, fi * 97 + j * 13 + 5); c.restore();
-          }
-        }
+        else this.drawLiquid(c, f, fi, j, cx, x, lw, y, share, theme);
         this.hits.push({ x, y, w: lw, h: LH, type: 'stage', fi, j });
       });
       // One result item per result the goal needs (chests, flasks, pots…): filled ones are done,
@@ -550,11 +546,31 @@ export class Scene {
     return null;
   }
 
+  // The lab's tanks hold a liquid: its level rises a row per drop, each drop falling from the pipe
+  // in the colour of the stage's liquid; kept across refreshes like the heaps.
+  drawLiquid(c, f, fi, j, cx, x, lw, y, share, theme) {
+    const n = f.stages.length, rows = LH - 2, key = `${f.id ?? f.title}|${j}`, t = this.t;
+    let h = this.heaps.get(key);
+    if (!h) { h = { shown: 0, falling: [], next: 0 }; this.heaps.set(key, h); }
+    const want = Math.round(rows * share) || (share > 0 ? 1 : 0);
+    if (h.shown > want) { h.shown = want; h.falling = []; }
+    if (h.shown + h.falling.length < want && t >= h.next) { h.falling.push({ born: t }); h.next = t + 0.08; }
+    h.falling = h.falling.filter(d => { if (t - d.born < 0.4) return true; h.shown++; return false; });
+    if (h.shown > 0) {
+      c.save(); c.beginPath();
+      for (let r = rows - h.shown; r < rows; r++) { const hw = tankHalf(j, n, r + 1) - 1; c.rect(cx - hw, y + 1 + r, hw * 2, 1); }
+      c.clip(); theme.tank(c, x - 20, y + 1, lw + 40, rows, j, n, t, fi * 97 + j * 13 + 5); c.restore();
+    }
+    const surface = y + 1 + rows - h.shown;
+    c.fillStyle = theme.drop(j, n);
+    for (const d of h.falling) { const q = (t - d.born) / 0.4; c.fillRect(cx - 0.5, Math.round((y - 2 + (surface - y + 1) * q * q) * 2) / 2, 1.5, 2); }
+  }
+
   // The tank holds discrete pieces in cells, filled middle-first and low-first so they
   // pile up into a mound; as many cells are taken as the share of what the goal needs. Pieces join
   // one at a time, each falling from the pipe to its cell (also on load, so the heap builds up).
   drawHeap(c, f, fi, j, cx, y, share, theme) {
-    const n = f.stages.length, P = theme.piece, key = `${fi}|${j}`;
+    const n = f.stages.length, P = theme.piece, key = `${f.id ?? f.title}|${j}`;
     let h = this.heaps.get(key);
     if (!h) {
       const cells = [], rows = Math.floor((LH - 3) / P.h);
