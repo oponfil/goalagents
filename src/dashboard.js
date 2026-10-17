@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=80507ed8';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=80507ed8';
-import { t, lang } from './i18n.js?v=80507ed8';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=394d4c9c';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=394d4c9c';
+import { t, lang } from './i18n.js?v=394d4c9c';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an

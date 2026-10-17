@@ -1,8 +1,8 @@
 // The pricing page: "Get Pro" opens the Creem checkout; on Pro already, the button shows the plan
 // and opens the subscription settings (or nothing to manage for Pro granted without paying).
-import { supabase } from './auth.js?v=80507ed8';
-import { account, openBilling } from './billing.js?v=80507ed8';
-import { t, lang } from './i18n.js?v=80507ed8';
+import { supabase } from './auth.js?v=394d4c9c';
+import { account, openBilling } from './billing.js?v=394d4c9c';
+import { t, lang } from './i18n.js?v=394d4c9c';
 
 const button = document.getElementById('get-pro');
 const note = document.getElementById('billing-note');
