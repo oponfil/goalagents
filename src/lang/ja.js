@@ -8,6 +8,8 @@ export default {
   'nav.goals': '目標',
   'nav.notify': 'メール通知',
   'nav.notifyTitle': (e) => `エージェントから質問があったら ${e} にメールする`,
+  'nav.profile': 'プロフィール',
+  'nav.notifyLong': 'エージェントから質問があったらメールする',
   'nav.signout': 'ログアウト',
   'nav.lang': '言語',
   'footer.built': '© 2026 GoalAgents',

@@ -7,6 +7,8 @@ export default {
   'nav.goals': 'Metas',
   'nav.notify': 'Avisos',
   'nav.notifyTitle': (e) => `Enviar un correo a ${e} cuando un agente te haga una pregunta`,
+  'nav.profile': 'Perfil',
+  'nav.notifyLong': 'Enviarme un correo cuando un agente haga una pregunta',
   'nav.signout': 'Salir',
   'nav.lang': 'Idioma',
   'footer.built': '© 2026 GoalAgents',

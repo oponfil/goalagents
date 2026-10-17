@@ -8,6 +8,8 @@ export default {
   'nav.goals': 'Mục tiêu',
   'nav.notify': 'Thông báo',
   'nav.notifyTitle': (e) => `Gửi email tới ${e} khi một tác tử đặt câu hỏi cho bạn`,
+  'nav.profile': 'Hồ sơ',
+  'nav.notifyLong': 'Gửi email cho tôi khi tác tử đặt câu hỏi',
   'nav.signout': 'Đăng xuất',
   'nav.lang': 'Ngôn ngữ',
   'footer.built': '© 2026 GoalAgents',

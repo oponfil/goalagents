@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=e24d1b66';
-import vi from './lang/vi.js?v=e24d1b66';
-import ja from './lang/ja.js?v=e24d1b66';
+import es from './lang/es.js?v=096ff589';
+import vi from './lang/vi.js?v=096ff589';
+import ja from './lang/ja.js?v=096ff589';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -64,6 +64,8 @@ const STRINGS = {
   'nav.goals': L('Goals', 'Цели', '目标', 'เป้าหมาย'),
   'nav.notify': L('Email me', 'Письма', '邮件通知', 'แจ้งทางอีเมล'),
   'nav.notifyTitle': L((e) => `Email ${e} when an agent asks you a question`, (e) => `Присылать письмо на ${e}, когда агент задаёт вопрос`, (e) => `智能体向你提问时发邮件到 ${e}`, (e) => `ส่งอีเมลถึง ${e} เมื่อเอเจนต์ถามคำถามคุณ`),
+  'nav.profile': L('Profile', 'Профиль', '个人资料', 'โปรไฟล์'),
+  'nav.notifyLong': L('Email me when an agent asks a question', 'Присылать письмо, когда агент задаёт вопрос', '智能体提问时给我发邮件', 'ส่งอีเมลเมื่อเอเจนต์ถามคำถาม'),
   'nav.signout': L('Sign out', 'Выйти', '退出', 'ออกจากระบบ'),
   'nav.lang': L('Language', 'Язык', '语言', 'ภาษา'),
   'footer.built': L('© 2026 GoalAgents', '© 2026 GoalAgents', '© 2026 GoalAgents', '© 2026 GoalAgents'),
