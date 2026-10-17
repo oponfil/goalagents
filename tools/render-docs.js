@@ -1,12 +1,12 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=fe1d7d2c';
-import { Scene, CW, drawWork, TOOL_PERIOD } from '../src/scene.js?v=fe1d7d2c';
-import { guideScene, guideHeight, drawGuide, TH } from '../src/guide.js?v=fe1d7d2c';
+import { AGENTS, FUNNELS } from '../src/data.js?v=454e40dc';
+import { Scene, CW, drawWork, TOOL_PERIOD } from '../src/scene.js?v=454e40dc';
+import { guideScene, guideHeight, drawGuide, TH } from '../src/guide.js?v=454e40dc';
 import { GIFEncoder, quantize, applyPalette } from 'https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js';
-import { THEMES } from '../src/themes.js?v=fe1d7d2c';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=fe1d7d2c';
+import { THEMES } from '../src/themes.js?v=454e40dc';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=454e40dc';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -150,10 +150,13 @@ async function ogCard() {
   const logo = new Image();
   await new Promise(r => { logo.onload = r; logo.src = '/favicon.svg'; });
   g.imageSmoothingEnabled = false;
-  g.drawImage(logo, 44, 162, 120, 120);
+  g.drawImage(logo, 44, 176, 104, 104);
   g.textBaseline = 'alphabetic'; g.textAlign = 'left';
-  g.font = `700 118px ${FONT}`;
-  g.fillStyle = '#F4EDE1'; g.fillText('Goalcraft', 184, 264);
+  // The name as on the site: the pixel font, in capitals, letters set close.
+  await document.fonts.load("100px 'Tiny5'");
+  g.font = `400 100px 'Tiny5', monospace`; g.letterSpacing = '-4px';
+  g.fillStyle = '#F4EDE1'; g.fillText('GOALCRAFT', 170, 258);
+  g.letterSpacing = '0px';
   g.font = `500 40px ${FONT}`; g.fillStyle = '#F4EDE1';
   g.fillText('Watch your AI agents', 50, 380);
   g.fillText('craft your goals.', 50, 432);

@@ -193,7 +193,7 @@ body {
   /* The same width as the header on the landing page, as tall as its button. */
   padding: 0 max(20px, calc((100% - 1000px) / 2));
 }
-.sitebar .logo { font-weight: 700; font-size: 20px; text-decoration: none; color: var(--text); }
+.sitebar .logo { font: 400 24px 'Tiny5', monospace; text-transform: uppercase; letter-spacing: -0.04em; text-decoration: none; color: var(--text); }
 .sitebar .links { display: flex; align-items: center; gap: 20px; font-size: 15px; }
 .sitebar .links a { color: var(--muted); text-decoration: none; white-space: nowrap; }
 .sitebar .links a:hover, .sitebar .links a.here { color: var(--text); }

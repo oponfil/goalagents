@@ -1,6 +1,6 @@
 // The prompt that connects Goalcraft to any agent, with a copy icon on its block.
-import { MCP_URL } from './config.js?v=fe1d7d2c';
-import { t } from './i18n.js?v=fe1d7d2c';
+import { MCP_URL } from './config.js?v=454e40dc';
+import { t } from './i18n.js?v=454e40dc';
 
 export const CONNECT_PROMPT = t('connect.prompt', MCP_URL);
 

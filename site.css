@@ -13,6 +13,8 @@ a { color: inherit; }
 .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .logo { font-weight: 700; font-size: 20px; text-decoration: none; }
+/* The name in the pixel font of the game look, in capitals, letters set close. */
+.logo { font: 400 24px 'Tiny5', monospace; text-transform: uppercase; letter-spacing: -0.04em; }
 .links { display: flex; align-items: center; gap: 20px; font-size: 15px; }
 .links a { color: var(--muted); text-decoration: none; white-space: nowrap; }
 .links a:hover { color: var(--text); }
