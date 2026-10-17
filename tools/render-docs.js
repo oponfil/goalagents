@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=f63e0c40';
-import { Scene, CW, H } from '../src/scene.js?v=f63e0c40';
-import { THEMES } from '../src/themes.js?v=f63e0c40';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=f63e0c40';
+import { AGENTS, FUNNELS } from '../src/data.js?v=38d7b930';
+import { Scene, CW, H } from '../src/scene.js?v=38d7b930';
+import { THEMES } from '../src/themes.js?v=38d7b930';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=38d7b930';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -251,12 +251,12 @@ try {
   }
   await save(agentsSheet(), 'agents.png');
   await save(themesSheet(), 'themes.png');
+  // The board itself only feeds the link preview card.
   const board = overview();
-  await save(board, 'overview.png');
   await save(await ogCard(board), 'og.png');
   await save(funnelGuide(), 'funnel.png');
   await save(funnelGuide({ labels: false }), 'funnel-plain.png');
-  status.textContent = 'Saved docs/img/agents.png, themes.png, overview.png, og.png and funnel.png';
+  status.textContent = 'Saved docs/img/agents.png, themes.png, og.png, funnel.png and funnel-plain.png';
 } catch (e) {
   status.textContent = e.done || 'Failed: ' + e.message;
 }

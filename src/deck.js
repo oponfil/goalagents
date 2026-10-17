@@ -1,8 +1,8 @@
 // The pitch deck: each slide's backdrop is one of the dashboard themes, with an agent of that theme
 // at work under the text. Arrow keys, Page Up/Down and Space move between slides.
-import { THEMES } from './themes.js?v=f63e0c40';
-import { AGENTS } from './data.js?v=f63e0c40';
-import { drawStanding, drawLying, drawBubble, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, MINER_H } from './sprites.js?v=f63e0c40';
+import { THEMES } from './themes.js?v=38d7b930';
+import { AGENTS } from './data.js?v=38d7b930';
+import { drawStanding, drawLying, drawBubble, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, MINER_H } from './sprites.js?v=38d7b930';
 
 const K = 4;  // screen pixels per logical pixel, as blocky as the dashboard
 
@@ -62,39 +62,6 @@ function vignette(slide) {
   else { drawBow(c, hx, hy, 0); drawArrow(c, hx + 3 + 0.6 * (pipeX - hx - 3), hy); }
 }
 
-// Callouts on the board screenshot: each label sits beside the image at its target's height (pushed
-// apart if they would overlap) with an arrow from the label to the point it explains.
-function callouts() {
-  document.querySelectorAll('.annot').forEach(box => {
-    const img = box.querySelector('.shot'), svg = box.querySelector('.arrows');
-    const wide = getComputedStyle(svg).display !== 'none';
-    svg.innerHTML = '';
-    if (!wide || !img.complete) return;
-    // The picture is fitted into its box (object-fit: contain): measure the drawn area, not the box.
-    const b = box.getBoundingClientRect(), outer = img.getBoundingClientRect();
-    const k = Math.min(outer.width / img.naturalWidth, outer.height / img.naturalHeight);
-    const r = { width: img.naturalWidth * k, height: img.naturalHeight * k };
-    const ix = outer.left - b.left + (outer.width - r.width) / 2, iy = outer.top - b.top + (outer.height - r.height) / 2;
-    for (const side of ['left', 'right']) {
-      let bottom = -Infinity;
-      [...box.querySelectorAll(`.callout[data-side="${side}"]`)]
-        .sort((p, q) => p.dataset.y - q.dataset.y)
-        .forEach(el => {
-          const tx = ix + el.dataset.x * r.width, ty = iy + el.dataset.y * r.height, h = el.offsetHeight;
-          const top = Math.max(bottom + 10, ty - 12);
-          el.style.top = top + 'px';
-          el.style.left = side === 'left' ? (ix - 220) + 'px' : (ix + r.width + 10) + 'px';
-          bottom = top + h;
-          const sx = side === 'left' ? ix - 6 : ix + r.width + 6, sy = top + 12;
-          const ang = Math.atan2(ty - sy, tx - sx), hl = 9;
-          svg.insertAdjacentHTML('beforeend',
-            `<line x1="${sx}" y1="${sy}" x2="${tx}" y2="${ty}" stroke="#F2C14E" stroke-width="2.5"/>` +
-            `<polygon fill="#F2C14E" points="${tx},${ty} ${tx - hl * Math.cos(ang - 0.45)},${ty - hl * Math.sin(ang - 0.45)} ${tx - hl * Math.cos(ang + 0.45)},${ty - hl * Math.sin(ang + 0.45)}"/>` +
-            `<circle cx="${sx}" cy="${sy}" r="3" fill="#F2C14E"/>`);
-        });
-    }
-  });
-}
 // Bullet icons, drawn like the board: an empty funnel tank with a "?", an agent idle, a funnel, a
 // tank with its heap, an agent asking.
 const IW = 36, IH = 32;
@@ -143,10 +110,9 @@ function icons() {
   });
 }
 
-document.querySelectorAll('.annot .shot').forEach(img => img.addEventListener('load', callouts));
 
 const slides = [...document.querySelectorAll('.slide')];
-const paintAll = () => { slides.forEach(paint); callouts(); icons(); };
+const paintAll = () => { slides.forEach(paint); icons(); };
 document.fonts.ready.then(paintAll);
 let t;
 addEventListener('resize', () => { clearTimeout(t); t = setTimeout(paintAll, 150); });

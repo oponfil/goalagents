@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="deck.css?v=f63e0c40">
+  <link rel="stylesheet" href="deck.css?v=38d7b930">
 </head>
 <body>
   <main id="deck">
@@ -86,19 +86,8 @@
     <section class="slide" data-theme="money" data-agent="qwen">
       <div class="body wide">
         <p class="kicker">What you see</p>
-        <!-- The board screenshot with callouts: src/deck.js places each label beside the image at
-             its target's height and draws an arrow to the point (x, y as fractions of the image). -->
-        <div class="annot">
-          <img class="shot" src="../docs/img/overview.png" alt="The GoalAgents board: four goal funnels with agents working between the tanks">
-          <svg class="arrows" aria-hidden="true"></svg>
-          <div class="callout" data-side="left" data-x="0.125" data-y="0.05"><b>Sheet</b>opens the list the agent keeps</div>
-          <div class="callout" data-side="left" data-x="0.054" data-y="0.23"><b>Red badge</b>an agent is waiting for your answer</div>
-          <div class="callout" data-side="left" data-x="0.04" data-y="0.307"><b>Tank</b>how many items have reached this stage</div>
-          <div class="callout" data-side="left" data-x="0.103" data-y="0.9"><b>next</b>when the next result is due</div>
-          <div class="callout" data-side="right" data-x="0.93" data-y="0.099"><b>+N</b>what the agent's last run added</div>
-          <div class="callout" data-side="right" data-x="0.875" data-y="0.466"><b>Heap</b>piles up piece by piece toward what the goal needs</div>
-          <div class="callout" data-side="right" data-x="0.975" data-y="0.837"><b>Results</b>one per result; empty ones are still to come</div>
-        </div>
+        <!-- The same labelled funnel as in the README (tools/render-docs.html draws it). -->
+        <img class="guide-shot" src="../docs/img/funnel.png" alt="One goal funnel with labels: the sheet, tanks, a question, agents asleep and at work, results and the prediction">
       </div>
     </section>
 
@@ -138,6 +127,6 @@
 
   </main>
   <div id="counter" aria-hidden="true"></div>
-  <script type="module" src="../src/deck.js?v=f63e0c40"></script>
+  <script type="module" src="../src/deck.js?v=38d7b930"></script>
 </body>
 </html>
