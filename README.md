@@ -110,7 +110,8 @@ Scripts and stylesheets are loaded with a version in the address (`i18n.js?v=3f2
 - `src/guide.js` — the explained funnel: run live on the landing page (`src/guide-live.js`), recorded for the README
 - `src/nav.js` — the nav: language picker, Goals and Sign out once signed in
 - `index.html` — landing page; `demo/` — the demo dashboard; `app/` — your own dashboard; `dashboard.css` — their styles
-- `login/` — sign-in with Google or an email link (Supabase Auth); `oauth/consent/` — where you allow an agent to connect; `connect/` — the prompt that connects an agent; `pricing/` — Free and Pro plans; `privacy/`, `contact/`
+- `login/` — sign-in with Google or an email link (Supabase Auth); `oauth/consent/` — where you allow an agent to connect; `connect/` — the prompt that connects an agent; `pricing/` — Free and Pro plans ($9 a month during early access, through Creem); `privacy/`, `contact/`
+- `src/billing.js`, `src/pricing.js` — paying for Pro: the Get Pro button and the plan in the profile menu; `supabase/functions/billing/` — Creem checkout, the customer portal and the webhook that moves `accounts.pro_until`; `terms/` — terms of service
 - `src/config.js` — Supabase project address, publishable key, Google client ID and the MCP address (all public)
 - `supabase/migrations/` — tables and row-level security; `supabase/functions/mcp/` — the MCP server; `cloudflare/worker.js` — serves it and its sign-in at goalcraft.ai (routes `/mcp*`, `/auth/*`, `/.well-known/*`)
 - `docs/MCP.md` — the MCP protocol agents use to write to the dashboard

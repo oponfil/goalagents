@@ -2,8 +2,9 @@
 // profile button (the Google photo, or a plain silhouette) whose menu holds the rarely used
 // settings: the language, email when an agent asks, and signing out. A signed-in person's language
 // is kept in their account too.
-import { supabase, siteUrl } from './auth.js?v=cce9c985';
-import { t, lang, chosen, LANGS, SHORT, setLang, onLangSaved, adoptLang, FLOW_UNITS, flowUnit, setFlowUnit, onFlowSaved } from './i18n.js?v=cce9c985';
+import { account, openBilling } from './billing.js?v=b1ba8fcc';
+import { supabase, siteUrl } from './auth.js?v=b1ba8fcc';
+import { t, lang, chosen, LANGS, SHORT, setLang, onLangSaved, adoptLang, FLOW_UNITS, flowUnit, setFlowUnit, onFlowSaved } from './i18n.js?v=b1ba8fcc';
 
 const links = document.querySelector('nav .links');
 const signin = document.querySelector('.links a.signin');
@@ -99,6 +100,26 @@ if (signin && session) {
     if (FLOW_UNITS.includes(m.flow_unit)) { setFlowUnit(m.flow_unit, { remote: false }); flowPick.value = m.flow_unit; }
   });
 
+  // The plan: Free with a way up to Pro, or Pro with its end date and, when paid, the
+  // subscription settings at Creem.
+  const planRow = document.createElement('div');
+  planRow.className = 'row plan-row';
+  const planName = document.createElement('span');
+  const planAction = document.createElement('a');
+  planAction.href = siteUrl('pricing/');
+  planRow.append(planName, planAction);
+  planName.textContent = `${t('nav.plan')}: …`;
+  account().then(me => {
+    if (!me) { planRow.remove(); return; }
+    const date = me.until ? me.until.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+    planName.textContent = `${t('nav.plan')}: ${me.pro ? (date ? t('nav.proUntil', date) : 'Pro') : t('nav.planFree')}`;
+    if (me.paying) {
+      planAction.textContent = t('nav.manage');
+      planAction.addEventListener('click', e => { e.preventDefault(); openBilling('portal').catch(() => { planAction.textContent = t('billing.failed'); }); });
+    } else if (!me.pro) planAction.textContent = t('nav.upgrade');
+    else planAction.remove();
+  });
+
   const out = document.createElement('a');
   out.href = '#'; out.className = 'signout';
   out.textContent = t('nav.signout');
@@ -109,7 +130,7 @@ if (signin && session) {
     location.replace(siteUrl(''));
   });
 
-  menu.append(email, langRow, flowRow, notify, out);
+  menu.append(email, planRow, langRow, flowRow, notify, out);
   profile.append(button, menu);
   signin.after(profile);
 

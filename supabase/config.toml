@@ -416,3 +416,6 @@ enabled = true
 
 [functions.mcp]
 verify_jwt = false
+
+[functions.billing]
+verify_jwt = false

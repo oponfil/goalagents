@@ -103,10 +103,10 @@ async function funnels(db: Db, key?: string) {
 const one = async (db: Db, key: string) => (await funnels(db, key))[0]
 
 // Free: 3 funnels of up to 3 stages, one agent per zone. Pro: 10 funnels of up to 5 stages, two agents per zone
-// (everyone is on Pro during the launch).
+// (Pro is paid through Creem; see supabase/functions/billing).
 async function plan(db: Db) {
-  const row = check(await db.from('accounts').select('plan').maybeSingle()) as { plan: string } | null
-  const name = row?.plan ?? 'pro'
+  // The plan the limits use: Pro only while it is paid for (or granted) up to now.
+  const name = (check(await db.rpc('my_plan')) as string | null) ?? 'free'
   return { plan: name, max_funnels: name === 'pro' ? 10 : 3, max_stages: name === 'pro' ? 5 : 3, max_agents_per_zone: name === 'pro' ? 2 : 1 }
 }
 

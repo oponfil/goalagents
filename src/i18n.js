@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=cce9c985';
-import vi from './lang/vi.js?v=cce9c985';
-import ja from './lang/ja.js?v=cce9c985';
+import es from './lang/es.js?v=b1ba8fcc';
+import vi from './lang/vi.js?v=b1ba8fcc';
+import ja from './lang/ja.js?v=b1ba8fcc';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -88,8 +88,14 @@ const STRINGS = {
   'flow.h': L('per hour', 'в час', '每小时', 'ต่อชั่วโมง'),
   'flow.d': L('per day', 'в день', '每天', 'ต่อวัน'),
   'flow.w': L('per week', 'в неделю', '每周', 'ต่อสัปดาห์'),
+  'nav.plan': L('Plan', 'Тариф', '套餐', 'แพ็กเกจ'),
+  'nav.planFree': L('Free', 'Бесплатный', '免费版', 'ฟรี'),
+  'nav.upgrade': L('Upgrade to Pro', 'Перейти на Pro', '升级到 Pro', 'อัปเกรดเป็น Pro'),
+  'nav.manage': L('Manage subscription', 'Управлять подпиской', '管理订阅', 'จัดการการสมัคร'),
+  'nav.proUntil': L((d) => `Pro until ${d}`, (d) => `Pro до ${d}`, (d) => `Pro 到 ${d}`, (d) => `Pro ถึง ${d}`),
   'nav.lang': L('Language', 'Язык', '语言', 'ภาษา'),
   'footer.built': L('© 2026 Goalcraft', '© 2026 Goalcraft', '© 2026 Goalcraft', '© 2026 Goalcraft'),
+  'footer.terms': L('Terms', 'Условия', '条款', 'ข้อกำหนด'),
   'footer.deck': L('Pitch deck', 'Презентация', '路演文稿', 'พิตช์เด็ค'),
   'footer.privacy': L('Privacy', 'Конфиденциальность', '隐私', 'ความเป็นส่วนตัว'),
   'footer.contact': L('Contact', 'Контакты', '联系', 'ติดต่อ'),
@@ -204,8 +210,10 @@ const STRINGS = {
   'board.next': L((eta) => `next ${eta}`, (eta) => `следующий ${eta}`, (eta) => `下一个 ${eta}`, (eta) => `ถัดไป ${eta}`),
 
   // Pricing
+  'pricing.current': L('Your plan', 'Ваш тариф', '当前套餐', 'แพ็กเกจของคุณ'),
+  'billing.failed': L('Could not open the payment page. Try again in a minute.', 'Не удалось открыть страницу оплаты. Попробуйте через минуту.', '无法打开付款页面，请稍后再试。', 'เปิดหน้าชำระเงินไม่ได้ ลองใหม่อีกครั้งในอีกสักครู่'),
   'pricing.h1': L('Pricing', 'Тарифы', '价格', 'ราคา'),
-  'pricing.lead': L('Pro is free during early access: everyone who signs up now gets it.', 'Pro бесплатен на время раннего доступа: его получает каждый, кто зарегистрируется сейчас.', '抢先体验期间 Pro 免费：现在注册的每个人都能获得。', 'Pro ใช้ฟรีในช่วงทดลองใช้ก่อนใคร ทุกคนที่สมัครตอนนี้จะได้รับ'),
+  'pricing.lead': L('Early-access price: Pro is $9 a month instead of $15, and stays $9 while you keep it.', 'Цена раннего доступа: Pro за $9 в месяц вместо $15, и цена не вырастет, пока вы не отмените подписку.', '早期价格：Pro 每月 $9，原价 $15；只要不取消订阅，价格就一直是 $9。', 'ราคาช่วงเปิดตัว: Pro เดือนละ $9 แทน $15 และคงราคา $9 ตราบที่คุณยังสมัครอยู่'),
   'pricing.forever': L('forever', 'навсегда', '永久', 'ตลอดไป'),
   'pricing.free1': L('<b>3</b> goal funnels', '<b>3</b> воронки целей', '<b>3</b> 个目标漏斗', 'กรวยเป้าหมาย <b>3</b> อัน'),
   'pricing.free2': L('<b>3</b> stages in each funnel', '<b>3</b> этапа в каждой воронке', '每个漏斗 <b>3</b> 个阶段', '<b>3</b> ขั้นในแต่ละกรวย'),
@@ -218,22 +226,18 @@ const STRINGS = {
   'pricing.answer': L('Answer your agents from the dashboard', 'Отвечайте агентам прямо с доски', '直接在看板上回复智能体', 'ตอบเอเจนต์ได้จากแดชบอร์ด'),
   'pricing.startFree': L('Start free', 'Начать бесплатно', '免费开始', 'เริ่มใช้ฟรี'),
   'pricing.early': L('Early access', 'Ранний доступ', '抢先体验', 'ทดลองใช้ก่อนใคร'),
-  'pricing.perMonth': L('per month, free during early access', 'в месяц, бесплатно в раннем доступе', '每月，抢先体验期间免费', 'ต่อเดือน ฟรีในช่วงทดลองใช้ก่อนใคร'),
-  'pricing.getPro': L('Get Pro free', 'Получить Pro бесплатно', '免费获取 Pro', 'รับ Pro ฟรี'),
+  'pricing.perMonth': L('per month, early-access price', 'в месяц, цена раннего доступа', '每月，早期价格', 'ต่อเดือน ราคาช่วงเปิดตัว'),
+  'pricing.getPro': L('Get Pro', 'Подключить Pro', '开通 Pro', 'สมัคร Pro'),
   'pricing.fine1': L(
     'Agents work at the steps of a funnel: above the first stage, between stages, and below the last one, where they turn the last stage into results. A funnel has one step more than stages.',
     'Агенты работают на шагах воронки: над первым этапом, между этапами и под последним, где они превращают последний этап в результаты. Шагов в воронке на один больше, чем этапов.',
     '智能体在漏斗的各个步骤上工作：第一阶段之上、阶段之间，以及最后一个阶段之下（把最后阶段变成成果）。步骤数比阶段数多一个。',
     'เอเจนต์ทำงานที่ขั้นตอนของกรวย: เหนือขั้นแรก ระหว่างขั้น และใต้ขั้นสุดท้ายที่เปลี่ยนขั้นสุดท้ายเป็นผลลัพธ์ จำนวนขั้นตอนมากกว่าจำนวนขั้นหนึ่ง'),
-  'pricing.fine2': L(
-    'When early access ends, Pro becomes $10 a month. We will tell you before that, and you can keep using the free plan.',
-    'Когда ранний доступ закончится, Pro будет стоить $10 в месяц. Мы предупредим заранее, а бесплатным тарифом можно будет пользоваться дальше.',
-    '抢先体验结束后，Pro 为每月 10 美元。我们会提前通知你，你也可以继续使用免费方案。',
-    'เมื่อช่วงทดลองใช้ก่อนใครจบลง Pro จะมีราคา $10 ต่อเดือน เราจะแจ้งล่วงหน้า และคุณยังใช้แผนฟรีต่อได้'),
+  'pricing.fine2': L('Payments go through Creem, our merchant of record. Cancel any time in the profile menu: Pro stays until the end of the month you paid for. When early access ends, Pro will cost $15 a month for new subscribers.', 'Оплата проходит через Creem, нашего платёжного партнёра. Отменить можно в любой момент в меню профиля: Pro остаётся до конца оплаченного месяца. После раннего доступа новые подписчики будут платить $15 в месяц.', '付款通过我们的销售方 Creem 完成。可随时在个人菜单中取消：Pro 保留到已付费月份结束。早期阶段结束后，新订阅为每月 $15。', 'ชำระเงินผ่าน Creem ผู้ขายของเรา ยกเลิกได้ทุกเมื่อในเมนูโปรไฟล์: Pro ใช้ได้จนจบเดือนที่จ่ายแล้ว เมื่อช่วงเปิดตัวจบ สมาชิกใหม่จะจ่ายเดือนละ $15'),
 
   // Privacy
   'privacy.h1': L('Privacy', 'Конфиденциальность', '隐私', 'ความเป็นส่วนตัว'),
-  'privacy.updated': L('Last updated: 15 October 2026', 'Обновлено: 15 октября 2026', '最后更新：2026 年 10 月 15 日', 'อัปเดตล่าสุด: 15 ตุลาคม 2026'),
+  'privacy.updated': L('Last updated: 17 October 2026', 'Обновлено: 17 октября 2026', '最后更新：2026 年 10 月 17 日', 'อัปเดตล่าสุด: 17 ตุลาคม 2026'),
   'privacy.h.store': L('What we store', 'Что мы храним', '我们存储什么', 'เราเก็บอะไรบ้าง'),
   'privacy.store': L(
     'When you sign in with Google or an email link, we store your email address and a user ID. With Google we also receive your name and profile picture; we do not use them for anything else. When your agents connect, we store the funnels, counts, results and agent states they report.',
@@ -252,18 +256,20 @@ const STRINGS = {
     'Goalcraft запрашивает у Google только почту и базовый профиль. Использование информации, полученной через API Google, соответствует <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, включая требования Limited Use.',
     'Goalcraft 只向 Google 请求你的邮箱和基本资料。对从 Google API 获得的信息的使用遵循 <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>，包括 Limited Use 要求。',
     'Goalcraft ขอจาก Google เพียงอีเมลและโปรไฟล์พื้นฐาน การใช้ข้อมูลที่ได้รับจาก Google API เป็นไปตาม <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a> รวมถึงข้อกำหนด Limited Use'),
+  'privacy.h.pay': L('Payments', 'Оплата', '付款', 'การชำระเงิน'),
+  'privacy.pay': L('If you buy Pro, Creem processes the payment as our merchant of record. We receive only your Creem customer ID and the state of your subscription, never your card details.', 'Если вы покупаете Pro, оплату проводит Creem, наш платёжный партнёр. Мы получаем только ваш номер клиента в Creem и состояние подписки, данные карты нам не передаются.', '如果你购买 Pro，付款由我们的销售方 Creem 处理。我们只会收到你在 Creem 的客户编号和订阅状态，不会收到银行卡信息。', 'หากคุณซื้อ Pro การชำระเงินจะดำเนินการโดย Creem ผู้ขายของเรา เราได้รับเพียงรหัสลูกค้า Creem และสถานะการสมัครของคุณ ไม่เคยได้รับข้อมูลบัตร'),
   'privacy.h.delete': L('Deleting your data', 'Удаление данных', '删除你的数据', 'การลบข้อมูลของคุณ'),
   'privacy.delete': L(
-    'Write to <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a> and we will delete your account and everything your agents reported.',
-    'Напишите на <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>, и мы удалим ваш аккаунт и всё, что сообщили ваши агенты.',
-    '写信到 <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>，我们会删除你的账户及你的智能体汇报的所有内容。',
-    'เขียนมาที่ <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a> แล้วเราจะลบบัญชีของคุณและทุกอย่างที่เอเจนต์ของคุณรายงาน'),
+    'Write to <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a> and we will delete your account and everything your agents reported.',
+    'Напишите на <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>, и мы удалим ваш аккаунт и всё, что сообщили ваши агенты.',
+    '写信到 <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>，我们会删除你的账户及你的智能体汇报的所有内容。',
+    'เขียนมาที่ <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a> แล้วเราจะลบบัญชีของคุณและทุกอย่างที่เอเจนต์ของคุณรายงาน'),
 
   // Contact
   'contact.h1': L('Contact', 'Контакты', '联系', 'ติดต่อ'),
   'contact.who': L('Goalcraft is made by Oleg Ponfilenok.', 'Goalcraft делает Олег Понфиленок.', 'Goalcraft 由 Oleg Ponfilenok 打造。', 'Goalcraft สร้างโดย Oleg Ponfilenok'),
   'contact.h.write': L('Write to us', 'Напишите нам', '给我们写信', 'เขียนถึงเรา'),
-  'contact.write': L('Questions, ideas, bugs or a partnership: <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>.', 'Вопросы, идеи, ошибки или партнёрство: <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>.', '问题、想法、错误或合作：<a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>。', 'คำถาม ไอเดีย บั๊ก หรือความร่วมมือ: <a href="mailto:ponfil@gmail.com">ponfil@gmail.com</a>'),
+  'contact.write': L('Questions, ideas, bugs or a partnership: <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>.', 'Вопросы, идеи, ошибки или партнёрство: <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>.', '问题、想法、错误或合作：<a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>。', 'คำถาม ไอเดีย บั๊ก หรือความร่วมมือ: <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>'),
   'contact.h.code': L('Code', 'Код', '代码', 'โค้ด'),
   'contact.code': L(
     'The code and the MCP protocol are on <a href="https://github.com/oponfil/goalcraft" target="_blank" rel="noopener">GitHub</a>. Issues and pull requests are welcome.',

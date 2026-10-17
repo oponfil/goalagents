@@ -1,5 +1,5 @@
 // Demo data shown on the landing page. In the product this comes from agents via MCP.
-import { lang } from './i18n.js?v=cce9c985';
+import { lang } from './i18n.js?v=b1ba8fcc';
 
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
@@ -170,7 +170,7 @@ export const FUNNELS = [
     ],
   },
   {
-    title: 'Dating',
+    title: 'Love',
     theme: 'love',
     result: ['relationship', 'relationships'],
     stages: [
@@ -178,7 +178,7 @@ export const FUNNELS = [
       { count: 64, forms: ['conversation', 'conversations'] },
       { count: 9, forms: ['first date', 'first dates'] },
       { count: 3, forms: ['second date', 'second dates'] },
-      { count: 1, forms: ['sleepover', 'sleepovers'] },
+      { count: 1, forms: ['met the friends', 'met the friends'] },
     ],
     flows: [8, 3, 0.5, 0.2, 0.08, 1 / 60],
     cubes: 0,
@@ -313,7 +313,7 @@ const DEMO = {
   'Creator': ['Автор', '创作者', 'ครีเอเตอร์', 'Creador', 'Nhà sáng tạo', 'クリエイター'],
   'Bug Bounty': ['Баг-баунти', '漏洞赏金', 'บั๊กบาวน์ตี้', 'Bug bounty', 'Săn lỗi', 'バグバウンティ'],
   'Fundraising': ['Привлечение инвестиций', '融资', 'ระดมทุน', 'Inversión', 'Gọi vốn', '資金調達'],
-  'Dating': ['Знакомства', '约会', 'หาคู่', 'Citas', 'Hẹn hò', '婚活'],
+  'Love': ['Любовь', '爱情', 'ความรัก', 'Amor', 'Tình yêu', '恋愛'],
   'Research': ['Исследования', '科研', 'งานวิจัย', 'Investigación', 'Nghiên cứu', '研究'],
   'offer': [['оффер', 'оффера', 'офферов'], '录用通知', 'ข้อเสนองาน', ['oferta', 'ofertas'], 'lời mời làm việc', '内定'],
   'job found': [['найденная вакансия', 'найденные вакансии', 'найденных вакансий'], '找到的职位', 'งานที่พบ', ['vacante encontrada', 'vacantes encontradas'], 'việc tìm thấy', '見つけた求人'],
@@ -344,7 +344,7 @@ const DEMO = {
   'conversation': [['переписка', 'переписки', 'переписок'], '聊天', 'บทสนทนา', ['conversación', 'conversaciones'], 'cuộc trò chuyện', 'やり取り'],
   'first date': [['первое свидание', 'первых свидания', 'первых свиданий'], '第一次约会', 'เดทแรก', ['primera cita', 'primeras citas'], 'buổi hẹn đầu', '初デート'],
   'second date': [['второе свидание', 'вторых свидания', 'вторых свиданий'], '第二次约会', 'เดทที่สอง', ['segunda cita', 'segundas citas'], 'buổi hẹn thứ hai', '2回目のデート'],
-  'sleepover': [['ночёвка', 'ночёвки', 'ночёвок'], '过夜', 'ค้างคืน', ['noche juntos', 'noches juntos'], 'ngủ lại', 'お泊まり'],
+  'met the friends': [['знакомство с друзьями', 'знакомства с друзьями', 'знакомств с друзьями'], '见了朋友', 'พบเพื่อนของกันและกัน', ['conoció a los amigos', 'conocieron a los amigos'], 'đã gặp bạn bè', '友人に紹介'],
   'published paper': [['опубликованная статья', 'опубликованные статьи', 'опубликованных статей'], '已发表论文', 'บทความที่ตีพิมพ์', ['artículo publicado', 'artículos publicados'], 'bài báo đã đăng', '掲載論文'],
   'idea': [['идея', 'идеи', 'идей'], '想法', 'ไอเดีย', ['idea', 'ideas'], 'ý tưởng', 'アイデア'],
   'draft': [['черновик', 'черновика', 'черновиков'], '草稿', 'ฉบับร่าง', ['borrador', 'borradores'], 'bản nháp', '草稿'],
