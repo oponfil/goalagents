@@ -249,9 +249,13 @@ body {
 html:lang(vi) { --font: "Be Vietnam Pro", system-ui, sans-serif; }
 /* Japanese: Noto Sans JP before the Chinese font, so kanji take their Japanese shapes. */
 html:lang(ja) { --font: "Rubik", "Noto Sans JP", system-ui, sans-serif; }
-/* An agent's short reply to the person's answer: a note over its head, the text and a ×. */
-.agent-note { position: fixed; z-index: 5; transform: translateY(-100%); max-width: 200px; background: #F4EDE1; color: #1B1714; font-size: 12px; line-height: 1.35; padding: 6px 22px 6px 9px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.4); pointer-events: auto; }
-.agent-note::after { content: ""; position: absolute; left: var(--tail, 50%); bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-top-color: #F4EDE1; border-bottom: 0; }
-.agent-note button { position: absolute; top: 2px; right: 3px; background: none; border: 0; color: #6B6258; font-size: 15px; line-height: 1; cursor: pointer; padding: 2px 4px; }
-.agent-note button:hover { color: #1B1714; }
+/* An agent's short reply to the person's answer: a note over its head in the board's own style
+   (the popups' dark panel and border, square corners), the text and a ×. */
+.agent-note { position: fixed; z-index: 5; transform: translateY(calc(-100% - 6px)); max-width: 210px; background: var(--panel); color: var(--text); border: 2px solid var(--border); font: 500 13px/1.35 var(--font); padding: 6px 24px 7px 10px; pointer-events: auto; }
+/* The tail: a small square step down from the border to the agent, pixel style. */
+.agent-note::before, .agent-note::after { content: ""; position: absolute; left: var(--tail, 50%); }
+.agent-note::before { bottom: -8px; width: 8px; height: 6px; margin-left: -4px; background: var(--border); }
+.agent-note::after { bottom: -4px; width: 4px; height: 2px; margin-left: -2px; background: var(--panel); }
+.agent-note button { position: absolute; top: 3px; right: 4px; background: none; border: 0; color: var(--muted); font: 16px/1 var(--font); cursor: pointer; padding: 2px 3px; }
+.agent-note button:hover { color: var(--text); }
 .agent-note[hidden] { display: none; }
