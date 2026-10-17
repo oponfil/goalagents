@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=261a50db';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=261a50db';
-import { themeOf } from './themes.js?v=261a50db';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=261a50db';
+import { agentInfo, plural } from './data.js?v=f63e0c40';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=f63e0c40';
+import { themeOf } from './themes.js?v=f63e0c40';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=f63e0c40';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -647,7 +647,7 @@ function project(f) {
     if (have >= want || days === 0) return 1e3; // already enough: the needle rests far right
     return flow * days / (want - have);
   };
-  const zones = fl.map((flow, i) => f.manualPace?.[i] ?? reading(flow, i));
+  const zones = fl.map((flow, i) => reading(flow, i));
   return { zones, out: zones[n], eta: fl[n] > 0 ? 1 / fl[n] : null, fill, need };
 }
 // Pace vs goal, for the "next" line: red — far behind, yellow — close, green — on pace, bright
