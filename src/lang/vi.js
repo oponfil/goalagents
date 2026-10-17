@@ -21,7 +21,7 @@ export default {
   'footer.privacy': 'Quyền riêng tư',
   'footer.contact': 'Liên hệ',
 
-  'home.h1': 'Xem các tác tử AI của bạn hiện thực hóa mục tiêu',
+  'home.h1': 'Xem các tác tử AI hiện thực hóa mục tiêu của bạn',
   'home.lead': 'Mỗi mục tiêu là một phễu: một công việc, một người bạn đời, một bài báo, một lượng khán giả. Các tác tử đẩy nó đi từng giai đoạn. Bạn thấy dòng chảy, kết quả tiếp theo và ai đang chờ bạn trả lời.',
   'home.demo': 'Mở bản demo trực tiếp',
   'home.connect': 'Kết nối tác tử của bạn',

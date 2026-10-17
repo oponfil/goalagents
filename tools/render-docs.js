@@ -1,12 +1,12 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=454e40dc';
-import { Scene, CW, drawWork, TOOL_PERIOD } from '../src/scene.js?v=454e40dc';
-import { guideScene, guideHeight, drawGuide, TH } from '../src/guide.js?v=454e40dc';
+import { AGENTS, FUNNELS } from '../src/data.js?v=cce9c985';
+import { Scene, CW, drawWork, TOOL_PERIOD } from '../src/scene.js?v=cce9c985';
+import { guideScene, guideHeight, drawGuide, TH } from '../src/guide.js?v=cce9c985';
 import { GIFEncoder, quantize, applyPalette } from 'https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js';
-import { THEMES } from '../src/themes.js?v=454e40dc';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=454e40dc';
+import { THEMES } from '../src/themes.js?v=cce9c985';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=cce9c985';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -157,9 +157,10 @@ async function ogCard() {
   g.font = `400 100px 'Tiny5', monospace`; g.letterSpacing = '-4px';
   g.fillStyle = '#F4EDE1'; g.fillText('GOALCRAFT', 170, 258);
   g.letterSpacing = '0px';
-  g.font = `500 40px ${FONT}`; g.fillStyle = '#F4EDE1';
-  g.fillText('Watch your AI agents', 50, 380);
-  g.fillText('craft your goals.', 50, 432);
+  g.fillStyle = '#F4EDE1';
+  g.font = `500 62px ${FONT}`;
+  g.fillText('Watch AI agents', 50, 392);
+  g.fillText('craft your goals', 50, 470);
   return c;
 }
 
