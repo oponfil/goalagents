@@ -74,6 +74,8 @@ export default {
   'board.runNow': 'đang chạy',
   'board.noRuns': 'Chưa có lần chạy nào được ghi lại.',
   'board.runsFailed': 'Không tải được các lần chạy.',
+  'board.replied': (who) => `${who} đã trả lời`,
+  'board.you': 'Bạn',
   'board.resting': (who) => `${who} đang nghỉ đến lần chạy tiếp theo`,
   'board.starting': (who) => `${who} bắt đầu ca làm`,
   'board.finished': (who) => `${who} đã xong ca làm`,

@@ -378,6 +378,14 @@ export function drawArrow(ctx, x, y) {
   rect(ctx, x - 8, y - 1, 1.5, 0.5, '#F28AB8'); rect(ctx, x - 8, y + 1, 1.5, 0.5, '#F28AB8');
 }
 
+// The agent's reply to an answer: a white speech bubble with three dots.
+export function drawReplyBubble(ctx, x, y) {
+  rect(ctx, x + 0.5, y + 2, 13, 11, '#F4EDE1');
+  rect(ctx, x, y + 2.5, 14, 10, '#F4EDE1');
+  rect(ctx, x + 14, y + 9, 2, 2, '#F4EDE1');
+  for (let i = 0; i < 3; i++) rect(ctx, x + 3 + i * 3.5, y + 7, 1.5, 1.5, '#5E626B');
+}
+
 // One "!" per open question up to four, each widening the bubble by BUBBLE_STEP; from five on
 // the bubble is as wide as for four and the scene writes the number before a single "!".
 export const BUBBLE_STEP = 4;

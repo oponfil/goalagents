@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=21bb7ed3';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=21bb7ed3';
-import { themeOf } from './themes.js?v=21bb7ed3';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=21bb7ed3';
+import { agentInfo, plural } from './data.js?v=f6bfcdbd';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, drawReplyBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=f6bfcdbd';
+import { themeOf } from './themes.js?v=f6bfcdbd';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=f6bfcdbd';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -104,6 +104,7 @@ export class Scene {
       const a = { ...w, f, side, rand: r, hitAt: 1 + r() * 3, phase: r() };
       // Open questions, oldest first (the demo gives one as a plain string).
       a.questions = w.questions ?? (w.question ? [{ id: w.question_id, question: w.question }] : []);
+      a.replies = w.replies ?? [];
       if (w.state === 'sleep') a.wakeAt = w.wakeIn;
       if (w.state === 'work' && !live) a.workUntil = 20 + r() * 25;
       // The demo makes up what each agent's last run added; it then counts the items it adds.
@@ -376,6 +377,10 @@ export class Scene {
         drawBubble(c, bx, p.y - 14, a.questions.length);
         a.bubble = { x: bx, y: p.y - 14 };
         this.hits.push({ x: Math.min(p.x, bx) - 4, y: p.y - 16, w: 52 + extra, h: 38, type: 'ask', a });
+      } else if (a.replies.length) {
+        const bx = a.side === 'R' ? p.x - 16 : p.x + 30;
+        drawReplyBubble(c, bx, p.y - 16);
+        this.hits.push({ x: Math.min(p.x, bx) - 4, y: p.y - 16, w: 52, h: 38, type: 'reply', a });
       } else this.hits.push({ x: p.x - 4, y: p.y - 14, w: 34, h: 36, type: 'agent', a });
       return;
     }
@@ -451,7 +456,11 @@ export class Scene {
         this.sparks.push({ a, col: theme.spark, x: R ? cx + 6 + dx : cx - 6 - dx, y: p.y + 10 + Math.floor(a.rand() * 8), born: t });
       }
     }
-    this.hits.push({ x: R ? p.x - 14 : p.x - 2, y: p.y - 4, w: 36, h: 34, type: 'agent', a });
+    if (a.replies.length) {
+      const bx = R ? p.x + 20 : p.x - 14;
+      drawReplyBubble(c, bx, p.y - 14);
+      this.hits.push({ x: Math.min(p.x, bx) - 2, y: p.y - 14, w: 40, h: 44, type: 'reply', a });
+    } else this.hits.push({ x: R ? p.x - 14 : p.x - 2, y: p.y - 4, w: 36, h: 34, type: 'agent', a });
   }
 
   // Crisp text on the full-resolution canvas, over the pixel layer.

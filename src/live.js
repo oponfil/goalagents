@@ -1,5 +1,5 @@
 // The person's own funnels, written by their agents through MCP, redrawn when the agents write.
-import { supabase } from './auth.js?v=21bb7ed3';
+import { supabase } from './auth.js?v=f6bfcdbd';
 
 const DAY = 86400e3;
 const WINDOW_DAYS = 7;
@@ -50,6 +50,10 @@ function toScene(f, reports, now) {
         // Seconds since the agent last changed its state (its last word, for an overdue one).
         seenAgo: (now - Date.parse(p.updated_at)) / 1000,
         questions: qs.map(q => ({ id: q.id, question: q.question, chat: q.chat_url })),
+        // The agent's short replies to answers, not closed yet, oldest first.
+        replies: f.questions.filter(q => q.agent === p.agent && q.reply && !q.reply_seen_at)
+          .sort((a, b) => Date.parse(a.replied_at) - Date.parse(b.replied_at))
+          .map(q => ({ id: q.id, question: q.question, answer: q.answer, reply: q.reply })),
         chat: p.chat_url,
         // What this run added (the last run's, while the agent sleeps); null = not known.
         added: p.run_added,
@@ -65,7 +69,7 @@ export async function loadFunnels() {
       .select(`id, title, theme, source_url, result, goal_total, goal_every_days, results, output_flow_per_day,
         stages (key, position, label, count, fill_percent, flow_per_day),
         presence (agent, zone, state, next_run_at, question_id, chat_url, run_added, updated_at),
-        questions (id, agent, question, asked_at, answered_at, chat_url)`)
+        questions (id, agent, question, answer, asked_at, answered_at, chat_url, reply, replied_at, reply_seen_at)`)
       .order('created_at'),
     supabase.from('count_reports')
       .select('funnel_id, stage_key, value, at')
@@ -92,6 +96,12 @@ export async function runs(a, limit = 10) {
     .order('started_at', { ascending: false }).limit(limit);
   if (error) throw error;
   return data;
+}
+
+// The person closed the agent's replies: they stop showing.
+export async function closeReplies(ids) {
+  const { error } = await supabase.from('questions').update({ reply_seen_at: new Date().toISOString() }).in('id', ids);
+  return error?.message;
 }
 
 // Calls onChange (debounced) whenever an agent writes to this person's funnels.

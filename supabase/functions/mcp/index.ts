@@ -22,7 +22,7 @@ const agent = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,31}$/)
 const INSTRUCTIONS = `GoalAgents shows the person their goals as funnels and the agents working them.
 A funnel is one goal (e.g. "Job Search") with 2-5 stages top to bottom (jobs found → applied → interview → final round) and a result at the bottom (offer).
 Zones: 0 is the inflow above the first stage, zone k moves stage k-1 into stage k, zone n (below the last stage) turns the last stage into results. At most two agents per zone on Pro, one on the free plan.
-On every run: first thing, before any other work, set_agent_state(work) in your zone (this starts the run's counter, shown by you on the dashboard; 5 minutes past your next_run_at without it the dashboard warns the person that you did not wake up); after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question, chat_url of this conversation when you know it) and poll get_answer: while you are in ask the person sees you waiting and expects you to take the answer at once. If you go to sleep before it comes, the question stays on the dashboard and the person is told you will pick the answer up on your next run, so call get_answer then. If the person answers you somewhere else instead (in your chat), call close_question so the dashboard stops showing the question; at the end set_agent_state(sleep, next_run_at) or clear_agent.
+On every run: first thing, before any other work, set_agent_state(work) in your zone (this starts the run's counter, shown by you on the dashboard; 5 minutes past your next_run_at without it the dashboard warns the person that you did not wake up); after progress report_counts (and add_result when a result appears); if you need the person, set_agent_state(ask, question, chat_url of this conversation when you know it) and poll get_answer: while you are in ask the person sees you waiting and expects you to take the answer at once. If you go to sleep before it comes, the question stays on the dashboard and the person is told you will pick the answer up on your next run, so call get_answer then. Whenever you get an answer, reply to it in one short line with reply (what you do next); if you need more from the person, ask a new question instead. If the person answers you somewhere else instead (in your chat), call close_question so the dashboard stops showing the question; at the end set_agent_state(sleep, next_run_at) or clear_agent.
 Plans: free has up to 3 funnels with up to 3 stages each and one agent per zone; Pro has up to 10 funnels with up to 5 stages each and two agents per zone. list_funnels tells which plan the person has.
 Report only counts, dates and links: the items themselves stay in the person's own sources.
 Link to the list: whenever the funnel's items are kept in a table or list that opens by a URL (Google Sheets, Notion, Airtable, a GitHub file…), give that URL as the funnel's source_url (in upsert_funnel or report_counts) — the dashboard shows it as a sheet on top of the funnel and opens it on click. One link per funnel. Keep the list where a link can open it when you can. If it only exists on your machine or you have no such place, leave source_url empty and say so to the person; it is optional.`
@@ -78,7 +78,7 @@ async function funnels(db: Db, key?: string) {
     .select(`key, title, theme, source_url, result, goal_total, goal_every_days, results, output_flow_per_day, updated_at,
       stages (key, position, label, count, fill_percent, flow_per_day),
       presence (agent, zone, state, next_run_at, chat_url, question_id, run_added, updated_at),
-      questions (id, agent, question, answer, asked_at, answered_at, chat_url)`)
+      questions (id, agent, question, answer, asked_at, answered_at, chat_url, replied_at)`)
     .order('created_at')
   if (key) q = q.eq('key', key)
   const rows = check(await q) as any[]
@@ -95,6 +95,8 @@ async function funnels(db: Db, key?: string) {
     output_flow_per_day: f.output_flow_per_day,
     agents: f.presence,
     open_questions: f.questions.filter((q: any) => !q.answered_at),
+    // Answered but not replied to yet: the agent owes the person a short reply.
+    answers_to_reply: f.questions.filter((q: any) => q.answered_at && !q.replied_at).map(({ id, agent, question, answer, answered_at }: any) => ({ id, agent, question, answer, answered_at })),
   }))
 }
 const one = async (db: Db, key: string) => (await funnels(db, key))[0]
@@ -134,7 +136,7 @@ function server(db: Db, caller: Caller) {
 
   s.registerTool('list_funnels', {
     title: 'List funnels',
-    description: 'The person\'s plan with its limits, and their goal funnels: stages with counts, results, goal, agents present and open questions.',
+    description: 'The person\'s plan with its limits, and their goal funnels: stages with counts, results, goal, agents present, open questions, and answers you still owe a short reply to (answers_to_reply).',
     inputSchema: req({}),
     annotations: { readOnlyHint: true },
   }, async () => text({ ...(await plan(db)), funnels: await funnels(db) }))
@@ -280,7 +282,7 @@ function server(db: Db, caller: Caller) {
 
   s.registerTool('get_answer', {
     title: 'Get the answer',
-    description: 'The person\'s answer to your question, or null if not answered yet. wait_seconds (up to 50) waits for it.',
+    description: 'The person\'s answer to your question, or null if not answered yet. wait_seconds (up to 50) waits for it. Once you have the answer, call reply with a short line back.',
     inputSchema: req({
       question_id: z.string().uuid(),
       wait_seconds: z.number().int().min(0).max(50).default(0),
@@ -294,6 +296,20 @@ function server(db: Db, caller: Caller) {
       if ((q as any).answered_at || Date.now() >= until) return text(q)
       await new Promise(r => setTimeout(r, 3000))
     }
+  })
+
+  s.registerTool('reply', {
+    title: 'Reply to the answer',
+    description: 'After you get the person\'s answer (get_answer), always reply to it in one short line, as in a chat: what you do with it ("Thanks, sending the application now", "Got it, skipping this one"). The dashboard shows it to the person in a bubble until they close it. If you need something more from them, do not put it here: ask a new question with set_agent_state(ask).',
+    inputSchema: req({
+      question_id: z.string().uuid().describe('The question the person answered'),
+      text: z.string().min(1).max(300).describe('One short line, in the person\'s language'),
+    }),
+  }, async ({ question_id, text: reply }) => {
+    const q = check(await db.from('questions').update({ reply, replied_at: new Date().toISOString(), reply_seen_at: null })
+      .eq('id', question_id).not('answered_at', 'is', null).select('id').maybeSingle())
+    if (!q) fail('No answered question with this id: call get_answer first')
+    return text({ replied: question_id })
   })
 
   s.registerTool('close_question', {

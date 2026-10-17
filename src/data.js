@@ -1,5 +1,5 @@
 // Demo data shown on the landing page. In the product this comes from agents via MCP.
-import { lang } from './i18n.js?v=21bb7ed3';
+import { lang } from './i18n.js?v=f6bfcdbd';
 
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
@@ -69,7 +69,10 @@ export const FUNNELS = [
     goal: { total: 5, every: 21 },
     workers: [
       { agent: 'chatgpt', zone: -1, state: 'work' },
-      { agent: 'perplexity', zone: -1, state: 'work' },
+      {
+        agent: 'perplexity', zone: -1, state: 'work',
+        replies: [{ id: 'demo-reply', question: 'Search only remote jobs, or Berlin too?', answer: 'Remote and Berlin', reply: 'Got it: searching remote and Berlin jobs.' }],
+      },
       {
         agent: 'claude', zone: 0, state: 'ask',
         question: 'The form asks for a salary expectation. Send the application with $120k?',
@@ -266,6 +269,9 @@ const DEMO = {
   'preprint': [['препринт', 'препринта', 'препринтов'], '预印本', 'พรีปรินต์', ['preprint', 'preprints'], 'bản tiền ấn phẩm', 'プレプリント'],
   'submitted': [['отправлена', 'отправлены', 'отправлено'], '已投稿', 'ส่งแล้ว', ['enviado', 'enviados'], 'đã nộp', '投稿済み'],
   'under review': [['на рецензии', 'на рецензии', 'на рецензии'], '审稿中', 'อยู่ระหว่างพิจารณา', ['en revisión', 'en revisión'], 'đang phản biện', '査読中'],
+  'Search only remote jobs, or Berlin too?': ['Искать только удалёнку или Берлин тоже?', '只找远程职位，还是也找柏林的？', 'หาเฉพาะงานรีโมต หรือเบอร์ลินด้วย?', '¿Busco solo empleos remotos o también en Berlín?', 'Chỉ tìm việc từ xa hay cả ở Berlin?', 'リモートだけ探しますか、ベルリンも？'],
+  'Remote and Berlin': ['Удалёнку и Берлин', '远程和柏林都要', 'รีโมตและเบอร์ลิน', 'Remotos y Berlín', 'Từ xa và Berlin', 'リモートとベルリン'],
+  'Got it: searching remote and Berlin jobs.': ['Понял: ищу удалёнку и Берлин.', '明白：我会搜索远程和柏林的职位。', 'รับทราบ: กำลังหางานรีโมตและเบอร์ลิน', 'Entendido: busco empleos remotos y en Berlín.', 'Đã rõ: tôi sẽ tìm việc từ xa và ở Berlin.', '了解です。リモートとベルリンで探します。'],
   'The form asks for a salary expectation. Send the application with $120k?': ['В форме спрашивают ожидаемую зарплату. Отправить отклик с $120k?', '表单要求填写期望薪资。用 12 万美元提交申请吗？', 'แบบฟอร์มถามเงินเดือนที่คาดหวัง ส่งใบสมัครด้วย $120k ไหม?', 'El formulario pide una expectativa salarial. ¿Envío la postulación con $120k?', 'Biểu mẫu hỏi mức lương mong muốn. Gửi hồ sơ với $120k nhé?', 'フォームで希望年収を聞かれています。12万ドルで応募しますか？'],
   'This finding looks close to a public report from March. Submit it anyway?': ['Эта находка похожа на публичный отчёт из марта. Всё равно отправить?', '这个发现和三月的一份公开报告很像。仍然提交吗？', 'สิ่งที่พบนี้คล้ายรายงานสาธารณะเมื่อเดือนมีนาคม ส่งต่อไหม?', 'Este hallazgo se parece a un informe público de marzo. ¿Lo envío igualmente?', 'Phát hiện này gần giống một báo cáo công khai hồi tháng Ba. Vẫn gửi chứ?', 'この発見は3月の公開報告に似ています。それでも提出しますか？'],
   'Northwind Ventures asks for the cap table before Thursday. Share it from the data room?': ['Northwind Ventures просит таблицу капитализации до четверга. Дать доступ из data room?', 'Northwind Ventures 要求周四前提供股权结构表。从数据室共享吗？', 'Northwind Ventures ขอตารางผู้ถือหุ้นก่อนวันพฤหัสบดี แชร์จากดาต้ารูมไหม?', 'Northwind Ventures pide la tabla de capitalización antes del jueves. ¿La comparto desde el data room?', 'Northwind Ventures cần bảng cơ cấu vốn trước thứ Năm. Chia sẻ từ data room nhé?', 'Northwind Ventures が木曜までに資本政策表を求めています。データルームから共有しますか？'],
@@ -278,7 +284,10 @@ if (COL != null) for (const f of FUNNELS) {
   f.title = tr(f.title);
   f.result = trForms(f.result);
   for (const st of f.stages) st.forms = trForms(st.forms);
-  for (const w of f.workers) if (w.question) w.question = tr(w.question);
+  for (const w of f.workers) {
+    if (w.question) w.question = tr(w.question);
+    for (const r of w.replies || []) { r.question = tr(r.question); r.answer = tr(r.answer); r.reply = tr(r.reply); }
+  }
 }
 
 // Demo only: start each stage with a count that matches the funnel's conversion, so the tanks

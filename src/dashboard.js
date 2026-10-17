@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=21bb7ed3';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=21bb7ed3';
-import { t, lang } from './i18n.js?v=21bb7ed3';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=f6bfcdbd';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=f6bfcdbd';
+import { t, lang } from './i18n.js?v=f6bfcdbd';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -29,6 +29,7 @@ function openApp(e) {
 // opts.live: counts come from the agents, not the demo simulation.
 // opts.clock(scene): text for the right corner of the header.
 // opts.onAnswer(questionId, text): the person answered one of an agent's questions (live only).
+// opts.onCloseReplies(ids): the person closed the agent's replies to their answers (live only).
 export function mountDashboard(funnels, opts = {}) {
   const canvas = document.getElementById('scene');
   const scroller = document.getElementById('scroller');
@@ -156,6 +157,7 @@ export function mountDashboard(funnels, opts = {}) {
     if (h.type === 'source') { hidePop(); return window.open(h.url, '_blank', 'noopener'); }
     showPop(e, content(h));
     bindRuns(h.a);
+    if (h.type === 'reply') bindReplies(h.a);
     if (h.type === 'ask' && opts.onAnswer) bindAnswer(h.a);
   });
 
@@ -173,6 +175,13 @@ export function mountDashboard(funnels, opts = {}) {
     // Overdue: it should have run by now and has not been heard from.
     const missed = scene.overdue(a)
       ? `<p class="pop-note warn">${esc(t('board.missed', fmtDuration(scene.t - a.wakeAt), fmtDuration(scene.t + (a.seenAgo || 0))))}</p>` : '';
+    if (h.type === 'reply') {
+      // The agent's short replies to the person's answers, with what was asked and answered.
+      const items = a.replies.map(r => `<div class="reply-item"><p class="pop-note">${esc(r.question)}</p>
+        <p class="pop-note"><b>${esc(t('board.you'))}:</b> ${esc(r.answer)}</p><p>${esc(r.reply)}</p></div>`).join('');
+      return `<div class="pop-title">${t('board.replied', who)}</div>${items}
+        <button class="btn primary close-replies" style="${paint}">${esc(t('board.close'))}</button>${history}`;
+    }
     if (h.type === 'ask') {
       // Each open question with its own answer box and, beside Send, the chat it was asked from (or
       // the agent's chat): an agent working in several chats asks from each. The demo links to the
@@ -223,6 +232,15 @@ export function mountDashboard(funnels, opts = {}) {
         }).join('') : `<div class="pop-note">${esc(t('board.noRuns'))}</div>`;
         pop.style.top = Math.max(8, Math.min(window.innerHeight - pop.offsetHeight - 8, pop.offsetTop)) + 'px';
       } catch { list.textContent = t('board.runsFailed'); delete list.dataset.loaded; }
+    });
+  }
+
+  function bindReplies(a) {
+    pop.querySelector('.close-replies')?.addEventListener('click', async () => {
+      const ids = a.replies.map(r => r.id);
+      a.replies = [];
+      hidePop();
+      if (opts.onCloseReplies && ids[0]) await opts.onCloseReplies(ids);
     });
   }
 
