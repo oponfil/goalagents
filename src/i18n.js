@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=b1ba8fcc';
-import vi from './lang/vi.js?v=b1ba8fcc';
-import ja from './lang/ja.js?v=b1ba8fcc';
+import es from './lang/es.js?v=1c2eebb2';
+import vi from './lang/vi.js?v=1c2eebb2';
+import ja from './lang/ja.js?v=1c2eebb2';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -75,7 +75,7 @@ const L = (en, ru, zh, th) => ({ en, ru, zh, th });
 const STRINGS = {
   // Navigation and footer
   'nav.connect': L('Connect', 'Подключить', '连接', 'เชื่อมต่อ'),
-  'nav.docs': L('Docs', 'Документация', '文档', 'เอกสาร'),
+  'footer.docs': L('Docs', 'Документация', '文档', 'เอกสาร'),
   'nav.pricing': L('Pricing', 'Тарифы', '价格', 'ราคา'),
   'nav.signin': L('Sign in', 'Войти', '登录', 'เข้าสู่ระบบ'),
   'nav.goals': L('Goals', 'Цели', '目标', 'เป้าหมาย'),
@@ -223,16 +223,12 @@ const STRINGS = {
   'pricing.pro3': L('<b>2</b> agents at each step, <b>12</b> in a funnel', '<b>2</b> агента на каждом шаге, <b>12</b> в воронке', '每一步 <b>2</b> 个智能体，每个漏斗 <b>12</b> 个', 'เอเจนต์ <b>2</b> ตัวต่อขั้น <b>12</b> ตัวต่อกรวย'),
   'pricing.any': L('Claude, ChatGPT, Gemini and any MCP agent', 'Claude, ChatGPT, Gemini и любой MCP-агент', 'Claude、ChatGPT、Gemini 及任何 MCP 智能体', 'Claude, ChatGPT, Gemini และเอเจนต์ MCP ใดก็ได้'),
   'pricing.live': L('Live dashboard, all nine themes', 'Живая доска, все девять тем', '实时看板，全部九种主题', 'แดชบอร์ดสด ครบทั้งเก้าธีม'),
+  'pricing.themes': L('<b>9</b> visual themes', '<b>9</b> визуальных тем', '<b>9</b> 种视觉主题', 'ธีมภาพ <b>9</b> แบบ'),
   'pricing.answer': L('Answer your agents from the dashboard', 'Отвечайте агентам прямо с доски', '直接在看板上回复智能体', 'ตอบเอเจนต์ได้จากแดชบอร์ด'),
   'pricing.startFree': L('Start free', 'Начать бесплатно', '免费开始', 'เริ่มใช้ฟรี'),
   'pricing.early': L('Early access', 'Ранний доступ', '抢先体验', 'ทดลองใช้ก่อนใคร'),
   'pricing.perMonth': L('per month, early-access price', 'в месяц, цена раннего доступа', '每月，早期价格', 'ต่อเดือน ราคาช่วงเปิดตัว'),
   'pricing.getPro': L('Get Pro', 'Подключить Pro', '开通 Pro', 'สมัคร Pro'),
-  'pricing.fine1': L(
-    'Agents work at the steps of a funnel: above the first stage, between stages, and below the last one, where they turn the last stage into results. A funnel has one step more than stages.',
-    'Агенты работают на шагах воронки: над первым этапом, между этапами и под последним, где они превращают последний этап в результаты. Шагов в воронке на один больше, чем этапов.',
-    '智能体在漏斗的各个步骤上工作：第一阶段之上、阶段之间，以及最后一个阶段之下（把最后阶段变成成果）。步骤数比阶段数多一个。',
-    'เอเจนต์ทำงานที่ขั้นตอนของกรวย: เหนือขั้นแรก ระหว่างขั้น และใต้ขั้นสุดท้ายที่เปลี่ยนขั้นสุดท้ายเป็นผลลัพธ์ จำนวนขั้นตอนมากกว่าจำนวนขั้นหนึ่ง'),
   'pricing.fine2': L('Payments go through Creem, our merchant of record. Cancel any time in the profile menu: Pro stays until the end of the month you paid for. When early access ends, Pro will cost $15 a month for new subscribers.', 'Оплата проходит через Creem, нашего платёжного партнёра. Отменить можно в любой момент в меню профиля: Pro остаётся до конца оплаченного месяца. После раннего доступа новые подписчики будут платить $15 в месяц.', '付款通过我们的销售方 Creem 完成。可随时在个人菜单中取消：Pro 保留到已付费月份结束。早期阶段结束后，新订阅为每月 $15。', 'ชำระเงินผ่าน Creem ผู้ขายของเรา ยกเลิกได้ทุกเมื่อในเมนูโปรไฟล์: Pro ใช้ได้จนจบเดือนที่จ่ายแล้ว เมื่อช่วงเปิดตัวจบ สมาชิกใหม่จะจ่ายเดือนละ $15'),
 
   // Privacy
@@ -264,6 +260,98 @@ const STRINGS = {
     'Напишите на <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>, и мы удалим ваш аккаунт и всё, что сообщили ваши агенты.',
     '写信到 <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>，我们会删除你的账户及你的智能体汇报的所有内容。',
     'เขียนมาที่ <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a> แล้วเราจะลบบัญชีของคุณและทุกอย่างที่เอเจนต์ของคุณรายงาน'),
+
+  // Terms
+  'terms.h1': L(
+    'Terms of Service',
+    'Условия использования',
+    '服务条款',
+    'ข้อกำหนดการให้บริการ'),
+  'terms.h.who': L(
+    'Who we are',
+    'Кто мы',
+    '我们是谁',
+    'เราคือใคร'),
+  'terms.who': L(
+    'Goalcraft (goalcraft.ai) is made and run by Oleg Ponfilenok. Write to <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a> with any question about these terms, your account or a payment.',
+    'Goalcraft (goalcraft.ai) создаёт и поддерживает Олег Понфиленок. С любым вопросом об этих условиях, аккаунте или оплате пишите на <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>.',
+    'Goalcraft (goalcraft.ai) 由 Oleg Ponfilenok 开发和运营。关于本条款、你的账户或付款的任何问题，请写信到 <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>。',
+    'Goalcraft (goalcraft.ai) สร้างและดูแลโดย Oleg Ponfilenok หากมีคำถามเกี่ยวกับข้อกำหนดนี้ บัญชี หรือการชำระเงิน เขียนมาที่ <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a>'),
+  'terms.h.service': L(
+    'The service',
+    'Сервис',
+    '服务内容',
+    'บริการ'),
+  'terms.service': L(
+    'Goalcraft shows your goals as funnels and the AI agents working on them. Your own agents (Claude, ChatGPT and others) write to it through our MCP server; we do not run your agents. You decide what they do, and you are responsible for their actions in other services and for following those services\' rules.',
+    'Goalcraft показывает ваши цели в виде воронок и ИИ-агентов, которые над ними работают. Ваши собственные агенты (Claude, ChatGPT и другие) пишут в него через наш MCP-сервер; мы ваших агентов не запускаем. Вы решаете, что они делают, и отвечаете за их действия в других сервисах и за соблюдение правил этих сервисов.',
+    'Goalcraft 把你的目标显示为漏斗，并展示为之工作的 AI 智能体。你自己的智能体（Claude、ChatGPT 等）通过我们的 MCP 服务器写入数据；我们不运行你的智能体。它们做什么由你决定，你需对它们在其他服务中的行为以及遵守这些服务的规则负责。',
+    'Goalcraft แสดงเป้าหมายของคุณเป็นกรวยพร้อมเอเจนต์ AI ที่ทำงานกับเป้าหมายนั้น เอเจนต์ของคุณเอง (Claude, ChatGPT และอื่น ๆ) เขียนข้อมูลผ่านเซิร์ฟเวอร์ MCP ของเรา เราไม่ได้รันเอเจนต์ของคุณ คุณเป็นผู้กำหนดว่าเอเจนต์ทำอะไร และรับผิดชอบต่อการกระทำของเอเจนต์ในบริการอื่นและการปฏิบัติตามกฎของบริการเหล่านั้น'),
+  'terms.h.account': L(
+    'Your account',
+    'Ваш аккаунт',
+    '你的账户',
+    'บัญชีของคุณ'),
+  'terms.account': L(
+    'You sign in with Google or a one-time email link. Keep access to your email safe: whoever can read it can sign in. You must be at least 16 years old to use Goalcraft.',
+    'Вы входите через Google или по одноразовой ссылке на почту. Берегите доступ к почте: кто может её читать, тот может и войти. Пользоваться Goalcraft можно с 16 лет.',
+    '你通过 Google 或一次性邮件链接登录。请保护好你的邮箱：能读取邮箱的人就能登录。使用 Goalcraft 须年满 16 岁。',
+    'คุณเข้าสู่ระบบด้วย Google หรือลิงก์อีเมลแบบใช้ครั้งเดียว โปรดดูแลการเข้าถึงอีเมลของคุณให้ปลอดภัย ใครที่อ่านอีเมลได้ก็เข้าสู่ระบบได้ ผู้ใช้ Goalcraft ต้องมีอายุอย่างน้อย 16 ปี'),
+  'terms.h.plans': L(
+    'Plans and payment',
+    'Тарифы и оплата',
+    '套餐与付款',
+    'แพ็กเกจและการชำระเงิน'),
+  'terms.plans': L(
+    'The Free plan costs nothing. Pro costs $9 a month during early access; when early access ends, Pro will cost $15 a month for new subscribers, and your price stays the same while your subscription stays active. Payments are processed by Creem, our merchant of record, which also handles taxes and receipts; Creem\'s terms apply to the purchase itself. We never see your card details.',
+    'Тариф Free бесплатный. Pro стоит $9 в месяц в период раннего доступа; после него новые подписчики будут платить $15 в месяц, а ваша цена не изменится, пока подписка активна. Платежи проводит Creem, наш платёжный партнёр (merchant of record), он же отвечает за налоги и чеки; к самой покупке применяются условия Creem. Данные вашей карты мы никогда не видим.',
+    'Free 套餐免费。早期阶段 Pro 每月 $9；早期阶段结束后，新订阅为每月 $15，而只要你的订阅保持有效，你的价格不变。付款由我们的销售方（merchant of record）Creem 处理，Creem 同时负责税费和收据；购买本身适用 Creem 的条款。我们永远看不到你的银行卡信息。',
+    'แพ็กเกจ Free ไม่มีค่าใช้จ่าย Pro ราคาเดือนละ $9 ในช่วงเปิดตัว เมื่อช่วงเปิดตัวจบ สมาชิกใหม่จะจ่ายเดือนละ $15 ส่วนราคาของคุณจะคงเดิมตราบที่การสมัครยังใช้งานอยู่ การชำระเงินดำเนินการโดย Creem ผู้ขายของเรา (merchant of record) ซึ่งดูแลภาษีและใบเสร็จด้วย ข้อกำหนดของ Creem ใช้กับการซื้อนั้น เราไม่เคยเห็นข้อมูลบัตรของคุณ'),
+  'terms.plans2': L(
+    'Pro renews every month until you cancel. You can cancel any time in the profile menu (Manage subscription); Pro then stays on until the end of the month you have paid for, and no further payments are taken. We do not refund partial months, but if something went wrong, write to us within 14 days of a payment and we will make it right. None of this limits the rights you have under consumer law.',
+    'Pro продлевается каждый месяц, пока вы его не отмените. Отменить можно в любой момент в меню профиля («Управлять подпиской»); Pro останется до конца оплаченного месяца, и новых списаний не будет. За неполные месяцы деньги не возвращаются, но если что-то пошло не так, напишите нам в течение 14 дней после платежа, и мы всё исправим. Это не ограничивает ваши права по закону о защите прав потребителей.',
+    'Pro 每月自动续订，直到你取消。你可以随时在个人菜单（管理订阅）中取消；之后 Pro 会保留到已付费月份结束，不会再扣款。我们不退还不足一个月的费用，但如果出了问题，请在付款后 14 天内联系我们，我们会妥善解决。以上内容不限制你依据消费者保护法享有的权利。',
+    'Pro ต่ออายุทุกเดือนจนกว่าคุณจะยกเลิก คุณยกเลิกได้ทุกเมื่อในเมนูโปรไฟล์ (จัดการการสมัคร) จากนั้น Pro จะใช้ได้จนจบเดือนที่จ่ายแล้ว และจะไม่มีการเรียกเก็บเงินอีก เราไม่คืนเงินสำหรับเดือนที่ใช้ไม่ครบ แต่หากมีปัญหา เขียนถึงเราภายใน 14 วันหลังการชำระเงิน แล้วเราจะแก้ไขให้ ทั้งหมดนี้ไม่จำกัดสิทธิ์ของคุณตามกฎหมายคุ้มครองผู้บริโภค'),
+  'terms.h.fair': L(
+    'Fair use',
+    'Добросовестное использование',
+    '合理使用',
+    'การใช้งานอย่างเหมาะสม'),
+  'terms.fair': L(
+    'Do not use Goalcraft to break the law, to send spam, to harass anyone, or to attack or overload the service. We may suspend an account that does.',
+    'Не используйте Goalcraft, чтобы нарушать закон, рассылать спам, преследовать кого-либо, атаковать или перегружать сервис. Такой аккаунт мы можем заблокировать.',
+    '请勿利用 Goalcraft 违法、发送垃圾信息、骚扰他人，或攻击、超载本服务。我们可能会暂停这样做的账户。',
+    'ห้ามใช้ Goalcraft เพื่อทำผิดกฎหมาย ส่งสแปม คุกคามผู้อื่น หรือโจมตีหรือทำให้บริการทำงานหนักเกินไป เราอาจระงับบัญชีที่ทำเช่นนั้น'),
+  'terms.h.data': L(
+    'Your data',
+    'Ваши данные',
+    '你的数据',
+    'ข้อมูลของคุณ'),
+  'terms.data': L(
+    'What you and your agents put into Goalcraft is yours. We store and use it as described in the <a href="../privacy/">privacy policy</a>, and we delete it when you ask.',
+    'Всё, что вы и ваши агенты вносите в Goalcraft, принадлежит вам. Мы храним и используем эти данные, как описано в <a href="../privacy/">политике конфиденциальности</a>, и удаляем их по вашей просьбе.',
+    '你和你的智能体放入 Goalcraft 的内容归你所有。我们按照<a href="../privacy/">隐私政策</a>所述存储和使用这些数据，并会在你要求时删除。',
+    'ข้อมูลที่คุณและเอเจนต์ใส่ลงใน Goalcraft เป็นของคุณ เราจัดเก็บและใช้ข้อมูลตามที่อธิบายไว้ใน<a href="../privacy/">นโยบายความเป็นส่วนตัว</a> และลบเมื่อคุณขอ'),
+  'terms.h.asis': L(
+    'The service as it is',
+    'Сервис «как есть»',
+    '服务按现状提供',
+    'บริการตามสภาพ'),
+  'terms.asis': L(
+    'Goalcraft is a young product. It is provided as it is: it will change, it may sometimes be unavailable, and we cannot promise it is free of errors. To the extent the law allows, our liability for any claim is limited to what you paid us in the 12 months before it.',
+    'Goalcraft — молодой продукт. Он предоставляется «как есть»: он будет меняться, иногда может быть недоступен, и мы не можем обещать, что в нём нет ошибок. В пределах, допустимых законом, наша ответственность по любой претензии ограничена суммой, которую вы заплатили нам за 12 месяцев до неё.',
+    'Goalcraft 是一个年轻的产品，按现状提供：它会不断变化，有时可能无法使用，我们也无法保证没有错误。在法律允许的范围内，我们对任何索赔的责任以你在此前 12 个月内支付给我们的金额为限。',
+    'Goalcraft เป็นผลิตภัณฑ์ใหม่ ให้บริการตามสภาพ: จะมีการเปลี่ยนแปลง บางครั้งอาจใช้งานไม่ได้ และเราไม่อาจรับประกันว่าไม่มีข้อผิดพลาด ภายในขอบเขตที่กฎหมายอนุญาต ความรับผิดของเราต่อการเรียกร้องใด ๆ จำกัดไม่เกินจำนวนที่คุณจ่ายให้เราใน 12 เดือนก่อนหน้านั้น'),
+  'terms.h.changes': L(
+    'Changes',
+    'Изменения',
+    '变更',
+    'การเปลี่ยนแปลง'),
+  'terms.changes': L(
+    'We may update these terms. If a change affects what you pay or what Pro includes, we will email you before it applies.',
+    'Мы можем обновлять эти условия. Если изменение касается того, сколько вы платите или что входит в Pro, мы заранее напишем вам на почту.',
+    '我们可能会更新本条款。如果变更影响你支付的费用或 Pro 包含的内容，我们会在生效前发邮件通知你。',
+    'เราอาจปรับปรุงข้อกำหนดนี้ หากการเปลี่ยนแปลงกระทบต่อสิ่งที่คุณจ่ายหรือสิ่งที่ Pro มี เราจะส่งอีเมลแจ้งคุณก่อนมีผล'),
 
   // Contact
   'contact.h1': L('Contact', 'Контакты', '联系', 'ติดต่อ'),
