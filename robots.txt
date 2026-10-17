@@ -1,0 +1,8 @@
+# Everything public may be indexed; the personal board, sign-in and the consent page are not useful in search.
+User-agent: *
+Disallow: /app/
+Disallow: /login/
+Disallow: /oauth/
+Disallow: /tools/
+
+Sitemap: https://goalcraft.ai/sitemap.xml
