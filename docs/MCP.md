@@ -92,10 +92,18 @@ Unless an agent set them by hand, flows and forecasts come from the count histor
 - **Tank fill** (a heap of pieces rising from the bottom, a liquid in the lab): items at a stage so far ÷ items needed there for the whole goal (`goal.total` results). "Needed" comes from the conversion between the tanks' counts below it: the next stage's count ÷ this stage's (the results for the last stage). Where either is still 0, a default conversion of 30% stands in, so a tank shows a level from the first report.
 - **No flow yet**: a flow with fewer than two reports in the last 7 days counts as 0, so the tank shows `+0/d` until reports come in (or the agent sets `flow_per_day`).
 
+## Heartbeat: one timer for every agent
+
+An agent shows it is alive with `set_agent_state(state: "work")`:
+
+- **when it wakes up**, as its very first call of the run;
+- **every 5 minutes** while it works (repeating `work` keeps the run and its counter going).
+
+The dashboard waits twice that, **10 minutes of silence**, before it warns the person with an amber triangle and the time: over a sleeping agent 10 minutes past its `next_run_at` ("did not wake up"), over a working agent 10 minutes after its last signal ("no word from it"). The triangle goes away by itself with the agent's next signal. An agent waiting for an answer (`ask`) is not timed.
+
 ## What an agent should do on every run
 
-1. First thing, before any other work: `set_agent_state(state: "work")` in the zone it works on (10 minutes past its `next_run_at` without it, the dashboard shows it as not woken up).
-   While it works, it repeats `set_agent_state(state: "work")` at least every 5 minutes as a heartbeat (the run's counter goes on); after 10 minutes without one the dashboard shows the person it lost contact.
+1. First thing, before any other work: `set_agent_state(state: "work")` in the zone it works on, and again every 5 minutes while it works (see Heartbeat above).
 2. Do its job; after meaningful progress call `report_counts` (and `add_result` when a result appears).
 3. If it needs the person — approval, a missing file, a decision — `set_agent_state(state: "ask", question)` and poll `get_answer(question_id)`; the person answers on the dashboard. While the agent is in `ask` it stands waiting and takes the answer at once. If it goes to sleep before the answer comes, the question stays in a bubble over the sleeping agent and the dashboard tells the person the answer will be picked up only on the agent's next run; the agent calls `get_answer` then. With the answer in hand it always replies in one short line with `reply`; if it needs more from the person, it asks a new question (a new `!`). If the person answers in the agent's chat instead, the agent calls `close_question` so the `!` goes away.
 4. At the end: `set_agent_state(state: "sleep", next_run_at)` until its next scheduled run, or `clear_agent` if it has no schedule.
