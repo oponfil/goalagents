@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Tiny5&family=Rubik:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+Thai:wght@400;500;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../dashboard.css?v=1c2eebb2">
+  <link rel="stylesheet" href="../dashboard.css?v=80507ed8">
 </head>
 <body>
   <nav class="sitebar">
@@ -26,6 +26,8 @@
     <div id="titles-track"></div>
     <div id="clock"></div>
   </header>
+  <!-- Shown until the board is drawn. -->
+  <div class="loader" role="status" aria-label="Loading"><svg viewBox="0 0 32 22" width="128" height="88" shape-rendering="crispEdges" aria-hidden="true"><g><rect x="19" y="12" width="11" height="8" fill="#6E6A66"/><rect x="19" y="12" width="11" height="2" fill="#8C8781"/><rect x="21" y="15" width="2" height="2" fill="#57534F"/><rect x="26" y="16" width="2" height="2" fill="#57534F"/></g><g class="spark"><rect x="26" y="9" width="1" height="1" fill="#F2C14E"/><rect x="27" y="7" width="1" height="1" fill="#FFE08A"/><rect x="25" y="6" width="1" height="1" fill="#F2C14E"/><rect x="21" y="9" width="1" height="1" fill="#F2C14E"/></g><g class="pick"><rect x="13" y="13" width="1" height="1" fill="#8A5A2B"/><rect x="14" y="12" width="1" height="1" fill="#8A5A2B"/><rect x="15" y="11" width="1" height="1" fill="#8A5A2B"/><rect x="16" y="10" width="1" height="1" fill="#8A5A2B"/><rect x="17" y="9" width="1" height="1" fill="#8A5A2B"/><rect x="18" y="8" width="1" height="1" fill="#8A5A2B"/><rect x="19" y="7" width="1" height="1" fill="#8A5A2B"/><rect x="14" y="13" width="1" height="1" fill="#5E3B1B"/><rect x="15" y="12" width="1" height="1" fill="#5E3B1B"/><rect x="16" y="11" width="1" height="1" fill="#5E3B1B"/><rect x="17" y="10" width="1" height="1" fill="#5E3B1B"/><rect x="18" y="9" width="1" height="1" fill="#5E3B1B"/><rect x="19" y="8" width="1" height="1" fill="#5E3B1B"/><rect x="15" y="2" width="1" height="1" fill="#C9D1D9"/><rect x="16" y="2" width="1" height="1" fill="#C9D1D9"/><rect x="17" y="2" width="1" height="1" fill="#C9D1D9"/><rect x="18" y="3" width="1" height="1" fill="#C9D1D9"/><rect x="19" y="4" width="1" height="1" fill="#C9D1D9"/><rect x="20" y="5" width="1" height="1" fill="#C9D1D9"/><rect x="21" y="6" width="1" height="1" fill="#C9D1D9"/><rect x="22" y="7" width="1" height="1" fill="#C9D1D9"/><rect x="23" y="8" width="1" height="1" fill="#C9D1D9"/><rect x="23" y="9" width="1" height="1" fill="#C9D1D9"/><rect x="23" y="10" width="1" height="1" fill="#C9D1D9"/><rect x="14" y="3" width="1" height="1" fill="#7A848E"/><rect x="16" y="3" width="1" height="1" fill="#7A848E"/><rect x="17" y="3" width="1" height="1" fill="#7A848E"/><rect x="18" y="4" width="1" height="1" fill="#7A848E"/><rect x="19" y="5" width="1" height="1" fill="#7A848E"/><rect x="20" y="6" width="1" height="1" fill="#7A848E"/><rect x="21" y="7" width="1" height="1" fill="#7A848E"/><rect x="22" y="8" width="1" height="1" fill="#7A848E"/><rect x="22" y="9" width="1" height="1" fill="#7A848E"/><rect x="22" y="10" width="1" height="1" fill="#7A848E"/><rect x="22" y="11" width="1" height="1" fill="#7A848E"/></g></svg></div>
   <main id="scroller">
     <canvas id="scene" hidden></canvas>
     <section class="connect" id="connect" hidden>
@@ -38,11 +40,11 @@
   <div id="pop" hidden></div>
 
   <script type="module">
-    import { supabase } from '../src/auth.js?v=1c2eebb2';
-    import { setUpConnect } from '../src/connect.js?v=1c2eebb2';
-    import { loadFunnels, answer, watch, runs, closeReplies } from '../src/live.js?v=1c2eebb2';
-    import { mountDashboard } from '../src/dashboard.js?v=1c2eebb2';
-    import { t, fmtDuration } from '../src/i18n.js?v=1c2eebb2';
+    import { supabase } from '../src/auth.js?v=80507ed8';
+    import { setUpConnect } from '../src/connect.js?v=80507ed8';
+    import { loadFunnels, answer, watch, runs, closeReplies } from '../src/live.js?v=80507ed8';
+    import { mountDashboard } from '../src/dashboard.js?v=80507ed8';
+    import { t, fmtDuration } from '../src/i18n.js?v=80507ed8';
 
     // Coming back from an email link, supabase-js reads the session from the URL.
     const { data: { session } } = await supabase.auth.getSession();
@@ -65,7 +67,7 @@
         connect.hidden = !empty;
         canvas.hidden = empty;
         document.getElementById('titles').hidden = empty;
-        if (empty) return;
+        if (empty) { document.body.classList.add('ready'); return; }
         if (!board) board = mountDashboard(funnels, { live: true, onAnswer: answer, runs, onCloseReplies: closeReplies, orderKey: 'goalcraft-order-live' });
         else if (!board.setFunnels(funnels)) pending = true; // the person is typing an answer
       };
@@ -81,7 +83,7 @@
       const refresh = async () => {
         button.disabled = true;
         try { pending = false; show(await loadFunnels()); loadedAt = Date.now(); ago(); }
-        catch (e) { console.error(e); day.textContent = t('app.failed'); }
+        catch (e) { console.error(e); day.textContent = t('app.failed'); document.body.classList.add('ready'); }
         button.disabled = false;
       };
       button.addEventListener('click', refresh);
@@ -92,6 +94,6 @@
       document.addEventListener('focusout', () => { if (pending) refresh(); });
     }
   </script>
-  <script type="module" src="../src/nav.js?v=1c2eebb2"></script>
+  <script type="module" src="../src/nav.js?v=80507ed8"></script>
 </body>
 </html>

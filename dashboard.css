@@ -211,7 +211,16 @@ body {
 }
 .copybox .copy:hover { border-color: var(--muted); color: var(--text); }
 /* A plain scrolling page inside the dashboard layout (connect). */
-.page { flex: 1; overflow: auto; }
+.page { flex: 1; overflow: auto; display: flex; flex-direction: column; }
+.page .connect { width: 100%; box-sizing: border-box; }
+/* Site footer, the same as on the landing page: at the end of a page, under the board in the demo. */
+.sitefoot {
+  flex: none; margin: auto max(20px, calc((100% - 1000px) / 2)) 0; padding: 14px 0 18px;
+  border-top: 2px solid var(--border); color: var(--muted); font-size: 14px;
+  display: flex; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap;
+}
+.sitefoot a { color: inherit; }
+body > .sitefoot { padding: 10px 0 12px; font-size: 13px; }
 .sitebar .refresh {
   display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
   background: none; border: 2px solid var(--border); color: var(--text); font: 500 13px var(--font); text-decoration: none; cursor: pointer;
@@ -261,3 +270,19 @@ html:lang(ja) { --font: "Rubik", "Noto Sans JP", system-ui, sans-serif; }
 .agent-note[hidden] { display: none; }
 /* On a phone the refresh button stays, as an icon only. */
 @media (max-width: 560px) { .sitebar .refresh { padding: 4px 7px; } }
+
+/* The pickaxe striking a rock, centred while the board loads. Appears only if loading takes a
+   moment, and goes once the board is drawn (body.ready). */
+.loader {
+  position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0; animation: loader-in 0.2s 0.25s forwards;
+}
+body.ready .loader { display: none; }
+@keyframes loader-in { to { opacity: 1; } }
+.loader svg { image-rendering: pixelated; }
+.loader .pick { transform-origin: 13.5px 13.5px; animation: pick-swing 0.6s steps(1) infinite; }
+.loader .spark { opacity: 0; animation: pick-spark 0.6s steps(1) infinite; }
+/* Two pixel frames, as on the board: raised, then down on the rock with sparks. */
+@keyframes pick-swing { 0% { transform: rotate(-90deg); } 50% { transform: none; } }
+@keyframes pick-spark { 50% { opacity: 1; } 80% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .loader .pick, .loader .spark { animation: none; } }

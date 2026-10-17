@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=1c2eebb2';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=1c2eebb2';
-import { t, lang } from './i18n.js?v=1c2eebb2';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=80507ed8';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=80507ed8';
+import { t, lang } from './i18n.js?v=80507ed8';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -62,7 +62,10 @@ export function mountDashboard(funnels, opts = {}) {
     scroller.classList.toggle('fits', scene.funnels.length * CW * scale <= scroller.clientWidth);
   }
   window.addEventListener('resize', layout);
-  document.fonts?.ready.then(() => scene.resize(scale, window.devicePixelRatio || 1));
+  // Drawn once the fonts are in: then the loading pickaxe goes (see .loader in dashboard.css).
+  const ready = () => requestAnimationFrame(() => document.body.classList.add('ready'));
+  if (document.fonts) document.fonts.ready.then(() => { scene.resize(scale, window.devicePixelRatio || 1); ready(); });
+  else ready();
   layout();
 
   // Sticky header: one title per funnel column, kept aligned with the scene while it scrolls.
