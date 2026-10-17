@@ -1,7 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.117.2';
-import { SUPABASE_URL, SUPABASE_KEY } from './config.js?v=c1965cd2';
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js?v=473a2996';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+// The browser keeps the sign-in under a fixed name: by default it would follow the Supabase address,
+// and a new address would sign everyone out.
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'sb-goalagents-auth-token' } });
 
 // Pages of this site, resolved from this file, so they work on goalcraft.ai and on localhost alike.
 export const siteUrl = path => new URL('../' + path, import.meta.url).href;
