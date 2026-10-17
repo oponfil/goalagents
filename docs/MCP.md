@@ -67,7 +67,7 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 
 | Tool | Does |
 |---|---|
-| `list_funnels()` | The plan and its limits; funnels, stages, counts, results, goal, agents present and open questions |
+| `list_funnels()` | The plan and its limits; funnels, stages, counts, results, goal, agents present, open questions, and answers the agent still owes a short reply to (`answers_to_reply`) |
 | `upsert_funnel(id, title, result, goal_total, goal_every_days, source_url?, theme?, stages[])` | Create or update a funnel and its stages (`key`, `label`); stages keep their counts by key |
 | `report_counts(funnel_id, counts{stage_key: n}, results?, fill_percent?{stage_key: 0–100}, flow_per_day?{stage_key or "results": n}, source_url?)` | Counts after the agent's work, cumulative (everything that ever reached a stage); the server stores each report with a timestamp. `source_url` sets the funnel's list link (`null` removes it). Optional manual readings: tank fill in % and the flow written on a tank (`+N/d`) in items per day, by stage key or `results`; `null` returns one to automatic |
 | `add_result(funnel_id)` | One more result came out (increments `results`) |
@@ -94,7 +94,7 @@ Unless an agent set them by hand, flows and forecasts come from the count histor
 
 ## What an agent should do on every run
 
-1. `set_agent_state(state: "work")` in the zone it works on.
+1. First thing, before any other work: `set_agent_state(state: "work")` in the zone it works on (5 minutes past its `next_run_at` without it, the dashboard shows it as not woken up).
 2. Do its job; after meaningful progress call `report_counts` (and `add_result` when a result appears).
 3. If it needs the person — approval, a missing file, a decision — `set_agent_state(state: "ask", question)` and poll `get_answer(question_id)`; the person answers on the dashboard. While the agent is in `ask` it stands waiting and takes the answer at once. If it goes to sleep before the answer comes, the question stays in a bubble over the sleeping agent and the dashboard tells the person the answer will be picked up only on the agent's next run; the agent calls `get_answer` then. With the answer in hand it always replies in one short line with `reply`; if it needs more from the person, it asks a new question (a new `!`). If the person answers in the agent's chat instead, the agent calls `close_question` so the `!` goes away.
 4. At the end: `set_agent_state(state: "sleep", next_run_at)` until its next scheduled run, or `clear_agent` if it has no schedule.
