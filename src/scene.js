@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=67d628d5';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=67d628d5';
-import { themeOf } from './themes.js?v=67d628d5';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=67d628d5';
+import { agentInfo, plural } from './data.js?v=4f921199';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=4f921199';
+import { themeOf } from './themes.js?v=4f921199';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=4f921199';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -168,7 +168,7 @@ export class Scene {
         if (k < 0) {
           this.pipe(c, cx, y + 1, y + 4, theme);
           if (f.source_url) this.sheets(c, cx, y - 26);
-          this.hopper(c, cx, y - 8, y + 1);
+          this.hopper(c, cx, y - 8, y + 1, theme);
         }
       }
       f.stages.forEach((s, j) => {
@@ -186,7 +186,8 @@ export class Scene {
         }
       });
       // Below the last tank the pipe just ends; results drip out of it.
-      c.fillStyle = '#7D828C'; c.fillRect(cx - 4, zoneTop(n - 1) + ZH, 9, 3);
+      c.fillStyle = theme.pipe[0]; c.fillRect(cx - 4, zoneTop(n - 1) + ZH, 9, 3);
+      c.fillStyle = theme.pipe[1]; c.fillRect(cx - 2, zoneTop(n - 1) + ZH, 5, 2);
     });
   }
 
@@ -203,15 +204,17 @@ export class Scene {
   }
 
   // A small funnel on top of the first pipe, where new items pour in.
-  hopper(c, cx, y0, y1) {
+  // The small funnel on top, in the same material as the theme's pipe.
+  hopper(c, cx, y0, y1, theme) {
+    const [edge, body, shine] = theme?.pipe || ['#5E626B', '#8E939D', '#B9BEC7'];
     for (let y = y0; y < y1; y++) {
       const t = (y - y0) / (y1 - y0 - 1), half = Math.round(9 - t * 4.5);
-      c.fillStyle = '#5E626B'; c.fillRect(cx - half, y, half * 2 + 1, 1);
-      c.fillStyle = '#8E939D'; c.fillRect(cx - half + 1, y, half * 2 - 1, 1);
-      c.fillStyle = '#B9BEC7'; c.fillRect(cx - half + 1, y, 2, 1);
+      c.fillStyle = edge; c.fillRect(cx - half, y, half * 2 + 1, 1);
+      c.fillStyle = body; c.fillRect(cx - half + 1, y, half * 2 - 1, 1);
+      c.fillStyle = shine; c.fillRect(cx - half + 1, y, 2, 1);
     }
-    c.fillStyle = '#B9BEC7'; c.fillRect(cx - 10, y0 - 1, 21, 1);
-    c.fillStyle = '#5E626B'; c.fillRect(cx - 10, y0, 21, 1);
+    c.fillStyle = shine; c.fillRect(cx - 10, y0 - 1, 21, 1);
+    c.fillStyle = edge; c.fillRect(cx - 10, y0, 21, 1);
   }
 
   // A funnel whose agent keeps its list behind a link: a spreadsheet file (folded corner, white
