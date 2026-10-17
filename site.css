@@ -61,6 +61,7 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 .or::before, .or::after { content: ""; flex: 1; border-top: 2px solid var(--border); }
 .field { width: 100%; padding: 12px 14px; margin-bottom: 10px; background: var(--bg); border: 2px solid var(--border); color: var(--text); font: inherit; }
 .field:focus { outline: none; border-color: var(--accent); }
+.alt-login { display: inline-block; margin-top: 12px; color: var(--muted); font-size: 13px; }
 .msg { min-height: 22px; margin-top: 14px; font-size: 14px; color: var(--muted); }
 .msg.error { color: #FF6B5E; }
 .msg.ok { color: #7BD88F; }
@@ -96,14 +97,12 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 .billing-note { color: #F2A33C; font-size: 14px; margin: 10px 0 0; text-align: center; }
 .plan .tag { position: absolute; top: -13px; right: 18px; background: var(--accent); color: #1B1714; font-size: 13px; font-weight: 700; padding: 2px 10px; }
 .fineprint { text-align: center; color: var(--muted); font-size: 14px; margin: 24px auto 40px; max-width: 560px; }
-.links a.gh { display: flex; }
 .logo { display: inline-flex; align-items: center; }
 .logo .mark { image-rendering: pixelated; margin-right: 8px; }
 
 /* Language picker in the nav. */
 .links select.lang { width: 3.9em; background: transparent; color: inherit; border: 1px solid var(--border); font: inherit; font-size: 14px; padding: 3px 2px; cursor: pointer; }
 .links select.lang option { background: #241F1B; color: #F4EDE1; }
-@media (max-width: 560px) { .links a.gh { display: none; } }
 /* The signed-in profile: a round photo (or silhouette) and its menu of rare settings. */
 .links .profile { position: relative; display: flex; }
 .links .avatar { width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 2px solid var(--border); background: #241F1B; color: #B8AE9F; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -125,3 +124,6 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 html:lang(vi) body { font-family: "Be Vietnam Pro", system-ui, sans-serif; }
 /* Japanese: Noto Sans JP before the Chinese font, so kanji take their Japanese shapes. */
 html:lang(ja) body { font-family: "Rubik", "Noto Sans JP", system-ui, sans-serif; }
+
+/* The GitHub icon at the end of the footer links, level with the text. */
+footer a.gh { display: inline-flex; vertical-align: -3px; }

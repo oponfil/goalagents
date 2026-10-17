@@ -139,7 +139,7 @@ function server(db: Db, caller: Caller) {
     title: 'List funnels',
     description: 'The person\'s plan with its limits, and their goal funnels: stages with counts, results, goal, agents present, open questions, and answers you still owe a short reply to (answers_to_reply).',
     inputSchema: req({}),
-    annotations: { readOnlyHint: true },
+    annotations: { title: 'List funnels', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, async () => text({ ...(await plan(db)), funnels: await funnels(db) }))
 
   s.registerTool('upsert_funnel', {
@@ -158,7 +158,7 @@ function server(db: Db, caller: Caller) {
         label: forms.describe('[singular, plural], e.g. ["interview", "interviews"]; Russian: [1, 2-4, 5+]; Spanish: [singular, plural]; Chinese, Japanese, Thai, Vietnamese: one form'),
       })).min(2).max(5).describe('Stages top to bottom'),
     }),
-    annotations: { idempotentHint: true },
+    annotations: { title: 'Create or update a funnel', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
   }, async (a) => {
     const keys = a.stages.map(st => st.key)
     if (new Set(keys).size !== keys.length) fail('Stage keys must be unique')
@@ -193,6 +193,7 @@ function server(db: Db, caller: Caller) {
       source_url: z.string().url().regex(/^https?:\/\//).nullable().optional()
         .describe('Link to the table or list with this funnel\'s items: give it whenever it opens by a URL (Google Sheet, Notion…); null removes it'),
     }),
+    annotations: { title: 'Report counts', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, async ({ funnel_id, counts, results, fill_percent, flow_per_day, source_url }) => {
     const f = await funnelRow(db, funnel_id)
     const stages = check(await db.from('stages').select('key, position').eq('funnel_id', f.id).order('position')) as { key: string, position: number }[]
@@ -222,6 +223,7 @@ function server(db: Db, caller: Caller) {
     title: 'Add a result',
     description: 'One more result came out of the funnel (an offer, a paper, a term sheet…).',
     inputSchema: req({ funnel_id: funnelId }),
+    annotations: { title: 'Add a result', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, async ({ funnel_id }) => {
     const f = await funnelRow(db, funnel_id)
     const { results } = check(await db.from('funnels').select('results').eq('id', f.id).single()) as { results: number }
@@ -244,6 +246,7 @@ function server(db: Db, caller: Caller) {
       chat_url: z.string().url().regex(/^https?:\/\//).optional().describe('Link to this conversation (e.g. https://chatgpt.com/c/…, https://claude.ai/chat/…) when you know it. With ask it is kept with the question, so the person\'s "Open" under it leads to this very chat'),
       added: z.number().int().min(0).max(1e9).optional().describe('How many items you added this run, when you know it better than the counts show (e.g. when items also left your stage). Leave it out and the dashboard counts it from report_counts'),
     }),
+    annotations: { title: 'Set your state', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, async (a) => {
     const f = await funnelRow(db, a.funnel_id)
     const n = (check(await db.from('stages').select('key').eq('funnel_id', f.id)) as unknown[]).length
@@ -288,7 +291,7 @@ function server(db: Db, caller: Caller) {
       question_id: z.string().uuid(),
       wait_seconds: z.number().int().min(0).max(50).default(0),
     }),
-    annotations: { readOnlyHint: true },
+    annotations: { title: 'Get the answer', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, async ({ question_id, wait_seconds }) => {
     const until = Date.now() + wait_seconds * 1000
     for (;;) {
@@ -306,6 +309,7 @@ function server(db: Db, caller: Caller) {
       question_id: z.string().uuid().describe('The question the person answered'),
       text: z.string().min(1).max(300).describe('One short line, in the person\'s language'),
     }),
+    annotations: { title: 'Reply to the answer', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, async ({ question_id, text: reply }) => {
     const q = check(await db.from('questions').update({ reply, replied_at: new Date().toISOString(), reply_seen_at: null })
       .eq('id', question_id).not('answered_at', 'is', null).select('id').maybeSingle())
@@ -322,7 +326,7 @@ function server(db: Db, caller: Caller) {
       question_id: z.string().uuid().optional().describe('The question to close; leave out to close all your open questions in this funnel'),
       answer: z.string().min(1).max(2000).optional().describe('The answer you got, in short, kept with the question'),
     }),
-    annotations: { idempotentHint: true },
+    annotations: { title: 'Close a question answered elsewhere', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, async (a) => {
     const f = await funnelRow(db, a.funnel_id)
     let q = db.from('questions').update({ answer: a.answer ?? 'Answered in the chat', answered_at: new Date().toISOString() })
@@ -338,7 +342,7 @@ function server(db: Db, caller: Caller) {
     title: 'Leave the funnel',
     description: 'You leave the funnel (no scheduled next run).',
     inputSchema: req({ funnel_id: funnelId, agent }),
-    annotations: { idempotentHint: true },
+    annotations: { title: 'Leave the funnel', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, async ({ funnel_id, agent }) => {
     const f = await funnelRow(db, funnel_id)
     check(await endRun(db, f.id, agent))
@@ -350,7 +354,7 @@ function server(db: Db, caller: Caller) {
     title: 'Delete a funnel',
     description: 'Delete a funnel with its stages, history, agents and questions. Only when the person asks for it.',
     inputSchema: req({ funnel_id: funnelId }),
-    annotations: { destructiveHint: true },
+    annotations: { title: 'Delete a funnel', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
   }, async ({ funnel_id }) => {
     const f = await funnelRow(db, funnel_id)
     check(await db.from('funnels').delete().eq('id', f.id))

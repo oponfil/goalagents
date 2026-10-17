@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=7b3172f5';
-import vi from './lang/vi.js?v=7b3172f5';
-import ja from './lang/ja.js?v=7b3172f5';
+import es from './lang/es.js?v=7057c12d';
+import vi from './lang/vi.js?v=7057c12d';
+import ja from './lang/ja.js?v=7057c12d';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -370,6 +370,10 @@ const STRINGS = {
   'login.sub': L('New here? The same steps create your account.', 'Впервые здесь? Те же шаги создадут аккаунт.', '第一次来？同样的步骤会为你创建账户。', 'มาครั้งแรก? ขั้นตอนเดียวกันจะสร้างบัญชีให้คุณ'),
   'login.or': L('or with email', 'или по почте', '或使用邮箱', 'หรือด้วยอีเมล'),
   'login.send': L('Email me a sign-in link', 'Прислать ссылку для входа', '给我发送登录链接', 'ส่งลิงก์เข้าสู่ระบบทางอีเมล'),
+  'login.withPassword': L('Sign in with a password', 'Войти по паролю', '使用密码登录', 'เข้าสู่ระบบด้วยรหัสผ่าน'),
+  'login.password': L('Password', 'Пароль', '密码', 'รหัสผ่าน'),
+  'login.signIn': L('Sign in', 'Войти', '登录', 'เข้าสู่ระบบ'),
+  'login.wrongPassword': L('Wrong email or password.', 'Неверная почта или пароль.', '邮箱或密码不正确。', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'),
   'login.signing': L('Signing in…', 'Входим…', '正在登录…', 'กำลังเข้าสู่ระบบ…'),
   'login.sending': L('Sending…', 'Отправляем…', '正在发送…', 'กำลังส่ง…'),
   'login.expired': L(

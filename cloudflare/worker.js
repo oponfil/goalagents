@@ -3,7 +3,8 @@
 // runs only on the routes below and passes the rest of the requests through.
 //   goalcraft.ai/mcp*          → the MCP server (Supabase Edge Function)
 //   goalcraft.ai/auth/*        → Supabase Auth (OAuth 2.1: register, authorize, token, keys)
-//   goalcraft.ai/.well-known/* → discovery documents that name goalcraft.ai everywhere
+//   goalcraft.ai/.well-known/* → discovery documents that name goalcraft.ai everywhere, and the
+//                                ChatGPT app directory's domain check (openai-apps-challenge)
 
 // Every address handed to an agent is on the domain its request came in on: goalcraft.ai, or
 // goalagents.run for agents connected before the move (it keeps working for them).
@@ -54,8 +55,15 @@ async function forward(request, target, SITE) {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env = {}) {
     const url = new URL(request.url), path = url.pathname, SITE = url.origin;
+    // OpenAI checks that we own the domain: the token from its developer portal, as plain text. It
+    // is kept in the Worker's variable OPENAI_APPS_CHALLENGE (Cloudflare dashboard → Settings).
+    if (path === '/.well-known/openai-apps-challenge') {
+      return env.OPENAI_APPS_CHALLENGE
+        ? new Response(env.OPENAI_APPS_CHALLENGE.trim(), { headers: { 'content-type': 'text/plain; charset=utf-8' } })
+        : new Response('Not found', { status: 404 });
+    }
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: {
         'access-control-allow-origin': '*',

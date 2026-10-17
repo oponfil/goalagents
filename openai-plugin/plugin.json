@@ -1,0 +1,110 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "goalcraft",
+  "version": "1.0.0",
+  "description": "Shows your goals as funnels and the AI agents working them: agents create funnels, report progress after each run and ask you questions.",
+  "author": {
+    "name": "Goalcraft",
+    "email": "support@goalcraft.ai",
+    "url": "https://goalcraft.ai"
+  },
+  "homepage": "https://goalcraft.ai",
+  "repository": "https://github.com/oponfil/goalcraft",
+  "license": "MIT",
+  "keywords": [
+    "goals",
+    "funnels",
+    "agents",
+    "dashboard",
+    "job search",
+    "outreach"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Goalcraft",
+        "shortDescription": "Watch AI agents craft your goals",
+        "longDescription": "Goalcraft is a live dashboard for the long goals you hand to AI agents: a job search, fundraising, finding customers, research. Each goal is a funnel of stages drawn as pixel-art tanks with your agents at work between them. Your agent can create a funnel, report how many items reached each stage after every run, add results, show whether it is working or asleep until its next run, and ask you a question when it needs a decision; you answer from any device. Goalcraft keeps only counts, dates, links and the agents' questions; the items stay in your own sources.",
+        "developerName": "Goalcraft",
+        "category": "Productivity",
+        "capabilities": [
+          "List goal funnels",
+          "Create and update funnels",
+          "Report progress",
+          "Ask the person a question"
+        ],
+        "websiteURL": "https://goalcraft.ai",
+        "supportURL": "https://goalcraft.ai/contact/",
+        "privacyPolicyURL": "https://goalcraft.ai/privacy/",
+        "termsOfServiceURL": "https://goalcraft.ai/terms/",
+        "defaultPrompt": [
+          "What goals do I have in Goalcraft?",
+          "Create a Goalcraft funnel for my job search.",
+          "Report today's progress to Goalcraft."
+        ],
+        "brandColor": "#F2C14E",
+        "brandColorDark": "#F2C14E",
+        "logo": "./assets/logo.png",
+        "logoDark": "./assets/logo.png",
+        "screenshots": [
+          "./assets/screenshot-1.png"
+        ]
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "List funnels",
+              "prompt": "What goals do I have in Goalcraft?",
+              "tools_triggered": "list_funnels",
+              "expected_behavior": "Summarize each funnel: its stages with counts, results, goal and open questions."
+            },
+            {
+              "description": "Create a funnel",
+              "prompt": "Create a Goalcraft funnel for finding podcast guests: found, contacted, replied, booked; the result is a recorded episode, goal 4, one every 14 days.",
+              "tools_triggered": "upsert_funnel",
+              "expected_behavior": "Create the funnel with four stages and confirm; it appears on the dashboard."
+            },
+            {
+              "description": "Report progress",
+              "prompt": "I contacted 12 more podcasts today and 3 replied; report it to Goalcraft.",
+              "tools_triggered": "list_funnels, report_counts",
+              "expected_behavior": "Read the current counts, then report the new cumulative counts for the contacted and replied stages."
+            },
+            {
+              "description": "Add a result",
+              "prompt": "We booked a guest: add a result to the podcast funnel.",
+              "tools_triggered": "add_result",
+              "expected_behavior": "Add one result to the podcast funnel and confirm the new total."
+            },
+            {
+              "description": "Ask the person",
+              "prompt": "Ask me on Goalcraft whether to accept the Tuesday slot, then wait for my answer.",
+              "tools_triggered": "set_agent_state, get_answer, reply",
+              "expected_behavior": "Post the question on the dashboard, wait for the answer, then send a short reply about what happens next."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unrelated question",
+              "prompt": "What's the weather in Hanoi?"
+            },
+            {
+              "description": "Delete everything",
+              "prompt": "Delete all my Goalcraft funnels."
+            },
+            {
+              "description": "Message someone else",
+              "prompt": "Send an email to my landlord."
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "Goalcraft tools do not sell products or take payments. The Pro plan is bought on goalcraft.ai, outside ChatGPT."
+      },
+      "publication": {
+        "release_notes": "First public release: funnels, progress reports, results, agent states and questions to the person."
+      }
+    }
+  }
+}

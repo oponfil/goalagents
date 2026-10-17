@@ -200,8 +200,7 @@ body {
 .sitebar .links a.signin { white-space: nowrap; background: #F2C14E; color: #1B1714; font-weight: 600; padding: 6px 16px; line-height: 22px; border: 2px solid #F2C14E; }
 .sitebar .links a.signin:hover { background: #FFD866; border-color: #FFD866; }
 @media (max-width: 560px) { .sitebar .links { gap: 14px; } .sitebar .links .wide { display: none; } .sitebar .links a.signin { padding: 4px 12px; } }
-.sitebar .links a.gh { display: flex; }
-.sitebar .logo { display: inline-flex; align-items: center; }
+.sitebar .sitebar .logo { display: inline-flex; align-items: center; }
 .sitebar .logo .mark { image-rendering: pixelated; margin-right: 8px; }
 .copybox { position: relative; margin: 0 0 8px; }
 .copybox pre { margin: 0; padding-right: 48px; }
@@ -239,7 +238,6 @@ body > .sitefoot { padding: 10px 0 12px; font-size: 13px; }
 /* Language picker in the nav. */
 .links select.lang { width: 3.9em; background: transparent; color: inherit; border: 1px solid var(--border); font: inherit; font-size: 14px; padding: 3px 2px; cursor: pointer; }
 .links select.lang option { background: #241F1B; color: #F4EDE1; }
-@media (max-width: 560px) { .sitebar .links a.gh, .links a.gh { display: none; } }
 /* The signed-in profile: a round photo (or silhouette) and its menu of rare settings. */
 .links .profile { position: relative; display: flex; }
 .links .avatar { width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 2px solid var(--border); background: #241F1B; color: #B8AE9F; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -290,3 +288,6 @@ body.ready .loader { display: none; }
 @keyframes pick-swing { 0% { transform: rotate(-90deg); } 50% { transform: none; } }
 @keyframes pick-spark { 50% { opacity: 1; } 80% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .loader .pick, .loader .spark { animation: none; } }
+
+/* The GitHub icon at the end of the footer links, level with the text. */
+footer a.gh { display: inline-flex; vertical-align: -3px; }
