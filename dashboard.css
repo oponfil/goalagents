@@ -155,8 +155,6 @@ body {
 #pop button.btn { font: inherit; cursor: pointer; background: none; }
 #pop button.btn.primary { background: #D97757; }
 #pop button.btn:disabled { opacity: 0.5; cursor: default; }
-#pop .reply-item + .reply-item { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 4px; }
-#pop .reply-item p { margin: 4px 0; }
 #pop .ask + .ask { border-top: 1px solid var(--border); margin-top: 10px; padding-top: 4px; }
 #pop .ask-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
 #pop details.runs { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; font-size: 13px; }
@@ -251,3 +249,9 @@ body {
 html:lang(vi) { --font: "Be Vietnam Pro", system-ui, sans-serif; }
 /* Japanese: Noto Sans JP before the Chinese font, so kanji take their Japanese shapes. */
 html:lang(ja) { --font: "Rubik", "Noto Sans JP", system-ui, sans-serif; }
+/* An agent's short reply to the person's answer: a note over its head, the text and a ×. */
+.agent-note { position: fixed; z-index: 5; transform: translateY(-100%); max-width: 200px; background: #F4EDE1; color: #1B1714; font-size: 12px; line-height: 1.35; padding: 6px 22px 6px 9px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.4); pointer-events: auto; }
+.agent-note::after { content: ""; position: absolute; left: var(--tail, 50%); bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-top-color: #F4EDE1; border-bottom: 0; }
+.agent-note button { position: absolute; top: 2px; right: 3px; background: none; border: 0; color: #6B6258; font-size: 15px; line-height: 1; cursor: pointer; padding: 2px 4px; }
+.agent-note button:hover { color: #1B1714; }
+.agent-note[hidden] { display: none; }

@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=cd7112fa';
-import vi from './lang/vi.js?v=cd7112fa';
-import ja from './lang/ja.js?v=cd7112fa';
+import es from './lang/es.js?v=c80912cf';
+import vi from './lang/vi.js?v=c80912cf';
+import ja from './lang/ja.js?v=c80912cf';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -167,8 +167,6 @@ const STRINGS = {
   'board.runNow': L('running', 'идёт', '进行中', 'กำลังรัน'),
   'board.noRuns': L('No runs recorded yet.', 'Запусков пока не записано.', '还没有记录到运行。', 'ยังไม่มีการรันที่บันทึกไว้'),
   'board.runsFailed': L('Could not load the runs.', 'Не удалось загрузить запуски.', '无法加载运行记录。', 'โหลดการรันไม่สำเร็จ'),
-  'board.replied': L((who) => `${who} replied`, (who) => `${who} ответил`, (who) => `${who} 回复了`, (who) => `${who} ตอบกลับแล้ว`),
-  'board.you': L('You', 'Вы', '你', 'คุณ'),
   'board.resting': L((who) => `${who} is resting until the next run`, (who) => `${who} отдыхает до следующего запуска`, (who) => `${who} 正在休息，等待下次运行`, (who) => `${who} กำลังพักจนถึงรอบถัดไป`),
   'board.starting': L((who) => `${who} is starting a shift`, (who) => `${who} начинает смену`, (who) => `${who} 开始轮班`, (who) => `${who} กำลังเริ่มกะ`),
   'board.finished': L((who) => `${who} finished a shift`, (who) => `${who} закончил смену`, (who) => `${who} 结束了轮班`, (who) => `${who} จบกะแล้ว`),

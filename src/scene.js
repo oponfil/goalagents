@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=cd7112fa';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, drawReplyBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=cd7112fa';
-import { themeOf } from './themes.js?v=cd7112fa';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=cd7112fa';
+import { agentInfo, plural } from './data.js?v=c80912cf';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=c80912cf';
+import { themeOf } from './themes.js?v=c80912cf';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=c80912cf';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -377,11 +377,9 @@ export class Scene {
         drawBubble(c, bx, p.y - 14, a.questions.length);
         a.bubble = { x: bx, y: p.y - 14 };
         this.hits.push({ x: Math.min(p.x, bx) - 4, y: p.y - 16, w: 52 + extra, h: 38, type: 'ask', a });
-      } else if (a.replies.length) {
-        const bx = a.side === 'R' ? p.x - 16 : p.x + 30;
-        drawReplyBubble(c, bx, p.y - 16);
-        this.hits.push({ x: Math.min(p.x, bx) - 4, y: p.y - 16, w: 52, h: 38, type: 'reply', a });
       } else this.hits.push({ x: p.x - 4, y: p.y - 14, w: 34, h: 36, type: 'agent', a });
+      // Where the page pins the agent's reply note: just above its head.
+      a.noteAt = { x: p.x + 14, y: p.y - 6 };
       return;
     }
     if (a.state === 'walk') {
@@ -456,11 +454,8 @@ export class Scene {
         this.sparks.push({ a, col: theme.spark, x: R ? cx + 6 + dx : cx - 6 - dx, y: p.y + 10 + Math.floor(a.rand() * 8), born: t });
       }
     }
-    if (a.replies.length) {
-      const bx = R ? p.x + 20 : p.x - 14;
-      drawReplyBubble(c, bx, p.y - 14);
-      this.hits.push({ x: Math.min(p.x, bx) - 2, y: p.y - 14, w: 40, h: 44, type: 'reply', a });
-    } else this.hits.push({ x: R ? p.x - 14 : p.x - 2, y: p.y - 4, w: 36, h: 34, type: 'agent', a });
+    this.hits.push({ x: R ? p.x - 14 : p.x - 2, y: p.y - 4, w: 36, h: 34, type: 'agent', a });
+    a.noteAt = { x: p.x + 10, y: p.y - 4 };
   }
 
   // Crisp text on the full-resolution canvas, over the pixel layer.

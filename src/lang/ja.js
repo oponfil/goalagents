@@ -75,8 +75,6 @@ export default {
   'board.runNow': '実行中',
   'board.noRuns': 'まだ実行の記録がありません。',
   'board.runsFailed': '実行記録を読み込めませんでした。',
-  'board.replied': (who) => `${who} が返信しました`,
-  'board.you': 'あなた',
   'board.resting': (who) => `${who} は次の実行まで休憩中`,
   'board.starting': (who) => `${who} がシフトを始めます`,
   'board.finished': (who) => `${who} がシフトを終えました`,

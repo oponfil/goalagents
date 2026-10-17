@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=cd7112fa';
-import { Scene, CW, H } from '../src/scene.js?v=cd7112fa';
-import { THEMES } from '../src/themes.js?v=cd7112fa';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=cd7112fa';
+import { AGENTS, FUNNELS } from '../src/data.js?v=c80912cf';
+import { Scene, CW, H } from '../src/scene.js?v=c80912cf';
+import { THEMES } from '../src/themes.js?v=c80912cf';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=c80912cf';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 

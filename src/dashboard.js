@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=cd7112fa';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=cd7112fa';
-import { t, lang } from './i18n.js?v=cd7112fa';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=c80912cf';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=c80912cf';
+import { t, lang } from './i18n.js?v=c80912cf';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -88,11 +88,47 @@ export function mountDashboard(funnels, opts = {}) {
   buildTitles();
 
   let last = performance.now();
+  // An agent's reply to the person's answer shows at once as a note over its head, with just the
+  // text and a × that closes it.
+  const notes = new Map();
+  function syncNotes() {
+    const r = canvas.getBoundingClientRect(), box = scroller.getBoundingClientRect(), seen = new Set();
+    for (const a of scene.agents) {
+      const reply = a.replies?.[a.replies.length - 1];
+      if (!reply || !a.noteAt || a.questions.length) continue;
+      const key = reply.id;
+      seen.add(key);
+      let el = notes.get(key);
+      if (!el) {
+        el = document.createElement('div');
+        el.className = 'agent-note';
+        el.innerHTML = `<span></span><button aria-label="${esc(t('board.close'))}">×</button>`;
+        el.querySelector('span').textContent = reply.reply;
+        el.querySelector('button').addEventListener('click', () => {
+          const ids = a.replies.map(x => x.id);
+          a.replies = [];
+          el.remove(); notes.delete(key);
+          if (opts.onCloseReplies) opts.onCloseReplies(ids.filter(id => !String(id).startsWith('demo')));
+        });
+        document.body.append(el);
+        notes.set(key, el);
+      }
+      const x = r.left + a.noteAt.x * scene.scale, y = r.top + a.noteAt.y * scene.scale;
+      el.hidden = x < box.left || x > box.right || y < box.top || y > box.bottom;
+      // Kept inside the window; the tail still points at the agent.
+      const w = el.offsetWidth, left = Math.max(8, Math.min(window.innerWidth - w - 8, x - w / 2));
+      el.style.left = left + 'px'; el.style.top = y + 'px';
+      el.style.setProperty('--tail', (x - left) + 'px');
+    }
+    for (const [key, el] of notes) if (!seen.has(key)) { el.remove(); notes.delete(key); }
+  }
+
   function frame(now) {
     scene.update(Math.min(0.1, (now - last) / 1000));
     last = now;
     scene.render();
     syncTitles();
+    syncNotes();
     if (opts.clock) clock.textContent = opts.clock(scene);
     requestAnimationFrame(frame);
   }
@@ -157,7 +193,6 @@ export function mountDashboard(funnels, opts = {}) {
     if (h.type === 'source') { hidePop(); return window.open(h.url, '_blank', 'noopener'); }
     showPop(e, content(h));
     bindRuns(h.a);
-    if (h.type === 'reply') bindReplies(h.a);
     if (h.type === 'ask' && opts.onAnswer) bindAnswer(h.a);
   });
 
@@ -175,13 +210,6 @@ export function mountDashboard(funnels, opts = {}) {
     // Overdue: it should have run by now and has not been heard from.
     const missed = scene.overdue(a)
       ? `<p class="pop-note warn">${esc(t('board.missed', fmtDuration(scene.t - a.wakeAt), fmtDuration(scene.t + (a.seenAgo || 0))))}</p>` : '';
-    if (h.type === 'reply') {
-      // The agent's short replies to the person's answers, with what was asked and answered.
-      const items = a.replies.map(r => `<div class="reply-item"><p class="pop-note">${esc(r.question)}</p>
-        <p class="pop-note"><b>${esc(t('board.you'))}:</b> ${esc(r.answer)}</p><p>${esc(r.reply)}</p></div>`).join('');
-      return `<div class="pop-title">${t('board.replied', who)}</div>${items}
-        <button class="btn primary close-replies" style="${paint}">${esc(t('board.close'))}</button>${history}`;
-    }
     if (h.type === 'ask') {
       // Each open question with its own answer box and, beside Send, the chat it was asked from (or
       // the agent's chat): an agent working in several chats asks from each. The demo links to the
@@ -232,15 +260,6 @@ export function mountDashboard(funnels, opts = {}) {
         }).join('') : `<div class="pop-note">${esc(t('board.noRuns'))}</div>`;
         pop.style.top = Math.max(8, Math.min(window.innerHeight - pop.offsetHeight - 8, pop.offsetTop)) + 'px';
       } catch { list.textContent = t('board.runsFailed'); delete list.dataset.loaded; }
-    });
-  }
-
-  function bindReplies(a) {
-    pop.querySelector('.close-replies')?.addEventListener('click', async () => {
-      const ids = a.replies.map(r => r.id);
-      a.replies = [];
-      hidePop();
-      if (opts.onCloseReplies && ids[0]) await opts.onCloseReplies(ids);
     });
   }
 

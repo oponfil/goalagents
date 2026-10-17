@@ -74,8 +74,6 @@ export default {
   'board.runNow': 'en curso',
   'board.noRuns': 'Aún no hay ejecuciones registradas.',
   'board.runsFailed': 'No se pudieron cargar las ejecuciones.',
-  'board.replied': (who) => `${who} respondió`,
-  'board.you': 'Tú',
   'board.resting': (who) => `${who} descansa hasta la próxima ejecución`,
   'board.starting': (who) => `${who} empieza su turno`,
   'board.finished': (who) => `${who} terminó su turno`,

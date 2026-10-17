@@ -300,7 +300,7 @@ function server(db: Db, caller: Caller) {
 
   s.registerTool('reply', {
     title: 'Reply to the answer',
-    description: 'After you get the person\'s answer (get_answer), always reply to it in one short line, as in a chat: what you do with it ("Thanks, sending the application now", "Got it, skipping this one"). The dashboard shows it to the person in a bubble until they close it. If you need something more from them, do not put it here: ask a new question with set_agent_state(ask).',
+    description: 'After you get the person\'s answer (get_answer), always reply to it in one short line, as in a chat: what you do with it ("Thanks, sending the application now", "Got it, skipping this one"). The dashboard shows it to the person as a note over you until they close it. If you need something more from them, do not put it here: ask a new question with set_agent_state(ask).',
     inputSchema: req({
       question_id: z.string().uuid().describe('The question the person answered'),
       text: z.string().min(1).max(300).describe('One short line, in the person\'s language'),
