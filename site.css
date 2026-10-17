@@ -116,8 +116,9 @@ footer { border-top: 2px solid var(--border); padding: 20px 0 32px; color: var(-
 .profile-menu .row.check { justify-content: flex-start; line-height: 1.35; }
 .profile-menu .row.check input { margin: 0; accent-color: #F2C14E; cursor: pointer; flex: none; }
 .links .profile-menu select.lang { width: auto; font-size: 14px; padding: 3px 4px; }
-.profile-menu .row.plan-row { cursor: default; flex-wrap: wrap; gap: 4px 12px; }
-.links .profile-menu .row.plan-row a { color: var(--accent); text-decoration: none; }
+.profile-menu .row.plan-row { cursor: default; flex-direction: column; align-items: flex-start; gap: 4px; }
+.links .profile-menu .row.plan-row a { color: #F2C14E; text-decoration: none; }
+.links .profile-menu .row.plan-row a:hover { text-decoration: underline; }
 .links .profile-menu a.signout { color: #B8AE9F; text-decoration: none; border-top: 1px solid var(--border); padding-top: 10px; }
 .links .profile-menu a.signout:hover { color: #F4EDE1; }
 /* Rubik has no Vietnamese letters: Vietnamese pages use Be Vietnam Pro, a font of the same shape. */

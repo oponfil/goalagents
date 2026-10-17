@@ -1,8 +1,8 @@
 // Paying for Pro: the site asks supabase/functions/billing for a Creem link and goes there, either
 // to pay (checkout) or to manage or cancel the subscription (portal). account() reads the person's
 // plan as the limits see it.
-import { supabase, siteUrl } from './auth.js?v=c1cdcc9a';
-import { SUPABASE_URL, SUPABASE_KEY } from './config.js?v=c1cdcc9a';
+import { supabase, siteUrl } from './auth.js?v=7b3172f5';
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js?v=7b3172f5';
 
 export async function account() {
   const { data } = await supabase.from('accounts').select('plan, pro_until, creem_customer_id, subscription_status').maybeSingle();
