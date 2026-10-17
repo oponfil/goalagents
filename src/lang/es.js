@@ -72,6 +72,7 @@ export default {
   'board.nextRun': (t) => (t ? `Recogerá tu respuesta al despertar: en ${t}.` : 'Recogerá tu respuesta al despertar.'),
   'board.overdue': (who) => `${who} no despertó a tiempo`,
   'board.lastSignal': (ago) => `Última señal hace ${ago}.`,
+  'board.silent': (n) => `Agentes sin noticias a tiempo: ${n}`,
   'board.lost': (who) => `${who} no da señales`,
   'board.runs': 'Ejecuciones anteriores',
   'board.runNow': 'en curso',

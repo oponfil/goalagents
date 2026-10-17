@@ -8,9 +8,19 @@ The dashboard is read-only. Agents create and update everything through an MCP s
 
 Live at [goalagents.run](https://goalagents.run): your own board under Goals, written by your agents through the MCP server, and a demo at [goalagents.run/demo](https://goalagents.run/demo/) on made-up data (`src/data.js`).
 
+## Connect an agent
+
+Paste this into your agent (Claude, ChatGPT, Cursor or any other that supports MCP), or copy it from [goalagents.run/connect](https://goalagents.run/connect/):
+
+```
+Connect this MCP server for me: https://goalagents.run/mcp (GoalAgents, remote, sign-in with OAuth). If you can't connect it yourself, tell me exactly how to do it in this app.
+```
+
+The agent adds the server or tells you how (Claude: Connectors → Add custom connector; Claude Code: `claude mcp add --transport http goalagents https://goalagents.run/mcp`; ChatGPT: Developer mode → Create). You sign in on goalagents.run and allow it; then tell it which goal to work on, and its funnel appears under Goals. Connect as many agents as you like, one at a time. Details: [docs/MCP.md](docs/MCP.md).
+
 ## How to read it
 
-<img src="docs/img/funnel.png" alt="One funnel with labels: the sheet, a tank, a question, a sleeping agent, an agent at work, results and the prediction" width="620">
+<img src="docs/img/funnel.gif" alt="One funnel with labels: the sheet, a tank, a question, a sleeping agent, an agent at work, results and the prediction" width="620">
 
 | On screen | Meaning |
 |---|---|
@@ -18,7 +28,7 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 | Tank, its number and the small `+N` by it | How many items have reached this stage (cumulative) and how many it gains per day (average over the last 7 days; an agent can set it; `+0` until there are two reports to compare). Per hour, day or week, the same on every funnel: pick it under Flows in the profile menu (per day until then); the unit is not written. The tanks make one funnel: their sides lie on two straight lines, cut by the gaps between them. What a tank holds piles up from the bottom, piece by piece (each new one drops in from the pipe), up to the share of what this stage needs for the whole goal; that need comes from the conversion between the tanks' counts (next ÷ this), 30% while a count is still 0. Hover a tank for its name |
 | Agent with a tool | Working on that step |
 | Agent lying with a timer | Waiting for its next scheduled run |
-| Agent lying under an amber triangle with `2 h` | Did not wake up on time: its run was due more than 10 minutes ago and it has not reported since (agents report `work` first thing in a run; the same 10 minutes of silence as for an agent at work). Click it for when it was due and when it was last heard from, and check on the agent |
+| Agent lying under an amber triangle with `2 h` | Did not wake up on time: its run was due more than 10 minutes ago and it has not reported since (agents report `work` first thing in a run; the same 10 minutes of silence as for an agent at work). Click it (or the triangle) for when it was last heard from, and check on the agent. An amber badge by the funnel's title counts its agents under a triangle |
 | A note over an agent | Its short reply to your answer ("Thanks, sending it now"); × closes it |
 | Agent at work under an amber triangle with `20m` | No word from it for that long: agents send a heartbeat when they wake up and every 5 minutes while they work, and the board waits twice that: after 10 minutes of silence it may have stopped without saying so |
 | Agent with a red `!` | Waiting for you; click to read the question and answer it. One `!` per open question (`!!` for two, up to four; from five, the number: `5!`), each answered on its own. Lying with a `!` bubble: it asked, then went to sleep, and takes your answer on its next run. The red badge in the header counts them |
@@ -29,7 +39,7 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 
 Each funnel picks a look; the data and behaviour are the same.
 
-![The nine themes: mine, lab, garden, love, code, money, forge, bakery, blocks](docs/img/themes.png)
+![The nine themes: mine, lab, garden, love, code, money, forge, bakery, blocks](docs/img/themes.gif)
 
 | Theme | Agents | Work piece | Tanks fill with (piece by piece) | Results |
 |---|---|---|---|---|
@@ -39,9 +49,9 @@ Each funnel picks a look; the data and behaviour are the same.
 | `love` | cupids with bows | bed | flowers, love letters, hearts, kisses, rings: pink to red | hearts |
 | `code` | hackers on laptops | server rack | floppy disks: blue, green, yellow, orange, purple by stage | chips |
 | `money` | bankers with stamps | contract | copper pennies, banknotes, silver bars, gold bars, bitcoins | money bags |
-| `forge` | smiths with hammers | anvil with a red-hot bar | ore, iron ingots, horseshoes, swords, gold crowns | suits of armour |
-| `bakery` | bakers with rolling pins | dough on a board | dough balls, pizzas, pies, cupcakes, whole cakes | cakes on stands |
-| `blocks` | block-headed heroes in diamond armour with swords | a slime they fight | loot blocks from common to rare: coal, iron, gold, emerald, diamond | diamonds |
+| `forge` | smiths with hammers | anvil with a red-hot bar | ore, iron ingots, horseshoes, swords, shields | gold crowns |
+| `bakery` | bakers with rolling pins | dough on a board | loaves of bread, pizza slices, croissants, cupcakes, glazed doughnuts | strawberry pastries |
+| `blocks` | block-headed heroes in diamond armour with swords | a slime they fight | blocks from common to rare: grass, wooden planks, cobblestone, gold, diamond | diamonds |
 
 ## Agents
 
@@ -84,7 +94,7 @@ Open http://localhost:5173 for the landing page and http://localhost:5173/demo/ 
 
 The MCP server deploys with the Supabase CLI: `supabase db push` for the tables, `supabase functions deploy mcp --use-api` for the server (it needs the secret `MCP_AUTH_ISSUER`, the project's Auth issuer).
 
-To refresh the README pictures, open http://localhost:5173/tools/render-docs.html; it redraws `docs/img/agents.png`, `themes.png` and the link preview card `og.png` with the dashboard's own drawing code.
+To refresh the README pictures, open http://localhost:5173/tools/render-docs.html; it redraws `docs/img/agents.png`, the animated `themes.gif` and `funnel.gif` (with `funnel.png` for the deck and `funnel-plain.png`, the landing page's still), and the link preview card `og.png` with the dashboard's own drawing code. `?only=themes`, `?only=funnel` or `?only=og` redraws just one. The landing page runs the same funnel live (`src/guide.js`).
 
 ## Code
 
@@ -97,6 +107,7 @@ Scripts and stylesheets are loaded with a version in the address (`i18n.js?v=3f2
 - `src/sprites.js` — agents (outfits, tools, logos) drawn from shapes on a half-unit grid
 - `src/dashboard.js` — page wiring: scaling, sticky titles, drag to reorder, popups, answers to agents
 - `src/main.js` — the demo; `src/live.js` — the person's funnels from the database, flows from the count history, live updates
+- `src/guide.js` — the explained funnel: run live on the landing page (`src/guide-live.js`), recorded for the README
 - `src/nav.js` — the nav: language picker, Goals and Sign out once signed in
 - `index.html` — landing page; `demo/` — the demo dashboard; `app/` — your own dashboard; `dashboard.css` — their styles
 - `login/` — sign-in with Google or an email link (Supabase Auth); `oauth/consent/` — where you allow an agent to connect; `connect/` — the prompt that connects an agent; `pricing/` — Free and Pro plans; `privacy/`, `contact/`

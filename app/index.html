@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+Thai:wght@400;500;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../dashboard.css?v=3fe7e493">
+  <link rel="stylesheet" href="../dashboard.css?v=4fc07f4f">
 </head>
 <body>
   <nav class="sitebar">
@@ -38,11 +38,11 @@
   <div id="pop" hidden></div>
 
   <script type="module">
-    import { supabase } from '../src/auth.js?v=3fe7e493';
-    import { setUpConnect } from '../src/connect.js?v=3fe7e493';
-    import { loadFunnels, answer, watch, runs, closeReplies } from '../src/live.js?v=3fe7e493';
-    import { mountDashboard } from '../src/dashboard.js?v=3fe7e493';
-    import { t, fmtDuration } from '../src/i18n.js?v=3fe7e493';
+    import { supabase } from '../src/auth.js?v=4fc07f4f';
+    import { setUpConnect } from '../src/connect.js?v=4fc07f4f';
+    import { loadFunnels, answer, watch, runs, closeReplies } from '../src/live.js?v=4fc07f4f';
+    import { mountDashboard } from '../src/dashboard.js?v=4fc07f4f';
+    import { t, fmtDuration } from '../src/i18n.js?v=4fc07f4f';
 
     // Coming back from an email link, supabase-js reads the session from the URL.
     const { data: { session } } = await supabase.auth.getSession();
@@ -92,6 +92,6 @@
       document.addEventListener('focusout', () => { if (pending) refresh(); });
     }
   </script>
-  <script type="module" src="../src/nav.js?v=3fe7e493"></script>
+  <script type="module" src="../src/nav.js?v=4fc07f4f"></script>
 </body>
 </html>

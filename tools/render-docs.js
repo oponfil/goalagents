@@ -1,20 +1,47 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=3fe7e493';
-import { Scene, CW } from '../src/scene.js?v=3fe7e493';
-import { THEMES } from '../src/themes.js?v=3fe7e493';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=3fe7e493';
+import { AGENTS, FUNNELS } from '../src/data.js?v=4fc07f4f';
+import { Scene, CW, drawWork, TOOL_PERIOD } from '../src/scene.js?v=4fc07f4f';
+import { guideScene, guideHeight, drawGuide, TH } from '../src/guide.js?v=4fc07f4f';
+import { GIFEncoder, quantize, applyPalette } from 'https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js';
+import { THEMES } from '../src/themes.js?v=4fc07f4f';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=4fc07f4f';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
-function canvas(w, h) {
+function canvas(w, h, show = true) {
   const c = document.createElement('canvas');
   c.width = w; c.height = h;
-  document.body.appendChild(c);
+  if (show) document.body.appendChild(c);
   const g = c.getContext('2d');
   g.imageSmoothingEnabled = false;
   return [c, g];
+}
+
+// An animated GIF of n frames, each drawn at full size by frame(i) and scaled down to w×h (half
+// size: every pixel of the art is still whole). One palette for all frames, taken from a few of
+// them; after the first, a frame keeps only the pixels that changed and the rest is transparent,
+// so the still parts (backdrops, tanks, labels) are stored once.
+function gif(frame, n, w, h, delay) {
+  const enc = GIFEncoder(), [, g] = canvas(w, h, false);
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  const frames = [];
+  for (let i = 0; i < n; i++) { g.clearRect(0, 0, w, h); g.drawImage(frame(i), 0, 0, w, h); frames.push(g.getImageData(0, 0, w, h).data); }
+  const sample = new Uint8ClampedArray(frames[0].length * 2);
+  sample.set(frames[0]); sample.set(frames[Math.floor(n / 2)], frames[0].length);
+  const palette = quantize(sample, 255), clear = palette.length;
+  palette.push([0, 0, 0]);
+  let prev = null;
+  for (const data of frames) {
+    const index = applyPalette(data, palette.slice(0, clear));
+    if (prev) for (let k = 0; k < index.length; k++) if (index[k] === prev[k]) index[k] = clear;
+    enc.writeFrame(index, w, h, prev ? { palette, delay, transparent: true, transparentIndex: clear, dispose: 1 } : { palette, delay, dispose: 1 });
+    if (prev) { for (let k = 0; k < index.length; k++) if (index[k] !== clear) prev[k] = index[k]; }
+    else prev = index.slice();
+  }
+  enc.finish();
+  return enc.bytes();
 }
 
 function rng(seed) {
@@ -22,7 +49,7 @@ function rng(seed) {
 }
 
 async function save(c, name) {
-  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  const blob = c instanceof Uint8Array ? new Blob([c], { type: 'image/gif' }) : await new Promise(r => c.toBlob(r, 'image/png'));
   const res = await fetch(`/docs/img/${name}`, { method: 'PUT', body: blob });
   if (!res.ok) throw new Error(`${name}: ${res.status}`);
 }
@@ -45,9 +72,13 @@ function agentsSheet() {
 }
 
 // One tile per theme: a working agent on the tank's top edge by its work piece, the tank, results.
-function themesSheet() {
+// Each tile at time t (seconds into a LOOP-long loop): the agent works as on the board, its tool
+// going through a whole number of strokes in the loop (each stroke stretched a little to fit).
+const LOOP = 2.4;
+const scratch = document.createElement('canvas').getContext('2d');
+function themesSheet(t = 0.3) {
   const names = Object.keys(THEMES), K = 4, W = 180, Hh = 112, cols = 3;
-  const [c, g] = canvas(cols * W * K, Math.ceil(names.length / cols) * Hh * K);
+  const [c, g] = canvas(cols * W * K, Math.ceil(names.length / cols) * Hh * K, false);
   const agentsFor = ['claude', 'chatgpt', 'gemini', 'grok', 'deepseek', 'mistral', 'qwen', 'kimi', 'perplexity'];
   names.forEach((name, i) => {
     const th = THEMES[name], ox = (i % cols) * W, oy = Math.floor(i / cols) * Hh, r = rng(7 + i);
@@ -61,15 +92,12 @@ function themesSheet() {
     th.plate(g, 77, 43, 26, 11);
     const id = agentsFor[i % agentsFor.length], ax = 57, ay = 26, hx = ax + 16.5, hy = ay + 15;
     drawStanding(g, ax, ay, id, AGENTS[id].color, -1, false, true, th.outfit);
-    if (th.tool === 'pickaxe') drawPickaxe(g, hx, hy - 1, -0.9);
-    else if (th.tool === 'shears') drawShears(g, hx, hy + 1, 0.6);
-    else if (th.tool === 'beaker') drawBeaker(g, hx, hy, 0.9, '#B585F2');
-    else if (th.tool === 'laptop') drawLaptop(g, hx - 3, hy + 2, 0.3);
-    else if (th.tool === 'stamp') drawStamp(g, hx - 1, hy + 4, 0.5);
-    else if (th.tool === 'hammer') drawHammer(g, hx, hy - 1, -1.2);
-    else if (th.tool === 'sword') drawSword(g, hx, hy - 1, -0.9);
-    else if (th.tool === 'rollingPin') drawRollingPin(g, hx - 1, hy + 4, 0);
-    else { drawBow(g, hx, hy, 0.6); drawArrow(g, hx + 1, hy); }
+    const strokes = Math.max(1, Math.round(LOOP / (TOOL_PERIOD[th.tool] ?? 1.2))), cycAt = time => ((time / LOOP * strokes) % 1 + 1) % 1;
+    drawWork(g, th.tool, hx, hy, cycAt(t), 86);
+    // Sparks by the pipe for a quarter second after the tool lands, as on the board.
+    let landed = false;
+    for (let d = 0; d <= 0.25 && !landed; d += 0.02) landed = drawWork(scratch, th.tool, 0, 0, cycAt(t - d), 0);
+    if (landed) for (let k = 0; k < 4; k++) { g.fillStyle = th.spark; g.fillRect(80 - ((k * 7 + i) % 6), 36 + ((k * 5 + i * 3) % 8), 2, 2); }
     // A funnel tank as on the board: a thin trapezoid, its pieces piled from the bottom middle
     // (a liquid in the lab), about half full.
     // The sides slope as gently as on the board (7 units each over the tank's height).
@@ -135,41 +163,20 @@ async function ogCard() {
 
 // One funnel with labels on its right, each with a line to the part it explains: the README's guide
 // to reading the board. The Job Search demo funnel after a few seconds, while Grok still sleeps.
-function funnelGuide({ labels = true } = {}) {
-  const scale = 2, dpr = 2, K = scale * dpr, TH = 22, side = 440, job = FUNNELS[0];
-  // A two-stage Job Search is enough to show every part: jobs found → interview → offer.
-  const f0 = {
-    ...job,
-    stages: [job.stages[0], job.stages[3]],
-    flows: [job.flows[0], job.flows[3], job.flows[5]],
-    workers: [
-      { agent: 'chatgpt', zone: -1, state: 'work' }, { agent: 'perplexity', zone: -1, state: 'work' },
-      { agent: 'claude', zone: 0, state: 'ask', question: job.workers.find(w => w.state === 'ask').question }, { agent: 'gemini', zone: 0, state: 'work' },
-      { agent: 'grok', zone: 1, state: 'sleep', wakeIn: 12 }, { agent: 'mistral', zone: 1, state: 'work' },
-    ],
-  };
-  // The agents the arrows point at stand on the left, by the labels, so no arrow crosses anything
-  // on its way; the agent sharing a zone with them goes right.
-  const sides = new Map([['chatgpt', 'L'], ['perplexity', 'R'], ['claude', 'L'], ['gemini', 'R'], ['grok', 'L'], ['mistral', 'R']]
-    .map(([id, sd]) => [`${f0.title}|${id}`, sd]));
-  const scene = new Scene(document.createElement('canvas'), [f0], { sides });
-  scene.resize(scale, dpr);
-  for (let i = 0; i < 5 * 30; i++) { scene.update(1 / 30); scene.render(); }
+function funnelGuide({ labels = true, scene = null, show = true } = {}) {
+  const scale = 2, dpr = 2, K = scale * dpr, side = 440;
+  // A fresh scene runs five seconds first, so the tanks have filled and the agents are at work.
+  if (!scene) {
+    scene = guideScene(); scene.resize(scale, dpr);
+    for (let i = 0; i < 5 * 30; i++) { scene.update(1 / 30); scene.render(); }
+  }
   scene.render();
-  const src = scene.canvas, fw = CW * K;
   // Without labels (the landing page writes them as text, in the page's language) the picture is
   // just the funnel.
   const left = labels ? side : 0;
-  // The scene is tall enough for five stages: cut it just below the lines under the results.
-  const tanks = scene.hits.filter(h => h.type === 'stage'), lastTank = tanks[tanks.length - 1];
-  const contentH = Math.min(src.height, Math.ceil((lastTank.y + lastTank.h + 49 + Math.ceil(Math.max(f0.goal.total, f0.cubes) / 10) * 22 + 50) * K));
-  const [c, g] = canvas(left + fw, TH * K + contentH);
+  const [c, g] = canvas(left + CW * K, TH * K + Math.min(scene.canvas.height, Math.ceil(guideHeight(scene) * K)), show);
   g.fillStyle = '#1B1714'; g.fillRect(0, 0, c.width, c.height);
-  g.drawImage(src, 0, 0, fw, contentH, left, TH * K, fw, contentH);
-  g.drawImage(scene.titleStrip(0, TH), left, 0, fw, TH * K);
-  g.font = `600 ${19 * dpr}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillStyle = '#F4EDE1'; g.fillText(f0.title, left + fw / 2, TH * K / 2);
-
+  drawGuide(scene, g, left);
   // Points in the scene's logical coordinates → picture pixels.
   const P = (x, y) => [left + x * K, TH * K + y * K];
   const f = scene.funnels[0], n = f.stages.length, cx = scene.cx(0);
@@ -185,7 +192,8 @@ function funnelGuide({ labels = true } = {}) {
   const notes = [
     [P(src0.x + 3, src0.y + 14), 'Sheet', 'The table where the agents keep track of everything.'],
     [P(cx - tankMid + 2, s0.y + s0.h / 2), 'Tank', 'Items at this stage so far, and +N a day.'],
-    [P(ask.bubble.x, ask.bubble.y + 11), 'Question', 'An agent waits for your answer. Click it to reply.'],
+    // The bubble bobs; the arrow points where it rests, so the label stays still.
+    [P(ask.bubble.x, scene.spot(ask, 'ask').y - 2 + 11), 'Question', 'An agent waits for your answer. Click it to reply.'],
     [P(sleep.x - 1, sleep.y + 1), 'Asleep', 'Resting until its next run; the timer counts down.'],
     [P(work.x + 1, work.y + 12), 'Agent at work', '+N is what its current run added.'],
     [P(cx - 45, resultsY + 8), 'Results', 'One per result the goal needs; filled ones are done.'],
@@ -226,31 +234,48 @@ function funnelGuide({ labels = true } = {}) {
   return c;
 }
 
+// The animated pictures. Themes: 2.4 seconds in 40 frames, each tool through whole strokes. The funnel: 2.4
+// seconds of the live scene, labels and all. Both at half the PNG size.
+function themesGif() {
+  const full = themesSheet(), n = 40;
+  return gif(i => themesSheet(i * LOOP / n), n, full.width / 2, full.height / 2, LOOP / n * 1000);
+}
+function funnelGif() {
+  const first = funnelGuide({ show: false }), scene = guideScene();
+  scene.resize(2, 2);
+  for (let i = 0; i < 5 * 30; i++) { scene.update(1 / 30); scene.render(); }
+  return gif(() => { scene.update(1 / 15); return funnelGuide({ scene, show: false }); }, 36, first.width / 2, first.height / 2, 66);
+}
+
 const status = document.getElementById('status');
+const only = new URLSearchParams(location.search).get('only');
 try {
   await document.fonts.ready;
   // ?only=og renders just the link preview card; ?only=themes the theme samples; ?only=funnel just
   // the funnel guide.
-  if (new URLSearchParams(location.search).get('only') === 'themes') {
-    await save(themesSheet(), 'themes.png');
-    throw Object.assign(new Error(), { done: 'Saved docs/img/themes.png' });
+  if (only === 'themes') {
+    await save(themesGif(), 'themes.gif');
+    throw Object.assign(new Error(), { done: 'Saved docs/img/themes.gif' });
   }
-  if (new URLSearchParams(location.search).get('only') === 'og') {
+  if (only === 'og') {
     await save(await ogCard(), 'og.png');
     throw Object.assign(new Error(), { done: 'Saved docs/img/og.png' });
   }
-  if (new URLSearchParams(location.search).get('only') === 'funnel') {
+  if (only === 'funnel') {
     await save(funnelGuide(), 'funnel.png');
+    await save(funnelGif(), 'funnel.gif');
     const plain = funnelGuide({ labels: false });
     await save(plain, 'funnel-plain.png');
-    throw Object.assign(new Error(), { done: 'Saved docs/img/funnel.png and funnel-plain.png. Points: ' + plain.points.join('; ') });
+    throw Object.assign(new Error(), { done: 'Saved docs/img/funnel.png, funnel.gif and funnel-plain.png. Points: ' + plain.points.join('; ') });
   }
+  if (only) throw Object.assign(new Error(), { done: `Nothing saved: ?only= takes themes, funnel or og` });
   await save(agentsSheet(), 'agents.png');
-  await save(themesSheet(), 'themes.png');
+  await save(themesGif(), 'themes.gif');
   await save(await ogCard(), 'og.png');
   await save(funnelGuide(), 'funnel.png');
+  await save(funnelGif(), 'funnel.gif');
   await save(funnelGuide({ labels: false }), 'funnel-plain.png');
-  status.textContent = 'Saved docs/img/agents.png, themes.png, og.png, funnel.png and funnel-plain.png';
+  status.textContent = 'Saved docs/img/agents.png, themes.gif, og.png, funnel.png, funnel.gif and funnel-plain.png';
 } catch (e) {
   status.textContent = e.done || 'Failed: ' + e.message;
 }

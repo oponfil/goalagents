@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=3fe7e493';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=3fe7e493';
-import { t, lang } from './i18n.js?v=3fe7e493';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=4fc07f4f';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=4fc07f4f';
+import { t, lang } from './i18n.js?v=4fc07f4f';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -66,11 +66,12 @@ export function mountDashboard(funnels, opts = {}) {
   layout();
 
   // Sticky header: one title per funnel column, kept aligned with the scene while it scrolls.
-  // A red badge shows how many agents in that funnel are waiting for you.
+  // A red badge shows how many questions in that funnel wait for you, an amber one how many of its
+  // agents have not been heard from in time (the warning triangles).
   function buildTitles() {
     track.innerHTML = scene.funnels.map((f, fi) =>
       `<div class="col-title" data-fi="${fi}" style="left:${fi * CW * scale}px;width:${CW * scale}px">
-        <span class="name">${esc(f.title)}</span><span class="badge" hidden></span></div>`).join('');
+        <span class="name">${esc(f.title)}</span><span class="badge" hidden></span><span class="badge warn" hidden></span></div>`).join('');
     const h = track.parentElement.clientHeight / scale;
     track.querySelectorAll('.col-title').forEach(el => {
       el.style.backgroundImage = `url(${scene.titleStrip(+el.dataset.fi, h).toDataURL()})`;
@@ -79,10 +80,14 @@ export function mountDashboard(funnels, opts = {}) {
   function syncTitles() {
     track.style.transform = `translateX(${canvas.getBoundingClientRect().left - track.parentElement.getBoundingClientRect().left}px)`;
     track.querySelectorAll('.col-title').forEach(el => {
-      const n = scene.waitingFor(scene.funnels[+el.dataset.fi]), badge = el.querySelector('.badge');
+      const f = scene.funnels[+el.dataset.fi], n = scene.waitingFor(f), badge = el.querySelector('.badge:not(.warn)');
       badge.hidden = !n;
       badge.textContent = n;
       badge.title = n ? t('board.waiting', n) : '';
+      const s = scene.silentIn(f), warn = el.querySelector('.badge.warn');
+      warn.hidden = !s;
+      warn.textContent = s;
+      warn.title = s ? t('board.silent', s) : '';
     });
   }
   buildTitles();

@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=3fe7e493';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=3fe7e493';
-import { themeOf } from './themes.js?v=3fe7e493';
-import { t as tr, lang, fmtDuration, flowUnit } from './i18n.js?v=3fe7e493';
+import { agentInfo, plural } from './data.js?v=4fc07f4f';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=4fc07f4f';
+import { themeOf } from './themes.js?v=4fc07f4f';
+import { t as tr, lang, fmtDuration, flowUnit } from './i18n.js?v=4fc07f4f';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -105,6 +105,13 @@ export class Scene {
       a.replies = w.replies ?? [];
       if (w.state === 'sleep') a.wakeAt = w.wakeIn;
       if (w.state === 'work' && !live) a.workUntil = 20 + r() * 25;
+      // The demo shows each warning once: an agent that overslept its run (lateBy seconds) and one
+      // silent at work (silentFor seconds). They stay as they are, so the triangle stays up.
+      if (!live && w.lateBy) Object.assign(a, { stuck: true, wakeAt: -w.lateBy, seenAgo: w.lateBy + 40 * 60 });
+      if (!live && w.silentFor) Object.assign(a, { stuck: true, workUntil: null, seenAgo: w.silentFor });
+      // keep: the agent stays in its state (the explained funnel on the landing page): at work for
+      // good, or asleep with its timer starting over.
+      if (!live && w.keep) Object.assign(a, { keep: w.wakeIn || true, workUntil: null });
       // The demo makes up what each agent's last run added; it then counts the items it adds.
       if (!live && a.added == null) a.added = w.state === 'sleep' ? 1 + Math.floor(r() * 6) : 0;
       this.agents.push(a);
@@ -248,7 +255,8 @@ export class Scene {
     this.t += dt;
     const t = this.t;
     for (const a of this.agents) {
-      if (a.state === 'sleep' && t >= a.wakeAt && !this.live) { a.state = 'walk'; a.to = 'work'; a.x = this.spot(a, 'rest').x; }
+      if (a.keep && a.state === 'sleep' && t >= a.wakeAt) a.wakeAt = t + a.keep;
+      if (a.state === 'sleep' && t >= a.wakeAt && !this.live && !a.stuck) { a.state = 'walk'; a.to = 'work'; a.x = this.spot(a, 'rest').x; }
       if (a.state === 'work' && a.workUntil && t >= a.workUntil) { a.state = 'walk'; a.to = 'rest'; a.x = this.spot(a, 'work').x; }
       if (a.state === 'walk') {
         const target = this.spot(a, a.to).x;
@@ -403,65 +411,8 @@ export class Scene {
     const hx = p.x + 16.5, hy = p.y + 15, pipeX = R ? 2 * (p.x + 10) - (cx + 5) : cx - 5;
     c.save();
     if (R) { c.translate(2 * (p.x + 10), 0); c.scale(-1, 1); }
-    let hit = false;
-    if (theme.tool === 'pickaxe') {
-      const cyc = ((t + a.phase) % 0.8) / 0.8;
-      const ang = cyc < 0.7 ? 0.35 - (cyc / 0.7) * 2.3 : -1.95 + ((cyc - 0.7) / 0.3) * 2.3;
-      drawPickaxe(c, hx, hy - 1, ang);
-      hit = cyc > 0.95;
-    } else if (theme.tool === 'shears') {
-      // Gardener snips the bush: the blades open slowly and shut fast; leaves fly off.
-      const cyc = ((t + a.phase) % 0.9) / 0.9;
-      drawShears(c, hx, hy + 1, cyc < 0.75 ? cyc / 0.75 : 1 - (cyc - 0.75) / 0.25);
-      hit = cyc > 0.95;
-    } else if (theme.tool === 'beaker') {
-      // Chemist pours: the beaker tips toward the pipe and drops fall in.
-      const tip = 0.5 + 0.5 * Math.sin(t * 2.2 + a.phase * 6);
-      drawBeaker(c, hx, hy, 0.2 + tip * 1.1, '#B585F2');
-      if (tip > 0.75) for (let k = 0; k < 3; k++) {
-        const q = (t * 2 + k / 3) % 1;
-        c.fillStyle = '#B585F2'; c.fillRect(hx + 5 + q * (pipeX - hx - 5), hy - 4 + q * q * 10, 1.5, 1.5);
-      }
-      hit = tip > 0.97;
-    } else if (theme.tool === 'laptop') {
-      // Hacker types; bits fly from the laptop into the pipe.
-      const q = (t * 1.5 + a.phase) % 1;
-      drawLaptop(c, hx - 3, hy + 2, (t * 6 + a.phase) % 1);
-      for (let k = 0; k < 3; k++) {
-        const u = (q + k / 3) % 1;
-        c.fillStyle = '#3CF27A'; c.fillRect(hx + 5 + u * (pipeX - hx - 5), hy - 3 - Math.sin(u * Math.PI) * 4, 1, 1.5);
-      }
-      hit = q > 0.95;
-    } else if (theme.tool === 'hammer') {
-      // Smith raises the hammer and brings it down on the red-hot bar: sparks fly.
-      const cyc = ((t + a.phase) % 0.9) / 0.9;
-      const ang = cyc < 0.7 ? 0.5 - (cyc / 0.7) * 2.2 : -1.7 + ((cyc - 0.7) / 0.3) * 2.2;
-      drawHammer(c, hx, hy - 1, ang);
-      hit = cyc > 0.95;
-    } else if (theme.tool === 'sword') {
-      // The hero winds up, then slashes at the slime fast.
-      const cyc = ((t + a.phase) % 0.8) / 0.8;
-      const ang = cyc < 0.6 ? 0.6 - (cyc / 0.6) * 2.4 : -1.8 + ((cyc - 0.6) / 0.4) * 2.4;
-      drawSword(c, hx, hy - 1, ang);
-      hit = cyc > 0.95;
-    } else if (theme.tool === 'rollingPin') {
-      // Baker rolls the dough back and forth; flour puffs up at each turn.
-      const cyc = ((t + a.phase) % 1) / 1;
-      drawRollingPin(c, hx - 1, hy + 4, Math.sin(cyc * Math.PI * 2));
-      hit = cyc > 0.96;
-    } else if (theme.tool === 'stamp') {
-      // Banker stamps the contract: lift, then press down hard.
-      const cyc = ((t + a.phase) % 1.1) / 1.1;
-      drawStamp(c, hx - 1, hy + 4, cyc < 0.75 ? cyc / 0.75 : 1 - (cyc - 0.75) / 0.25);
-      hit = cyc > 0.97;
-    } else {
-      // Cupid draws the bow, then the arrow flies into the pipe.
-      const cyc = ((t + a.phase) % 1.2) / 1.2;
-      drawBow(c, hx, hy, cyc < 0.5 ? cyc * 2 : 0);
-      if (cyc < 0.5) drawArrow(c, hx + 3 - cyc * 6, hy);
-      else drawArrow(c, hx + 3 + (cyc - 0.5) / 0.5 * (pipeX - hx - 3), hy);
-      hit = cyc > 0.96;
-    }
+    const period = TOOL_PERIOD[theme.tool] ?? 1.2;
+    const hit = drawWork(c, theme.tool, hx, hy, ((t + a.phase * period) % period) / period, pipeX);
     c.restore();
     if (hit && !this.sparks.some(s => s.a === a)) {
       for (let i = 0; i < 4; i++) {
@@ -485,14 +436,20 @@ export class Scene {
     // An amber warning triangle with a time in it: an agent overdue or out of contact. A click on it
     // opens the agent, as a click on the agent does.
     const warn = (a, text, cx, base) => {
+      // Always the same near-equilateral shape; a longer time gets a smaller font instead of a
+      // wider triangle.
+      const h = 20, half = 12;
       g.font = `700 ${7 * S}px ${FONT}`;
-      const tw = g.measureText(text).width / S, h = 17, half = Math.max(12, tw / 2 + 7);
+      const size = Math.min(7, 7 * 12 / (g.measureText(text).width / S));
+      // The corners are rounded: each side is drawn up to an arc into the next.
+      const pts = [[cx, base - h], [cx + half, base], [cx - half, base]].map(([px, py]) => [px * S, py * S]), r = 2.6 * S;
       g.beginPath();
-      g.moveTo(cx * S, (base - h) * S); g.lineTo((cx + half) * S, base * S); g.lineTo((cx - half) * S, base * S);
+      g.moveTo((pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2);
+      for (let k = 1; k <= 3; k++) { const [ax, ay] = pts[k % 3], [bx, by] = pts[(k + 1) % 3]; g.arcTo(ax, ay, bx, by, r); }
       g.closePath();
       g.lineJoin = 'round'; g.lineWidth = 1.6 * S; g.strokeStyle = '#1B1714'; g.fillStyle = '#F2A33C';
       g.fill(); g.stroke();
-      T(text, cx, base - 4.2, 7, '#1B1714', 'center', 700);
+      T(text, cx, base - 4.6, size, '#1B1714', 'center', 700);
       this.hits.push({ x: cx - half - 2, y: base - h - 2, w: half * 2 + 4, h: h + 4, type: 'agent', a });
     };
     // Working, but silent for too long: the same triangle over its head, with how long it has been.
@@ -639,14 +596,16 @@ export class Scene {
   // A sleeping agent that should have run more than 10 minutes ago and has not reported since (an
   // agent says set_agent_state(work) first thing in a run). Only a sign to check on it: its
   // schedule may have slipped, or it may have stopped.
-  overdue(a) { return this.live && a.state === 'sleep' && a.wakeAt != null && this.t - a.wakeAt > SILENT; }
-  // Seconds since the agent last said anything (live only; the demo's agents are never silent).
-  silence(a) { return this.live && a.seenAgo != null ? this.t + a.seenAgo : 0; }
+  overdue(a) { return (this.live || a.stuck) && a.state === 'sleep' && a.wakeAt != null && this.t - a.wakeAt > SILENT; }
+  // Seconds since the agent last said anything (live, and the demo's stuck agents).
+  silence(a) { return (this.live || a.stuck) && a.seenAgo != null ? this.t + a.seenAgo : 0; }
   // A working agent with no heartbeat for over 10 minutes: it may have stopped without saying so.
   lost(a) { return a.state === 'work' && this.silence(a) > SILENT; }
   // Seconds until a sleeping agent's next run, or null.
   sleepLeft(a) { return a.state === 'sleep' && a.wakeAt != null ? a.wakeAt - this.t : null; }
   // Open questions in a funnel: from agents asking and agents that asked and went to sleep.
+  // How many of the funnel's agents have not been heard from in time: overslept a run or silent at work.
+  silentIn(f) { return this.agents.filter(a => a.f === f && (this.overdue(a) || this.lost(a))).length; }
   waitingFor(f) {
     return this.agents.filter(a => a.f === f && (a.state === 'ask' || a.state === 'sleep')).reduce((n, a) => n + a.questions.length, 0);
   }
@@ -712,14 +671,15 @@ function fmtFlow(perDay) {
   return '+' + (v >= 10 ? Math.round(v) : v >= 1 ? Math.round(v * 10) / 10 : Number(v.toPrecision(1)));
 }
 
-// A span of days in the person's flow unit, so the goal reads in the same unit as the flows: 28d,
-// not 4w, when flows are per day.
+// A span of days in the person's flow unit, so the goal and the next result read in the same unit
+// as the flows: 28d, not 4w, when flows are per day.
 function fmtInUnit(days) {
   const v = days / PER[flowUnit];
   return (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10) + tr('units')[flowUnit];
 }
 
-const fmtEta = days => (days == null || !isFinite(days) ? '—' : '≈' + fmtDuration(days * 86400));
+// When the next result is due, in the person's flow unit too (≈12d, not ≈2w, when flows are per day).
+const fmtEta = days => (days == null || !isFinite(days) ? '—' : '≈' + fmtInUnit(days));
 
 // One rule for silence: an agent heard from nothing for 10 minutes past when it should have spoken
 // (its next run, or its last heartbeat while working; agents send one at least every 5 minutes).
@@ -731,4 +691,49 @@ export { fmtDuration };
 function fmtTimer(sec) {
   sec = Math.max(0, Math.ceil(sec));
   return sec >= 60 ? fmtDuration(sec) : `0:${String(sec).padStart(2, '0')}`;
+}
+
+// How long one stroke of each tool takes, in seconds.
+export const TOOL_PERIOD = { pickaxe: 0.8, shears: 0.9, beaker: 2.8, laptop: 2 / 3, stamp: 1.1, hammer: 0.9, sword: 0.8, rollingPin: 1, bow: 1.2 };
+
+// A working agent's tool at phase cyc (0..1) of its stroke, held at (hx, hy) and facing right
+// toward the pipe at pipeX; with what it sends flying (drops, bits, the arrow). Returns true at the
+// moment it lands, when sparks fly. The board and the README's theme samples both draw it.
+export function drawWork(c, tool, hx, hy, cyc, pipeX) {
+  const swing = (k, a0, span) => (cyc < k ? a0 - (cyc / k) * span : a0 - span + ((cyc - k) / (1 - k)) * span);
+  const press = k => (cyc < k ? cyc / k : 1 - (cyc - k) / (1 - k));
+  if (tool === 'pickaxe') { drawPickaxe(c, hx, hy - 1, swing(0.7, 0.35, 2.3)); return cyc > 0.95; }
+  // Smith raises the hammer and brings it down on the red-hot bar.
+  if (tool === 'hammer') { drawHammer(c, hx, hy - 1, swing(0.7, 0.5, 2.2)); return cyc > 0.95; }
+  // The hero winds up, then slashes at the slime fast.
+  if (tool === 'sword') { drawSword(c, hx, hy - 1, swing(0.6, 0.6, 2.4)); return cyc > 0.95; }
+  // Gardener snips the bush: the blades open slowly and shut fast.
+  if (tool === 'shears') { drawShears(c, hx, hy + 1, press(0.75)); return cyc > 0.95; }
+  // Banker stamps the contract: lift, then press down hard.
+  if (tool === 'stamp') { drawStamp(c, hx - 1, hy + 4, press(0.75)); return cyc > 0.97; }
+  // Baker rolls the dough back and forth.
+  if (tool === 'rollingPin') { drawRollingPin(c, hx - 1, hy + 4, Math.sin(cyc * Math.PI * 2)); return cyc > 0.96; }
+  if (tool === 'beaker') {
+    // Chemist pours: the beaker tips toward the pipe and drops fall in.
+    const tip = 0.5 + 0.5 * Math.sin(cyc * Math.PI * 2);
+    drawBeaker(c, hx, hy, 0.2 + tip * 1.1, '#B585F2');
+    if (tip > 0.75) for (let k = 0; k < 3; k++) {
+      const q = (cyc * 6 + k / 3) % 1;
+      c.fillStyle = '#B585F2'; c.fillRect(hx + 5 + q * (pipeX - hx - 5), hy - 4 + q * q * 10, 1.5, 1.5);
+    }
+    return tip > 0.97;
+  }
+  if (tool === 'laptop') {
+    // Hacker types; bits fly from the laptop into the pipe.
+    drawLaptop(c, hx - 3, hy + 2, (cyc * 4) % 1);
+    for (let k = 0; k < 3; k++) {
+      const u = (cyc + k / 3) % 1;
+      c.fillStyle = '#3CF27A'; c.fillRect(hx + 5 + u * (pipeX - hx - 5), hy - 3 - Math.sin(u * Math.PI) * 4, 1, 1.5);
+    }
+    return cyc > 0.95;
+  }
+  // Cupid draws the bow, then the arrow flies into the pipe.
+  drawBow(c, hx, hy, cyc < 0.5 ? cyc * 2 : 0);
+  drawArrow(c, cyc < 0.5 ? hx + 3 - cyc * 6 : hx + 3 + (cyc - 0.5) / 0.5 * (pipeX - hx - 3), hy);
+  return cyc > 0.96;
 }

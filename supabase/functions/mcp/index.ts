@@ -152,7 +152,7 @@ function server(db: Db, caller: Caller) {
       goal_total: z.number().int().min(1).max(100).describe('How many results the goal needs (1-100)'),
       goal_every_days: z.number().positive().max(3650).describe('Pace: one result every N days'),
       source_url: z.string().url().regex(/^https?:\/\//).nullable().optional().describe('Link to the table or list with this funnel\'s items (Google Sheet, Notion, Airtable…). Give it whenever the list opens by a URL; null removes it, leaving it out keeps it'),
-      theme: z.enum(THEMES).optional().describe('Look: mine (miners, ore), lab (chemists, flasks), garden (gardeners, flowers), love (cupids, hearts), code (hackers, chips), money (bankers, coins, banknotes, gold bars, bitcoins), forge (smiths, ingots, swords, armour), bakery (bakers, pizzas, pies, cakes), blocks (block-headed heroes in diamond armour with swords, blocks, diamonds). Default mine'),
+      theme: z.enum(THEMES).optional().describe('Look: mine (miners, ore), lab (chemists, flasks), garden (gardeners, flowers), love (cupids, hearts), code (hackers, chips), money (bankers, coins, banknotes, gold bars, bitcoins), forge (smiths, ingots, swords, shields, crowns), bakery (bakers, bread, pizza, croissants, doughnuts, pastries), blocks (block-headed heroes in diamond armour with swords, blocks, diamonds). Default mine'),
       stages: z.array(req({
         key: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/).describe('Stable key, e.g. "applied"'),
         label: forms.describe('[singular, plural], e.g. ["interview", "interviews"]; Russian: [1, 2-4, 5+]; Spanish: [singular, plural]; Chinese, Japanese, Thai, Vietnamese: one form'),

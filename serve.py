@@ -1,5 +1,5 @@
 """Local dev server for the prototype: static files with caching off, so a plain reload
-always picks up edited scripts. PUT /docs/img/<name>.png saves a picture rendered by
+always picks up edited scripts. PUT /docs/img/<name>.png or .gif saves a picture rendered by
 tools/render-docs.html (used to refresh the README images)."""
 import http.server
 import pathlib
@@ -16,7 +16,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_PUT(self):
-        m = re.fullmatch(r"/docs/img/([a-z0-9-]+\.png)", self.path)
+        m = re.fullmatch(r"/docs/img/([a-z0-9-]+\.(?:png|gif))", self.path)
         if not m:
             self.send_error(403)
             return

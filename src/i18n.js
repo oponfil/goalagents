@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=3fe7e493';
-import vi from './lang/vi.js?v=3fe7e493';
-import ja from './lang/ja.js?v=3fe7e493';
+import es from './lang/es.js?v=4fc07f4f';
+import vi from './lang/vi.js?v=4fc07f4f';
+import ja from './lang/ja.js?v=4fc07f4f';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -182,6 +182,7 @@ const STRINGS = {
     (t) => (t ? `จะรับคำตอบเมื่อตื่น: ในอีก ${t}` : 'จะรับคำตอบเมื่อตื่น')),
   'board.overdue': L((who) => `${who} did not wake up on time`, (who) => `${who} не проснулся вовремя`, (who) => `${who} 没有按时醒来`, (who) => `${who} ไม่ตื่นตามเวลา`),
   'board.lastSignal': L((ago) => `Last signal ${ago} ago.`, (ago) => `Последний сигнал ${ago} назад.`, (ago) => `最后一次信号是 ${ago}前。`, (ago) => `สัญญาณล่าสุดเมื่อ ${ago}ที่แล้ว`),
+  'board.silent': L((n) => `Agents not heard from in time: ${n}`, (n) => `Не вышли на связь вовремя: ${n}`, (n) => `未按时联系的智能体：${n}`, (n) => `เอเจนต์ที่ไม่ติดต่อตามเวลา: ${n}`),
   'board.lost': L((who) => `No word from ${who}`, (who) => `${who} не выходит на связь`, (who) => `${who} 没有消息`, (who) => `ไม่มีสัญญาณจาก ${who}`),
   'board.runs': L('Previous runs', 'Предыдущие запуски', '之前的运行', 'การรันก่อนหน้า'),
   'board.runNow': L('running', 'идёт', '进行中', 'กำลังรัน'),

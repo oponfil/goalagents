@@ -1,5 +1,5 @@
 // Demo data shown on the landing page. In the product this comes from agents via MCP.
-import { lang } from './i18n.js?v=3fe7e493';
+import { lang } from './i18n.js?v=4fc07f4f';
 
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
@@ -50,7 +50,8 @@ export function agentButton(info) {
 // zone -1 is the inflow above the first tank (zone 0 in docs/MCP.md), zone k sits below stage k;
 // zone n - 1 is the output zone, where agents turn the last stage into results.
 // The demo runs DAY_SECONDS (src/scene.js) per day: zones move items at their flow, slower
-// where no agent is working. wakeIn is seconds until a sleeping agent starts. result: forms of what comes out at the bottom.
+// where no agent is working. wakeIn is seconds until a sleeping agent starts; lateBy shows one that
+// overslept its run by that long, silentFor one silent at work that long (the warning triangles). result: forms of what comes out at the bottom.
 export const FUNNELS = [
   {
     title: 'Job Search',
@@ -243,7 +244,7 @@ export const FUNNELS = [
         agent: 'gemini', zone: 1, state: 'ask',
         question: 'The backend candidate asks to start in January instead of December. Agree?',
       },
-      { agent: 'deepseek', zone: 2, state: 'sleep', wakeIn: 16 },
+      { agent: 'deepseek', zone: 2, state: 'sleep', lateBy: 2 * 3600 },
       { agent: 'kimi', zone: 2, state: 'work' },
       { agent: 'qwen', zone: 3, state: 'work' },
       { agent: 'claude', zone: 4, state: 'work' },
@@ -295,7 +296,7 @@ export const FUNNELS = [
       { agent: 'grok', zone: -1, state: 'work' },
       { agent: 'perplexity', zone: -1, state: 'work' },
       { agent: 'claude', zone: 0, state: 'work' },
-      { agent: 'qwen', zone: 1, state: 'work' },
+      { agent: 'qwen', zone: 1, state: 'work', silentFor: 25 * 60 },
       { agent: 'chatgpt', zone: 1, state: 'sleep', wakeIn: 25 },
       { agent: 'deepseek', zone: 2, state: 'work' },
       { agent: 'mistral', zone: 3, state: 'work' },

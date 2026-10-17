@@ -73,6 +73,7 @@ export default {
   'board.nextRun': (t) => (t ? `Sẽ nhận câu trả lời khi thức dậy: sau ${t}.` : 'Sẽ nhận câu trả lời khi thức dậy.'),
   'board.overdue': (who) => `${who} không thức dậy đúng giờ`,
   'board.lastSignal': (ago) => `Tín hiệu cuối cùng ${ago} trước.`,
+  'board.silent': (n) => `Tác tử không liên lạc đúng hạn: ${n}`,
   'board.lost': (who) => `Không có tín hiệu từ ${who}`,
   'board.runs': 'Các lần chạy trước',
   'board.runNow': 'đang chạy',

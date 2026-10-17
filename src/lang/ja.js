@@ -73,6 +73,7 @@ export default {
   'board.nextRun': (t) => (t ? `起きたら返事を受け取ります：${t}後。` : '起きたら返事を受け取ります。'),
   'board.overdue': (who) => `${who} が予定どおりに起きませんでした`,
   'board.lastSignal': (ago) => `最後の信号は${ago}前です。`,
+  'board.silent': (n) => `時間どおりに連絡がないエージェント：${n}`,
   'board.lost': (who) => `${who} から連絡がありません`,
   'board.runs': '以前の実行',
   'board.runNow': '実行中',

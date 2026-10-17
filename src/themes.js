@@ -6,9 +6,9 @@
 //   love  — cupids shooting at a bed, tanks of hearts, big hearts
 //   code  — hackers in hoodies typing on laptops by a server rack, tanks of code, chips
 //   money — bankers stamping a contract, tanks of pennies, banknotes, silver and gold bars, bitcoins; money bags
-//   forge — smiths hammering a red-hot bar on an anvil, tanks of ore, ingots, horseshoes, swords, crowns; suits of armour
-//   bakery — bakers rolling dough on a board, tanks of dough, pizzas, pies, cupcakes, cakes; cakes on stands
-//   blocks — block-headed heroes swinging swords at a slime, tanks of loot blocks: coal, iron, gold, emerald, diamond; diamonds
+//   forge — smiths hammering a red-hot bar on an anvil, tanks of ore, ingots, horseshoes, swords, shields; gold crowns
+//   bakery — bakers rolling dough on a board, tanks of bread, pizza slices, croissants, cupcakes, doughnuts; pastries
+//   blocks — block-headed heroes swinging swords at a slime, tanks of grass blocks, planks, cobblestone, gold and diamond blocks; diamonds
 
 function rng(seed) {
   return () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
@@ -365,17 +365,16 @@ function disc(c, px, py, r, colour) {
 }
 
 function resultBag(c, x, y, empty) {
-  if (empty) {
-    blob(c, x + 8, y + 9, 10, t => 6 - t * 1.5, '#4A3A2A');
-    rect(c, x + 6, y + 6, 4, 3, '#4A3A2A');
-    return;
-  }
-  rect(c, x + 6, y + 2, 4, 3, '#8A6238'); rect(c, x + 5, y + 4.5, 6, 1, '#C9A040');
-  blob(c, x + 8, y + 5.5, 14, t => 3 + Math.sin(Math.min(1, t * 1.4) * Math.PI / 1.4) * 4.5, '#A87A48');
-  blob(c, x + 7, y + 6.5, 12, t => 2 + Math.sin(Math.min(1, t * 1.4) * Math.PI / 1.4) * 3, '#C49460');
-  rect(c, x + 7.5, y + 10, 1, 7, '#2E6B3A');
-  rect(c, x + 6, y + 11, 3.5, 1, '#2E6B3A'); rect(c, x + 6, y + 13, 3.5, 1, '#2E6B3A'); rect(c, x + 6, y + 15, 3.5, 1, '#2E6B3A');
-  rect(c, x + 6, y + 11, 1, 2, '#2E6B3A'); rect(c, x + 8.5, y + 13, 1, 2, '#2E6B3A');
+  // A money bag tied at the neck with a $ on it; the same bag as a dark shape while still to come.
+  const [neck, tie, outer, inner, sign] = empty
+    ? ['#4A3F35', '#5A4E42', '#4A3F35', '#54483C', '#3A3028']
+    : ['#8A6238', '#C9A040', '#A87A48', '#C49460', '#2E6B3A'];
+  rect(c, x + 6, y + 2, 4, 3, neck); rect(c, x + 5, y + 4.5, 6, 1, tie);
+  blob(c, x + 8, y + 5.5, 14, t => 3 + Math.sin(Math.min(1, t * 1.4) * Math.PI / 1.4) * 4.5, outer);
+  blob(c, x + 7, y + 6.5, 12, t => 2 + Math.sin(Math.min(1, t * 1.4) * Math.PI / 1.4) * 3, inner);
+  rect(c, x + 7.5, y + 10, 1, 7, sign);
+  rect(c, x + 6, y + 11, 3.5, 1, sign); rect(c, x + 6, y + 13, 3.5, 1, sign); rect(c, x + 6, y + 15, 3.5, 1, sign);
+  rect(c, x + 6, y + 11, 1, 2, sign); rect(c, x + 8.5, y + 13, 1, 2, sign);
 }
 
 // --- Garden theme: backdrop, tanks, the flower bed in each zone, flower pots ---
@@ -512,7 +511,7 @@ function plateForge(c, x, y, w, h) {
   rect(c, cx - 5, y - 0.5, 10, 1.5, '#E8501E'); rect(c, cx - 4, y - 0.5, 6, 0.5, '#FFC04A');
 }
 
-// Forging from raw to fine, top stages to bottom: ore, iron ingots, horseshoes, swords, gold crowns.
+// Forging from raw to fine, top stages to bottom: ore, iron ingots, horseshoes, swords, shields.
 const pieceForge = {
   w: 6.5, h: 5.5,
   draw(c, x, y, j, n) {
@@ -524,23 +523,22 @@ const pieceForge = {
       // A sword lying flat: grip and pommel, a gold crossguard, a long bright blade.
       rect(c, x, y + 2.5, 1.5, 1, '#5A3A22'); rect(c, x + 1.5, y + 1, 1, 4, '#B8860B');
       rect(c, x + 2.5, y + 2.5, 3.5, 1, '#8E949E'); rect(c, x + 2.5, y + 2.5, 3.5, 0.5, '#C8CCD2'); rect(c, x + 6, y + 2.75, 0.5, 0.5, '#8E949E');
-    } else pixmap(c, x, y + 0.5, 1, ['Y.YY.Y', 'YYYYYY', 'YRYYBY', 'DDDDDD'], { Y: '#C8901E', D: '#8A6010', R: '#C8263B', B: '#3A7AD8' });
+    } else pixmap(c, x, y, 1, ['GGGGG', 'GSRSG', 'GRRRG', '.GRG.', '..G..'], { G: '#A87818', S: '#7E848E', R: '#A8242A' });
   },
 };
 
-function resultArmour(c, x, y, empty) {
-  // A suit of plate armour on a stand: shoulder plates, a breastplate with a gold trim and a red
-  // emblem, a skirt of plates. A dark blank while still to come.
-  const [steel, light, dark] = empty ? ['#3A3E46', '#4A4E56', '#2A2D33'] : ['#9AA0AA', '#D8DDE4', '#5E646E'];
-  rect(c, x + 7.5, y + 18, 1, 2, empty ? '#2A2D33' : '#6E4A2A'); rect(c, x + 5, y + 19.5, 6, 0.5, empty ? '#2A2D33' : '#6E4A2A');
-  rect(c, x + 1, y + 3, 4, 3, steel); rect(c, x + 11, y + 3, 4, 3, steel);
-  rect(c, x + 1, y + 3, 4, 0.5, light); rect(c, x + 11, y + 3, 4, 0.5, light);
-  rect(c, x + 6, y + 2, 4, 1.5, dark);
-  blob(c, x + 8, y + 3, 10, t => 4.5 - t * 1.2, steel);
-  rect(c, x + 4, y + 3.5, 1, 8, light); rect(c, x + 11.5, y + 4, 1, 8, dark);
-  rect(c, x + 4, y + 13, 8, 1, empty ? dark : '#C8901E');
-  rect(c, x + 3.5, y + 14, 9, 2, steel); rect(c, x + 4, y + 16, 8, 1.5, steel); rect(c, x + 3.5, y + 15.5, 9, 0.5, dark);
-  if (!empty) { rect(c, x + 7, y + 6, 2, 5, '#B8342A'); rect(c, x + 5.5, y + 7.5, 5, 1.5, '#B8342A'); }
+function resultCrown(c, x, y, empty) {
+  // A gold crown with three points and red and blue gems once forged; the same crown as a dark
+  // shape while still to come.
+  const [gold, light, dark, red, blue] = empty
+    ? ['#4A453C', '#5A5048', '#3A352E', '#3E3630', '#3E3630']
+    : ['#E0A82E', '#FFE38A', '#8A6010', '#C8263B', '#3A7AD8'];
+  pixmap(c, x + 1, y + 6, 1, [
+    'G.....G.....G.', 'GG...GGG...GG.', 'GGG.GGGGG.GGG.', 'GGGGGGGGGGGGG.', 'GGRGGGBGGGRGG.',
+    'GGGGGGGGGGGGG.', 'DDDDDDDDDDDDD.',
+  ], { G: gold, D: dark, R: red, B: blue });
+  rect(c, x + 1, y + 5, 1, 1, light); rect(c, x + 7, y + 5, 1, 1, light); rect(c, x + 13, y + 5, 1, 1, light);
+  if (!empty) rect(c, x + 2, y + 9, 10, 0.5, light);
 }
 
 // --- Bakery: bakers rolling dough ---
@@ -560,34 +558,37 @@ function plateBakery(c, x, y, w, h) {
   [[-11, 9], [-8, 8.5], [8, 9], [11, 8.5]].forEach(([dx, dy]) => rect(c, cx + dx, y + dy - 1, 1, 0.5, '#F4EDE1'));
 }
 
-// Baking from plain to fancy, top stages to bottom: dough balls, pizzas, pies, cupcakes, whole cakes.
+// Baking from plain to fancy, top stages to bottom: loaves of bread, pizza slices, croissants,
+// cupcakes, glazed doughnuts.
 const pieceBakery = {
-  w: 6, h: 5.5,
+  w: 6.5, h: 5.5,
   draw(c, x, y, j, n) {
-    const kind = byDepth(['dough', 'pizza', 'pie', 'cupcake', 'cake'], j, n);
-    if (kind === 'dough') { disc(c, x + 2.5, y + 3, 2.25, '#B89A70'); rect(c, x + 1.5, y + 1.5, 1, 0.5, '#D8C098'); }
-    else if (kind === 'pizza') {
-      // A round pizza from above: a crust ring, tomato, cheese and pepperoni.
-      disc(c, x + 2.75, y + 2.75, 2.75, '#A8642A'); disc(c, x + 2.75, y + 2.75, 2.1, '#B8402A');
-      rect(c, x + 1.5, y + 2, 1, 0.5, '#E8C060'); rect(c, x + 3, y + 3.5, 1, 0.5, '#E8C060');
-      rect(c, x + 3, y + 1.5, 1, 1, '#6E1A14'); rect(c, x + 1.5, y + 3.5, 1, 1, '#6E1A14');
-    }
-    else if (kind === 'pie') { rect(c, x, y + 2, 5.5, 2.5, '#9C5A26'); rect(c, x + 0.5, y + 1.5, 4.5, 1, '#B87436'); rect(c, x + 1.5, y + 2.5, 0.5, 1, '#6E3A14'); rect(c, x + 3.5, y + 2.5, 0.5, 1, '#6E3A14'); }
+    const kind = byDepth(['bread', 'pizza', 'croissant', 'cupcake', 'donut'], j, n);
+    if (kind === 'bread') pixmap(c, x, y + 1, 1, ['.BBBB.', 'BLBLBB', 'BBBBBB', 'DDDDDD'], { B: '#A8642A', L: '#D8A060', D: '#6E3A14' });
+    else if (kind === 'pizza') pixmap(c, x, y, 1, ['CCCCCC', 'YPYYPY', '.YYPY.', '..YY..', '..Y...'], { C: '#A8642A', Y: '#D8A030', P: '#9A1E14' });
+    else if (kind === 'croissant') pixmap(c, x, y + 1, 1, ['.CCCC.', 'CLCLCC', 'CC..CC', 'C....C'], { C: '#B8742E', L: '#E0A050' });
     else if (kind === 'cupcake') pixmap(c, x, y, 1, ['..R..', '.PPP.', 'PPPPP', '.WWW.', '.WWW.'], { R: '#C8263B', P: '#B85A88', W: '#7A5A3A' });
-    else pixmap(c, x, y, 1, ['..R...', 'PPPPPP', 'WWWWWW', 'PPPPPP', 'CCCCCC'], { R: '#C8263B', P: '#B85A88', W: '#9A6A40', C: '#5A3020' });
+    else {
+      // A doughnut with pink glaze, sprinkles and a hole.
+      disc(c, x + 3, y + 3, 2.75, '#A8642A'); disc(c, x + 3, y + 2.75, 2.25, '#C85A88');
+      disc(c, x + 3, y + 2.75, 0.75, '#241A14');
+      rect(c, x + 1.5, y + 1.5, 0.5, 0.5, '#F4EDE1'); rect(c, x + 4, y + 1.5, 0.5, 0.5, '#7CF0F8'); rect(c, x + 4, y + 3.5, 0.5, 0.5, '#F2C14E');
+    }
   },
 };
 
 function resultCake(c, x, y, empty) {
-  // A layer cake with a cherry on a cake stand once baked; the same cake as a dark shape while still
-  // to come.
-  const [stand, top, sponge, cream, cherry] = empty
-    ? ['#4A453C', '#5A5048', '#3E3630', '#4E4640', '#5A5048']
-    : ['#C8C2B4', '#FFF2F6', '#E89AB8', '#6E3A20', '#C8263B'];
-  rect(c, x + 1, y + 16, 14, 1, stand); rect(c, x + 7, y + 17, 2, 2, stand); rect(c, x + 5, y + 19, 6, 1, stand);
-  rect(c, x + 3, y + 9, 10, 7, sponge); rect(c, x + 3, y + 12, 10, 1, cream); rect(c, x + 3, y + 9, 10, 1.5, top);
-  for (let k = 0; k < 5; k++) rect(c, x + 3.5 + k * 2, y + 10.5, 1, 1, top);
-  disc(c, x + 8, y + 7.5, 1.5, cherry); if (!empty) rect(c, x + 8, y + 5, 0.5, 1.5, '#3E7A30');
+  // A small layered pastry with a cream top and a strawberry, standing on its own; the same pastry
+  // as a dark shape while still to come.
+  const [cream, sponge, jam, base, berry] = empty
+    ? ['#5A5048', '#4A423A', '#3E3630', '#3A322C', '#4E4640']
+    : ['#FFF2F6', '#D8A060', '#C8263B', '#9C5A26', '#E8345E'];
+  rect(c, x + 2, y + 10, 12, 2, cream);
+  rect(c, x + 2, y + 12, 12, 2, sponge); rect(c, x + 2, y + 14, 12, 1, jam);
+  rect(c, x + 2, y + 15, 12, 2, sponge); rect(c, x + 2, y + 17, 12, 1, base);
+  blob(c, x + 8, y + 7, 3.5, t => 2 + t * 3, cream);
+  disc(c, x + 8, y + 6, 1.75, berry);
+  if (!empty) { rect(c, x + 7.5, y + 3.5, 1, 1, '#3E7A30'); rect(c, x + 6.5, y + 5, 0.5, 0.5, '#FFB8CC'); rect(c, x + 13, y + 12, 1, 5, '#B8823C'); }
 }
 
 // --- Blocks: block-headed heroes fighting a slime ---
@@ -611,13 +612,17 @@ function plateBlocks(c, x, y, w, h) {
   rect(c, x + 3, y + 2.5, 1, 1, '#C6F0B0');
 }
 
-// Loot blocks from common to rare, top stages to bottom: coal, iron, gold, emerald, diamond.
+// Blocks from common to rare, top stages to bottom, each with its own texture: grass blocks, wooden
+// planks, cobblestone, gold blocks, diamond blocks.
 const pieceBlocks = {
   w: 5.5, h: 5.5,
   draw(c, x, y, j, n) {
-    const [base, spot, edge] = byDepth([['#2E2E30', '#141416', '#46464A'], ['#9AA0AA', '#6E747E', '#C8CCD2'], ['#C8901E', '#8A6010', '#E8C060'], ['#1E9A4A', '#0E5A2A', '#5CD88A'], ['#2E9AA8', '#1E6E7A', '#7CE8F0']], j, n);
-    rect(c, x, y, 5, 5, base); rect(c, x, y, 5, 0.5, edge); rect(c, x, y, 0.5, 5, edge);
-    rect(c, x + 1, y + 1.5, 1, 1, spot); rect(c, x + 3, y + 3, 1, 1, spot); rect(c, x + 3.5, y + 1, 1, 0.5, spot);
+    const kind = byDepth(['grass', 'planks', 'cobble', 'gold', 'diamond'], j, n);
+    if (kind === 'grass') pixmap(c, x, y, 1, ['GGGGG', 'GLGDG', 'DGDDD', 'DDdDD', 'dDDDd'], { G: '#4E8A2E', L: '#6BA34A', D: '#6E4A2A', d: '#553820' });
+    else if (kind === 'planks') pixmap(c, x, y, 1, ['PPPPP', 'dddDd', 'PPPPP', 'dDddd', 'PPPPP'], { P: '#9A6E3A', D: '#9A6E3A', d: '#6E4A26' });
+    else if (kind === 'cobble') pixmap(c, x, y, 1, ['LSSdL', 'SdLSS', 'LSSSd', 'SdLSS', 'dSSLS'], { L: '#7E7E82', S: '#5E5E62', d: '#3E3E42' });
+    else if (kind === 'gold') pixmap(c, x, y, 1, ['LLLLY', 'LYYYD', 'LYYYD', 'LYYYD', 'YDDDD'], { L: '#F2D068', Y: '#C8901E', D: '#8A6010' });
+    else pixmap(c, x, y, 1, ['LLLLC', 'LCWCD', 'LWCWD', 'LCWCD', 'CDDDD'], { L: '#8EF0F8', C: '#2EB8C8', W: '#C8FAFF', D: '#1E7A88' });
   },
 };
 
@@ -639,7 +644,7 @@ export const THEMES = {
   love: { pipe: ['#8A2A55', '#E06A9A', '#F7B8D0', '#D9A520'], piece: pieceLove, tankBg: '#3A1A30', backdrop: backLove, frame: '#F28AB8', zone: zoneLove, tank: tankLove, plate: plateLove, result: resultHeart, outfit: 'wings', tool: 'bow', spark: '#F28AB8', accent: '#F28AB8' },
   code: { pipe: ['#0A140E', '#1E2A22', '#3A4A3E', '#3CF27A'], bandH: 1, piece: pieceCode, tankBg: '#06100A', emptyAlpha: 0.3, backdrop: backCode, frame: '#3CF27A', zone: zoneCode, tank: tankCode, plate: plateCode, result: resultChip, outfit: 'hoodie', tool: 'laptop', spark: '#3CF27A', accent: '#7CF0B0' },
   money: { pipe: ['#7A5A10', '#C8961E', '#F2D068', '#5A400A'], piece: pieceMoney, tankBg: '#14201A', backdrop: backMoney, frame: '#D9A520', zone: zoneMoney, tank: tankMoney, plate: plateMoney, result: resultBag, outfit: 'suit', tool: 'stamp', spark: '#FFD866', accent: '#9FE870' },
-  forge: { pipe: ['#1E1E22', '#3A3E46', '#6E747E', '#E8501E'], bandH: 1, piece: pieceForge, tankBg: '#1A1412', emptyAlpha: 0.35, backdrop: backForge, frame: '#C8602A', plate: plateForge, result: resultArmour, outfit: 'smith', tool: 'hammer', spark: '#FFB040', accent: '#FF9A3C' },
+  forge: { pipe: ['#1E1E22', '#3A3E46', '#6E747E', '#E8501E'], bandH: 1, piece: pieceForge, tankBg: '#1A1412', backdrop: backForge, frame: '#C8602A', plate: plateForge, result: resultCrown, outfit: 'smith', tool: 'hammer', spark: '#FFB040', accent: '#FF9A3C' },
   bakery: { pipe: ['#6E4420', '#C8964A', '#F2D8A8', '#E89AB8'], piece: pieceBakery, tankBg: '#241A14', emptyAlpha: 0.5, backdrop: backBakery, frame: '#E8C08A', plate: plateBakery, result: resultCake, outfit: 'chef', tool: 'rollingPin', spark: '#F4EDE1', accent: '#F2A6C0' },
   blocks: { pipe: ['#3A2814', '#6B4A2A', '#8A6238', '#4E9A2E'], piece: pieceBlocks, tankBg: '#1C1C1E', emptyAlpha: 0.5, backdrop: backBlocks, frame: '#6BA34A', plate: plateBlocks, result: resultGem, outfit: 'blocky', tool: 'sword', spark: '#8FD46A', accent: '#5CE0E8' },
 };
