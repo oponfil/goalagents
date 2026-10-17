@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=096ff589';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=096ff589';
-import { themeOf } from './themes.js?v=096ff589';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=096ff589';
+import { agentInfo, plural } from './data.js?v=261a50db';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=261a50db';
+import { themeOf } from './themes.js?v=261a50db';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=261a50db';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -473,7 +473,7 @@ export class Scene {
         // The count, and under it the flow, both in the middle of the tank.
         shadowed(() => {
           T(num, cx, tankTop(j) + LH / 2 - 5, 15, '#FFFFFF', 'center', 700);
-          if (flow) T(flow, cx, tankTop(j) + LH / 2 + 9, 8.5, '#9FE870', 'center', 700);
+          if (flow) T(flow, cx, tankTop(j) + LH / 2 + 9, 8.5, f.flows[j] ? '#9FE870' : STALLED, 'center', 700);
         });
       });
       const pr = project(f);
@@ -488,7 +488,7 @@ export class Scene {
       const x0 = cx * S - (wNum + wFlow) / 2;
       g.textAlign = 'left'; g.textBaseline = 'middle';
       g.font = `700 ${12 * S}px ${FONT}`; g.fillStyle = f.cubes ? themeOf(f).accent : '#8C8276'; g.fillText(num, x0, (ry + 12) * S);
-      if (flowText) { g.font = `700 ${8.5 * S}px ${FONT}`; g.fillStyle = '#9FE870'; g.fillText(flowText, x0 + wNum + 3 * S, (ry + 12) * S); }
+      if (flowText) { g.font = `700 ${8.5 * S}px ${FONT}`; g.fillStyle = outFlow ? '#9FE870' : STALLED; g.fillText(flowText, x0 + wNum + 3 * S, (ry + 12) * S); }
       if (f.cubes >= f.goal.total) T(tr('board.goalReached'), cx, ry + 24, 8, '#3CF27A', 'center', 700);
       else T(tr('board.next', fmtEta(pr.eta)), cx, ry + 24, 7.5, pr.out == null ? '#B8AE9F' : statusColor(pr.out), 'center', 700);
       // Once the goal is reached, "goal reached ✓" replaces the goal line.
@@ -652,6 +652,8 @@ function project(f) {
 }
 // Pace vs goal, for the "next" line: red — far behind, yellow — close, green — on pace, bright
 // green — well ahead.
+// Nothing moving (+0): the same red as a "next" line far behind.
+const STALLED = '#FF5A4E';
 function statusColor(r) {
   return r >= 1.5 ? '#3CF27A' : r >= 0.9 ? '#7BD88F' : r >= 0.5 ? '#F2C14E' : '#FF5A4E';
 }
