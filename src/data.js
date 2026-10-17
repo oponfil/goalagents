@@ -1,5 +1,5 @@
 // Demo data shown on the landing page. In the product this comes from agents via MCP.
-import { lang } from './i18n.js?v=394d4c9c';
+import { lang } from './i18n.js?v=b34377a6';
 
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
@@ -170,26 +170,26 @@ export const FUNNELS = [
     ],
   },
   {
-    title: 'Love',
+    title: 'Wedding',
     theme: 'love',
-    result: ['relationship', 'relationships'],
+    result: ['vendor booked', 'vendors booked'],
     stages: [
-      { count: 180, forms: ['match', 'matches'] },
-      { count: 64, forms: ['conversation', 'conversations'] },
-      { count: 9, forms: ['first date', 'first dates'] },
-      { count: 3, forms: ['second date', 'second dates'] },
-      { count: 1, forms: ['met the friends', 'met the friends'] },
+      { count: 120, forms: ['vendor found', 'vendors found'] },
+      { count: 46, forms: ['request sent', 'requests sent'] },
+      { count: 17, forms: ['quote', 'quotes'] },
+      { count: 6, forms: ['visit', 'visits'] },
+      { count: 3, forms: ['finalist', 'finalists'] },
     ],
-    flows: [8, 3, 0.5, 0.2, 0.08, 1 / 60],
-    cubes: 0,
-    goal: { total: 1, every: 30 },
+    flows: [6, 2.5, 1, 0.4, 0.2, 0.12],
+    cubes: 2,
+    goal: { total: 8, every: 7 },
     workers: [
       { agent: 'kimi', zone: -1, state: 'work' },
       { agent: 'claude', zone: 0, state: 'work' },
       { agent: 'qwen', zone: 0, state: 'sleep', wakeIn: 15 },
       {
         agent: 'grok', zone: 1, state: 'ask',
-        question: 'Alex suggested Saturday at 7pm at the rooftop bar. Confirm the date?',
+        question: 'The florist can do peonies for $1,200 on June 14. Book them?',
       },
       { agent: 'chatgpt', zone: 2, state: 'sleep', wakeIn: 9 * 3600 },
       { agent: 'gemini', zone: 2, state: 'work' },
@@ -313,7 +313,7 @@ const DEMO = {
   'Creator': ['Автор', '创作者', 'ครีเอเตอร์', 'Creador', 'Nhà sáng tạo', 'クリエイター'],
   'Bug Bounty': ['Баг-баунти', '漏洞赏金', 'บั๊กบาวน์ตี้', 'Bug bounty', 'Săn lỗi', 'バグバウンティ'],
   'Fundraising': ['Привлечение инвестиций', '融资', 'ระดมทุน', 'Inversión', 'Gọi vốn', '資金調達'],
-  'Love': ['Любовь', '爱情', 'ความรัก', 'Amor', 'Tình yêu', '恋愛'],
+  'Wedding': ['Свадьба', '婚礼', 'งานแต่งงาน', 'Boda', 'Đám cưới', '結婚式'],
   'Research': ['Исследования', '科研', 'งานวิจัย', 'Investigación', 'Nghiên cứu', '研究'],
   'offer': [['оффер', 'оффера', 'офферов'], '录用通知', 'ข้อเสนองาน', ['oferta', 'ofertas'], 'lời mời làm việc', '内定'],
   'job found': [['найденная вакансия', 'найденные вакансии', 'найденных вакансий'], '找到的职位', 'งานที่พบ', ['vacante encontrada', 'vacantes encontradas'], 'việc tìm thấy', '見つけた求人'],
@@ -339,12 +339,12 @@ const DEMO = {
   'meeting': [['встреча', 'встречи', 'встреч'], '会议', 'การประชุม', ['reunión', 'reuniones'], 'cuộc gặp', '面談'],
   'partner meeting': [['встреча с партнёром', 'встречи с партнёрами', 'встреч с партнёрами'], '合伙人会议', 'ประชุมกับพาร์ทเนอร์', ['reunión con socios', 'reuniones con socios'], 'cuộc gặp đối tác', 'パートナー面談'],
   'in due diligence': [['на проверке', 'на проверке', 'на проверке'], '尽职调查中', 'อยู่ระหว่างตรวจสอบ', ['en due diligence', 'en due diligence'], 'đang thẩm định', 'デューデリジェンス中'],
-  'relationship': [['отношения', 'отношений', 'отношений'], '恋爱关系', 'ความสัมพันธ์', ['relación', 'relaciones'], 'mối quan hệ', '交際'],
-  'match': [['мэтч', 'мэтча', 'мэтчей'], '配对', 'แมตช์', ['match', 'matches'], 'lượt ghép đôi', 'マッチ'],
-  'conversation': [['переписка', 'переписки', 'переписок'], '聊天', 'บทสนทนา', ['conversación', 'conversaciones'], 'cuộc trò chuyện', 'やり取り'],
-  'first date': [['первое свидание', 'первых свидания', 'первых свиданий'], '第一次约会', 'เดทแรก', ['primera cita', 'primeras citas'], 'buổi hẹn đầu', '初デート'],
-  'second date': [['второе свидание', 'вторых свидания', 'вторых свиданий'], '第二次约会', 'เดทที่สอง', ['segunda cita', 'segundas citas'], 'buổi hẹn thứ hai', '2回目のデート'],
-  'met the friends': [['знакомство с друзьями', 'знакомства с друзьями', 'знакомств с друзьями'], '见了朋友', 'พบเพื่อนของกันและกัน', ['conoció a los amigos', 'conocieron a los amigos'], 'đã gặp bạn bè', '友人に紹介'],
+  'vendor booked': [['забронированный подрядчик', 'забронированных подрядчика', 'забронированных подрядчиков'], '已预订的供应商', 'ผู้ให้บริการที่จองแล้ว', ['proveedor reservado', 'proveedores reservados'], 'nhà cung cấp đã đặt', '予約済みの業者'],
+  'vendor found': [['найденный подрядчик', 'найденных подрядчика', 'найденных подрядчиков'], '找到的供应商', 'ผู้ให้บริการที่พบ', ['proveedor encontrado', 'proveedores encontrados'], 'nhà cung cấp tìm thấy', '見つけた業者'],
+  'request sent': [['отправленный запрос', 'отправленных запроса', 'отправленных запросов'], '已发询价', 'คำขอที่ส่งแล้ว', ['solicitud enviada', 'solicitudes enviadas'], 'yêu cầu đã gửi', '送った問い合わせ'],
+  'quote': [['смета', 'сметы', 'смет'], '报价', 'ใบเสนอราคา', ['presupuesto', 'presupuestos'], 'báo giá', '見積もり'],
+  'visit': [['встреча', 'встречи', 'встреч'], '见面', 'นัดพบ', ['visita', 'visitas'], 'buổi gặp', '打ち合わせ'],
+  'finalist': [['финалист', 'финалиста', 'финалистов'], '入围者', 'ตัวเลือกสุดท้าย', ['finalista', 'finalistas'], 'ứng viên cuối', '最終候補'],
   'published paper': [['опубликованная статья', 'опубликованные статьи', 'опубликованных статей'], '已发表论文', 'บทความที่ตีพิมพ์', ['artículo publicado', 'artículos publicados'], 'bài báo đã đăng', '掲載論文'],
   'idea': [['идея', 'идеи', 'идей'], '想法', 'ไอเดีย', ['idea', 'ideas'], 'ý tưởng', 'アイデア'],
   'draft': [['черновик', 'черновика', 'черновиков'], '草稿', 'ฉบับร่าง', ['borrador', 'borradores'], 'bản nháp', '草稿'],
@@ -379,7 +379,7 @@ const DEMO = {
   'The backend candidate asks to start in January instead of December. Agree?': ['Кандидат на бэкенд просит выйти в январе, а не в декабре. Согласиться?', '后端候选人希望一月而不是十二月入职。同意吗？', 'ผู้สมัครตำแหน่งแบ็กเอนด์ขอเริ่มงานเดือนมกราคมแทนธันวาคม ตกลงไหม?', 'El candidato de backend pide empezar en enero en vez de diciembre. ¿Acepto?', 'Ứng viên backend xin bắt đầu vào tháng Một thay vì tháng Mười Hai. Đồng ý chứ?', 'バックエンドの候補者が12月ではなく1月からの入社を希望しています。了承しますか？'],
   'The client wants a fixed price for the landing page. Quote $2,500?': ['Клиент хочет фиксированную цену за лендинг. Назвать $2 500?', '客户想要落地页的固定报价。报 2500 美元吗？', 'ลูกค้าต้องการราคาเหมาสำหรับหน้าแลนดิ้ง เสนอ $2,500 ไหม?', 'El cliente quiere un precio cerrado por la landing. ¿Ofrezco 2.500 $?', 'Khách muốn giá trọn gói cho trang landing. Báo giá $2.500 nhé?', 'クライアントがランディングページの固定価格を求めています。2,500ドルで見積もりますか？'],
   'Northwind Ventures asks for the cap table before Thursday. Share it from the data room?': ['Northwind Ventures просит таблицу капитализации до четверга. Дать доступ из data room?', 'Northwind Ventures 要求周四前提供股权结构表。从数据室共享吗？', 'Northwind Ventures ขอตารางผู้ถือหุ้นก่อนวันพฤหัสบดี แชร์จากดาต้ารูมไหม?', 'Northwind Ventures pide la tabla de capitalización antes del jueves. ¿La comparto desde el data room?', 'Northwind Ventures cần bảng cơ cấu vốn trước thứ Năm. Chia sẻ từ data room nhé?', 'Northwind Ventures が木曜までに資本政策表を求めています。データルームから共有しますか？'],
-  'Alex suggested Saturday at 7pm at the rooftop bar. Confirm the date?': ['Алекс предложил субботу в 19:00 в баре на крыше. Подтвердить свидание?', 'Alex 提议周六晚上 7 点在屋顶酒吧见面。确认约会吗？', 'Alex ชวนวันเสาร์ 1 ทุ่มที่รูฟท็อปบาร์ ยืนยันเดทไหม?', 'Alex propuso el sábado a las 19:00 en el bar de la azotea. ¿Confirmo la cita?', 'Alex hẹn thứ Bảy lúc 19:00 ở quán bar sân thượng. Xác nhận buổi hẹn nhé?', 'Alex から土曜19時に屋上バーでと提案がありました。デートを確定しますか？'],
+  'The florist can do peonies for $1,200 on June 14. Book them?': ['Флорист сделает пионы за $1 200 к 14 июня. Бронируем?', '花艺师可以在6月14日用牡丹布置，价格 $1,200。要预订吗？', 'ร้านดอกไม้จัดดอกโบตั๋นให้ได้ในราคา $1,200 วันที่ 14 มิถุนายน จองเลยไหม?', 'La florista puede hacer peonías por $1.200 para el 14 de junio. ¿La reservo?', 'Tiệm hoa làm được hoa mẫu đơn giá $1.200 cho ngày 14/6. Đặt luôn nhé?', 'フローリストが6月14日に芍薬を$1,200で用意できます。予約しますか？'],
 };
 const COL = { ru: 0, zh: 1, th: 2, es: 3, vi: 4, ja: 5 }[lang];
 const tr = text => (COL == null ? text : DEMO[text]?.[COL] ?? text);
