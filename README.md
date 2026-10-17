@@ -29,7 +29,7 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 
 Each funnel picks a look; the data and behaviour are the same.
 
-![The six themes: mine, lab, garden, love, code, money](docs/img/themes.png)
+![The nine themes: mine, lab, garden, love, code, money, forge, bakery, blocks](docs/img/themes.png)
 
 | Theme | Agents | Work piece | Tanks fill with (piece by piece) | Results |
 |---|---|---|---|---|
@@ -39,6 +39,9 @@ Each funnel picks a look; the data and behaviour are the same.
 | `love` | cupids with bows | bed | flowers, love letters, hearts, kisses, rings: pink to red | hearts |
 | `code` | hackers on laptops | server rack | floppy disks: blue, green, yellow, orange, purple by stage | chips |
 | `money` | bankers with stamps | contract | copper pennies, banknotes, silver bars, gold bars, bitcoins | money bags |
+| `forge` | smiths with hammers | anvil with a red-hot bar | ore, iron ingots, horseshoes, swords, gold crowns | suits of armour |
+| `bakery` | bakers with rolling pins | dough on a board | dough balls, pizzas, pies, cupcakes, whole cakes | cakes on stands |
+| `blocks` | block-headed heroes in diamond armour with swords | a slime they fight | loot blocks from common to rare: coal, iron, gold, emerald, diamond | diamonds |
 
 ## Agents
 

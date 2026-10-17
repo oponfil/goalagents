@@ -103,7 +103,7 @@ export default {
   'pricing.pro2': '各ファネルに段階 <b>5</b> つ',
   'pricing.pro3': '各ステップにエージェント <b>2</b>、ファネルに <b>12</b>',
   'pricing.any': 'Claude、ChatGPT、Gemini、あらゆる MCP エージェント',
-  'pricing.live': 'ライブボード、6つのテーマすべて',
+  'pricing.live': 'ライブボード、9つのテーマすべて',
   'pricing.answer': 'ボードから直接エージェントに返事',
   'pricing.startFree': '無料で始める',
   'pricing.early': 'アーリーアクセス',

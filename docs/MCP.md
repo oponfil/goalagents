@@ -30,7 +30,7 @@ The agent adds the server or tells you how; you sign in on goalagents.run and al
 | `id` | Stable id, chosen by the agent (`job-search`) |
 | `title` | Column title (`Job Search`) |
 | `result` | Name of one result: `[singular, plural]` (`offer, offers`); Russian uses three forms `[1, 2–4, 5+]`, Spanish two like English; Chinese, Japanese, Thai and Vietnamese use one |
-| `theme` | Look of the column: `mine` (miners, ore, treasure chests), `lab` (chemists, liquids, flasks), `garden` (gardeners, sprouts and flowers, flower pots), `love` (cupids, hearts), `code` (hackers, code, chips), `money` (bankers; pennies, banknotes, silver and gold bars, bitcoins; money bags). Default `mine` |
+| `theme` | Look of the column: `mine` (miners, ore, treasure chests), `lab` (chemists, liquids, flasks), `garden` (gardeners, sprouts and flowers, flower pots), `love` (cupids, hearts), `code` (hackers, code, chips), `money` (bankers; pennies, banknotes, silver and gold bars, bitcoins; money bags), `forge` (smiths at an anvil; ore, ingots, horseshoes, swords, crowns; suits of armour), `bakery` (bakers; dough, pizzas, pies, cupcakes, cakes; cakes on stands), `blocks` (block-headed heroes in diamond armour fighting a slime; loot blocks: coal, iron, gold, emerald, diamond; diamonds). Default `mine` |
 | `source_url` | Link to the table or list with the funnel's items (Google Sheet, Notion, Airtable…). One per funnel. Optional, but an agent gives it whenever its list opens by a URL; the dashboard then draws spreadsheet sheets in the hopper on top, and a click opens the link |
 | `goal.total` | How many results the goal needs |
 | `goal.every_days` | Pace: one result every N days |

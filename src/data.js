@@ -1,5 +1,5 @@
 // Demo data shown on the landing page. In the product this comes from agents via MCP.
-import { lang } from './i18n.js?v=8292e455';
+import { lang } from './i18n.js?v=3fe7e493';
 
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
@@ -221,6 +221,87 @@ export const FUNNELS = [
       { agent: 'hermes', zone: 4, state: 'work' },
     ],
   },
+  {
+    title: 'Hiring',
+    theme: 'forge',
+    result: ['hire', 'hires'],
+    stages: [
+      { count: 160, forms: ['candidate sourced', 'candidates sourced'] },
+      { count: 48, forms: ['screened', 'screened'] },
+      { count: 15, forms: ['interviewed', 'interviewed'] },
+      { count: 5, forms: ['final interview', 'final interviews'] },
+      { count: 2, forms: ['offer sent', 'offers sent'] },
+    ],
+    flows: [6, 2, 0.6, 0.25, 0.12, 1 / 14],
+    cubes: 1,
+    goal: { total: 3, every: 14 },
+    workers: [
+      { agent: 'perplexity', zone: -1, state: 'work' },
+      { agent: 'chatgpt', zone: -1, state: 'work' },
+      { agent: 'claude', zone: 0, state: 'work' },
+      {
+        agent: 'gemini', zone: 1, state: 'ask',
+        question: 'The backend candidate asks to start in January instead of December. Agree?',
+      },
+      { agent: 'deepseek', zone: 2, state: 'sleep', wakeIn: 16 },
+      { agent: 'kimi', zone: 2, state: 'work' },
+      { agent: 'qwen', zone: 3, state: 'work' },
+      { agent: 'claude', zone: 4, state: 'work' },
+    ],
+  },
+  {
+    title: 'Freelance Clients',
+    theme: 'bakery',
+    result: ['client', 'clients'],
+    stages: [
+      { count: 85, forms: ['lead', 'leads'] },
+      { count: 26, forms: ['reply', 'replies'] },
+      { count: 9, forms: ['call', 'calls'] },
+      { count: 5, forms: ['proposal', 'proposals'] },
+      { count: 3, forms: ['contract sent', 'contracts sent'] },
+    ],
+    flows: [4, 1.2, 0.4, 0.2, 0.12, 1 / 10],
+    cubes: 3,
+    goal: { total: 8, every: 10 },
+    workers: [
+      { agent: 'claude', zone: -1, state: 'work' },
+      { agent: 'mistral', zone: -1, state: 'sleep', wakeIn: 8 },
+      { agent: 'chatgpt', zone: 0, state: 'work' },
+      { agent: 'grok', zone: 1, state: 'work' },
+      { agent: 'hermes', zone: 1, state: 'work' },
+      {
+        agent: 'gemini', zone: 2, state: 'ask',
+        question: 'The client wants a fixed price for the landing page. Quote $2,500?',
+      },
+      { agent: 'qwen', zone: 3, state: 'work' },
+      { agent: 'deepseek', zone: 4, state: 'work' },
+    ],
+  },
+  {
+    title: 'Podcast Tour',
+    theme: 'blocks',
+    result: ['episode aired', 'episodes aired'],
+    stages: [
+      { count: 140, forms: ['show found', 'shows found'] },
+      { count: 60, forms: ['pitch', 'pitches'] },
+      { count: 18, forms: ['reply', 'replies'] },
+      { count: 6, forms: ['booked', 'booked'] },
+      { count: 4, forms: ['recorded', 'recorded'] },
+    ],
+    flows: [7, 3, 0.8, 0.3, 0.2, 1 / 7],
+    cubes: 2,
+    goal: { total: 10, every: 7 },
+    workers: [
+      { agent: 'grok', zone: -1, state: 'work' },
+      { agent: 'perplexity', zone: -1, state: 'work' },
+      { agent: 'claude', zone: 0, state: 'work' },
+      { agent: 'qwen', zone: 1, state: 'work' },
+      { agent: 'chatgpt', zone: 1, state: 'sleep', wakeIn: 25 },
+      { agent: 'deepseek', zone: 2, state: 'work' },
+      { agent: 'mistral', zone: 3, state: 'work' },
+      { agent: 'kimi', zone: 4, state: 'work' },
+    ],
+  },
 ];
 
 // The demo in the viewer's language: titles, stage and result names, and questions, keyed by the
@@ -274,6 +355,28 @@ const DEMO = {
   'Got it: searching remote and Berlin jobs.': ['Понял: ищу удалёнку и Берлин.', '明白：我会搜索远程和柏林的职位。', 'รับทราบ: กำลังหางานรีโมตและเบอร์ลิน', 'Entendido: busco empleos remotos y en Berlín.', 'Đã rõ: tôi sẽ tìm việc từ xa và ở Berlin.', '了解です。リモートとベルリンで探します。'],
   'The form asks for a salary expectation. Send the application with $120k?': ['В форме спрашивают ожидаемую зарплату. Отправить отклик с $120k?', '表单要求填写期望薪资。用 12 万美元提交申请吗？', 'แบบฟอร์มถามเงินเดือนที่คาดหวัง ส่งใบสมัครด้วย $120k ไหม?', 'El formulario pide una expectativa salarial. ¿Envío la postulación con $120k?', 'Biểu mẫu hỏi mức lương mong muốn. Gửi hồ sơ với $120k nhé?', 'フォームで希望年収を聞かれています。12万ドルで応募しますか？'],
   'This finding looks close to a public report from March. Submit it anyway?': ['Эта находка похожа на публичный отчёт из марта. Всё равно отправить?', '这个发现和三月的一份公开报告很像。仍然提交吗？', 'สิ่งที่พบนี้คล้ายรายงานสาธารณะเมื่อเดือนมีนาคม ส่งต่อไหม?', 'Este hallazgo se parece a un informe público de marzo. ¿Lo envío igualmente?', 'Phát hiện này gần giống một báo cáo công khai hồi tháng Ba. Vẫn gửi chứ?', 'この発見は3月の公開報告に似ています。それでも提出しますか？'],
+  'Hiring': ['Найм', '招聘', 'จ้างงาน', 'Contratación', 'Tuyển dụng', '採用'],
+  'hire': [['сотрудник', 'сотрудника', 'сотрудников'], '录用', 'คนที่จ้างแล้ว', ['contratación', 'contrataciones'], 'người được tuyển', '採用'],
+  'candidate sourced': [['найденный кандидат', 'найденных кандидата', 'найденных кандидатов'], '找到的候选人', 'ผู้สมัครที่พบ', ['candidato encontrado', 'candidatos encontrados'], 'ứng viên tìm thấy', '見つけた候補者'],
+  'screened': [['прошёл отбор', 'прошли отбор', 'прошли отбор'], '已筛选', 'ผ่านคัดกรอง', ['filtrado', 'filtrados'], 'đã sàng lọc', '書類選考通過'],
+  'interviewed': [['прошёл интервью', 'прошли интервью', 'прошли интервью'], '已面试', 'สัมภาษณ์แล้ว', ['entrevistado', 'entrevistados'], 'đã phỏng vấn', '面接済み'],
+  'final interview': [['финальное интервью', 'финальных интервью', 'финальных интервью'], '终面', 'สัมภาษณ์รอบสุดท้าย', ['entrevista final', 'entrevistas finales'], 'phỏng vấn cuối', '最終面接'],
+  'Freelance Clients': ['Клиенты на фрилансе', '自由职业客户', 'ลูกค้าฟรีแลนซ์', 'Clientes freelance', 'Khách hàng freelance', 'フリーランスの顧客'],
+  'client': [['клиент', 'клиента', 'клиентов'], '客户', 'ลูกค้า', ['cliente', 'clientes'], 'khách hàng', '顧客'],
+  'lead': [['лид', 'лида', 'лидов'], '潜在客户', 'ลีด', ['contacto', 'contactos'], 'khách tiềm năng', '見込み客'],
+  'reply': [['ответ', 'ответа', 'ответов'], '回复', 'การตอบกลับ', ['respuesta', 'respuestas'], 'phản hồi', '返信'],
+  'call': [['созвон', 'созвона', 'созвонов'], '通话', 'การโทร', ['llamada', 'llamadas'], 'cuộc gọi', '通話'],
+  'offer sent': [['отправленный оффер', 'отправленных оффера', 'отправленных офферов'], '已发出的录用通知', 'ข้อเสนอที่ส่งแล้ว', ['oferta enviada', 'ofertas enviadas'], 'lời mời đã gửi', '送付済みの内定'],
+  'proposal': [['предложение', 'предложения', 'предложений'], '提案', 'ข้อเสนอ', ['propuesta', 'propuestas'], 'đề xuất', '提案'],
+  'contract sent': [['отправленный договор', 'отправленных договора', 'отправленных договоров'], '已发合同', 'สัญญาที่ส่งแล้ว', ['contrato enviado', 'contratos enviados'], 'hợp đồng đã gửi', '送付済みの契約書'],
+  'recorded': [['записан', 'записано', 'записано'], '已录制', 'บันทึกแล้ว', ['grabado', 'grabados'], 'đã ghi âm', '収録済み'],
+  'Podcast Tour': ['Подкасты', '播客巡回', 'ทัวร์พอดแคสต์', 'Gira de pódcasts', 'Chuỗi podcast', 'ポッドキャスト出演'],
+  'episode aired': [['вышедший эфир', 'вышедших эфира', 'вышедших эфиров'], '已播出的节目', 'ตอนที่ออกอากาศ', ['episodio emitido', 'episodios emitidos'], 'tập đã phát sóng', '配信済みの回'],
+  'show found': [['найденное шоу', 'найденных шоу', 'найденных шоу'], '找到的节目', 'รายการที่พบ', ['programa encontrado', 'programas encontrados'], 'chương trình tìm thấy', '見つけた番組'],
+  'pitch': [['заявка', 'заявки', 'заявок'], '自荐', 'การเสนอตัว', ['propuesta', 'propuestas'], 'lời chào', '売り込み'],
+  'booked': [['назначенная запись', 'назначенные записи', 'назначенных записей'], '已约定', 'จองแล้ว', ['agendado', 'agendados'], 'đã đặt lịch', '収録決定'],
+  'The backend candidate asks to start in January instead of December. Agree?': ['Кандидат на бэкенд просит выйти в январе, а не в декабре. Согласиться?', '后端候选人希望一月而不是十二月入职。同意吗？', 'ผู้สมัครตำแหน่งแบ็กเอนด์ขอเริ่มงานเดือนมกราคมแทนธันวาคม ตกลงไหม?', 'El candidato de backend pide empezar en enero en vez de diciembre. ¿Acepto?', 'Ứng viên backend xin bắt đầu vào tháng Một thay vì tháng Mười Hai. Đồng ý chứ?', 'バックエンドの候補者が12月ではなく1月からの入社を希望しています。了承しますか？'],
+  'The client wants a fixed price for the landing page. Quote $2,500?': ['Клиент хочет фиксированную цену за лендинг. Назвать $2 500?', '客户想要落地页的固定报价。报 2500 美元吗？', 'ลูกค้าต้องการราคาเหมาสำหรับหน้าแลนดิ้ง เสนอ $2,500 ไหม?', 'El cliente quiere un precio cerrado por la landing. ¿Ofrezco 2.500 $?', 'Khách muốn giá trọn gói cho trang landing. Báo giá $2.500 nhé?', 'クライアントがランディングページの固定価格を求めています。2,500ドルで見積もりますか？'],
   'Northwind Ventures asks for the cap table before Thursday. Share it from the data room?': ['Northwind Ventures просит таблицу капитализации до четверга. Дать доступ из data room?', 'Northwind Ventures 要求周四前提供股权结构表。从数据室共享吗？', 'Northwind Ventures ขอตารางผู้ถือหุ้นก่อนวันพฤหัสบดี แชร์จากดาต้ารูมไหม?', 'Northwind Ventures pide la tabla de capitalización antes del jueves. ¿La comparto desde el data room?', 'Northwind Ventures cần bảng cơ cấu vốn trước thứ Năm. Chia sẻ từ data room nhé?', 'Northwind Ventures が木曜までに資本政策表を求めています。データルームから共有しますか？'],
   'Alex suggested Saturday at 7pm at the rooftop bar. Confirm the date?': ['Алекс предложил субботу в 19:00 в баре на крыше. Подтвердить свидание?', 'Alex 提议周六晚上 7 点在屋顶酒吧见面。确认约会吗？', 'Alex ชวนวันเสาร์ 1 ทุ่มที่รูฟท็อปบาร์ ยืนยันเดทไหม?', 'Alex propuso el sábado a las 19:00 en el bar de la azotea. ¿Confirmo la cita?', 'Alex hẹn thứ Bảy lúc 19:00 ở quán bar sân thượng. Xác nhận buổi hẹn nhé?', 'Alex から土曜19時に屋上バーでと提案がありました。デートを確定しますか？'],
 };

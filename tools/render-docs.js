@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=8292e455';
-import { Scene, CW } from '../src/scene.js?v=8292e455';
-import { THEMES } from '../src/themes.js?v=8292e455';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=8292e455';
+import { AGENTS, FUNNELS } from '../src/data.js?v=3fe7e493';
+import { Scene, CW } from '../src/scene.js?v=3fe7e493';
+import { THEMES } from '../src/themes.js?v=3fe7e493';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=3fe7e493';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -48,7 +48,7 @@ function agentsSheet() {
 function themesSheet() {
   const names = Object.keys(THEMES), K = 4, W = 180, Hh = 112, cols = 3;
   const [c, g] = canvas(cols * W * K, Math.ceil(names.length / cols) * Hh * K);
-  const agentsFor = ['claude', 'chatgpt', 'gemini', 'grok', 'deepseek', 'mistral'];
+  const agentsFor = ['claude', 'chatgpt', 'gemini', 'grok', 'deepseek', 'mistral', 'qwen', 'kimi', 'perplexity'];
   names.forEach((name, i) => {
     const th = THEMES[name], ox = (i % cols) * W, oy = Math.floor(i / cols) * Hh, r = rng(7 + i);
     g.setTransform(K, 0, 0, K, ox * K, oy * K);
@@ -66,6 +66,9 @@ function themesSheet() {
     else if (th.tool === 'beaker') drawBeaker(g, hx, hy, 0.9, '#B585F2');
     else if (th.tool === 'laptop') drawLaptop(g, hx - 3, hy + 2, 0.3);
     else if (th.tool === 'stamp') drawStamp(g, hx - 1, hy + 4, 0.5);
+    else if (th.tool === 'hammer') drawHammer(g, hx, hy - 1, -1.2);
+    else if (th.tool === 'sword') drawSword(g, hx, hy - 1, -0.9);
+    else if (th.tool === 'rollingPin') drawRollingPin(g, hx - 1, hy + 4, 0);
     else { drawBow(g, hx, hy, 0.6); drawArrow(g, hx + 1, hy); }
     // A funnel tank as on the board: a thin trapezoid, its pieces piled from the bottom middle
     // (a liquid in the lab), about half full.
@@ -73,7 +76,7 @@ function themesSheet() {
     const tx = 90, ty = 54, TH = 26, half = row => Math.round(74 - 7 * row / (TH - 1));
     // Which stage's pieces each sample shows: gold for the mine, blue floppies for code, banknotes
     // for money, the middle stage elsewhere.
-    const [sj, sn] = { mine: [3, 5], code: [0, 5], money: [1, 5] }[name] || [1, 3];
+    const [sj, sn] = { mine: [3, 5], code: [0, 5], money: [1, 5], forge: [3, 5], bakery: [1, 5], blocks: [3, 5] }[name] || [1, 3];
     for (let row = 0; row < TH; row++) {
       const h = half(row);
       g.fillStyle = th.frame;
@@ -226,7 +229,12 @@ function funnelGuide({ labels = true } = {}) {
 const status = document.getElementById('status');
 try {
   await document.fonts.ready;
-  // ?only=og renders just the link preview card; ?only=funnel just the funnel guide.
+  // ?only=og renders just the link preview card; ?only=themes the theme samples; ?only=funnel just
+  // the funnel guide.
+  if (new URLSearchParams(location.search).get('only') === 'themes') {
+    await save(themesSheet(), 'themes.png');
+    throw Object.assign(new Error(), { done: 'Saved docs/img/themes.png' });
+  }
   if (new URLSearchParams(location.search).get('only') === 'og') {
     await save(await ogCard(), 'og.png');
     throw Object.assign(new Error(), { done: 'Saved docs/img/og.png' });

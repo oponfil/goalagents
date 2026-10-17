@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=8292e455';
-import vi from './lang/vi.js?v=8292e455';
-import ja from './lang/ja.js?v=8292e455';
+import es from './lang/es.js?v=3fe7e493';
+import vi from './lang/vi.js?v=3fe7e493';
+import ja from './lang/ja.js?v=3fe7e493';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -213,7 +213,7 @@ const STRINGS = {
   'pricing.pro2': L('<b>5</b> stages in each funnel', '<b>5</b> этапов в каждой воронке', '每个漏斗 <b>5</b> 个阶段', '<b>5</b> ขั้นในแต่ละกรวย'),
   'pricing.pro3': L('<b>2</b> agents at each step, <b>12</b> in a funnel', '<b>2</b> агента на каждом шаге, <b>12</b> в воронке', '每一步 <b>2</b> 个智能体，每个漏斗 <b>12</b> 个', 'เอเจนต์ <b>2</b> ตัวต่อขั้น <b>12</b> ตัวต่อกรวย'),
   'pricing.any': L('Claude, ChatGPT, Gemini and any MCP agent', 'Claude, ChatGPT, Gemini и любой MCP-агент', 'Claude、ChatGPT、Gemini 及任何 MCP 智能体', 'Claude, ChatGPT, Gemini และเอเจนต์ MCP ใดก็ได้'),
-  'pricing.live': L('Live dashboard, all six themes', 'Живая доска, все шесть тем', '实时看板，全部六种主题', 'แดชบอร์ดสด ครบทั้งหกธีม'),
+  'pricing.live': L('Live dashboard, all nine themes', 'Живая доска, все девять тем', '实时看板，全部九种主题', 'แดชบอร์ดสด ครบทั้งเก้าธีม'),
   'pricing.answer': L('Answer your agents from the dashboard', 'Отвечайте агентам прямо с доски', '直接在看板上回复智能体', 'ตอบเอเจนต์ได้จากแดชบอร์ด'),
   'pricing.startFree': L('Start free', 'Начать бесплатно', '免费开始', 'เริ่มใช้ฟรี'),
   'pricing.early': L('Early access', 'Ранний доступ', '抢先体验', 'ทดลองใช้ก่อนใคร'),

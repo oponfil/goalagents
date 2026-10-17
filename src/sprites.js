@@ -171,6 +171,7 @@ export const P = 2;
 export const MINER_W = 20, MINER_H = 28;
 
 const SKIN = '#F3C7A0', SKIN_SHADE = '#D9A57E', HELMET = '#F2C14E', HELMET_SHADE = '#C9952B';
+const DIAMOND = '#4ED8E0', DIAMOND_LIGHT = '#B8F8FC', DIAMOND_DARK = '#2A9AA8';
 const PANTS = '#3B4252', BOOTS = '#1E1E22', BELT = '#5A3D22';
 
 function shade(hex, k) {
@@ -198,14 +199,16 @@ function ellipse(c, cx, cy, rx, ry, col, topOnly = false) {
 // The agent body at (0, 0), facing right. walk: -1 standing, else the walk frame.
 // reach: the front hand is raised to (16, 14) to hold a tool.
 // outfit: helmet (miner), goggles (chemist in a lab coat), straw (gardener: straw hat, apron), wings (cupid),
-// hoodie (hacker), suit (banker).
+// hoodie (hacker), suit (banker), smith (headband, leather apron), chef (white jacket, toque),
+// blocky (a square head with square hair).
 function body(c, agent, color, walk, reach, outfit = 'helmet') {
   const shirt = color, shirtDark = shade(color, 0.72), shirtLight = shade(color, 1.25);
   const step = walk < 0 ? 0 : (walk % 2 ? 1 : -1);
   const COAT = '#ECEDE6', COAT_SHADE = '#C9CBC2';
   const SUIT = '#2B3140', SUIT_SHADE = '#1E2330';
-  const sleeve = outfit === 'goggles' ? COAT : outfit === 'suit' ? SUIT : shirt;
-  const sleeveBack = outfit === 'goggles' ? COAT_SHADE : outfit === 'suit' ? SUIT_SHADE : shirtDark;
+  const coat = outfit === 'goggles' || outfit === 'chef';
+  const sleeve = coat ? COAT : outfit === 'suit' ? SUIT : outfit === 'blocky' ? DIAMOND : shirt;
+  const sleeveBack = coat ? COAT_SHADE : outfit === 'suit' ? SUIT_SHADE : outfit === 'blocky' ? DIAMOND_DARK : shirtDark;
   if (outfit === 'hoodie') ellipse(c, 10, 8.5, 6, 5.5, shirtDark);
   if (outfit === 'wings') {
     ellipse(c, 2.5, 15, 3, 4.5, '#FFFFFF'); ellipse(c, 2, 16.5, 2, 3, '#DCE6F0');
@@ -223,9 +226,10 @@ function body(c, agent, color, walk, reach, outfit = 'helmet') {
   rect(c, 4.5, 13.5, 11, 0.5, shirtLight);
   rect(c, 14, 14, 1.5, 7.5, shirtDark);
   // lab coat panels over the shirt, keeping the logo area free
-  if (outfit === 'goggles') {
+  if (coat) {
     rect(c, 4.5, 13.5, 2.5, 9, COAT); rect(c, 13, 13.5, 2.5, 9, COAT_SHADE);
     rect(c, 4.5, 21, 11, 2, COAT);
+    if (outfit === 'chef') { rect(c, 6, 15, 0.5, 0.5, '#8A8A90'); rect(c, 6, 17, 0.5, 0.5, '#8A8A90'); rect(c, 6, 19, 0.5, 0.5, '#8A8A90'); }
   } else {
     rect(c, 4.5, 21, 11, 1.5, BELT); rect(c, 9.5, 21, 1.5, 1.5, '#D9B44A');
   }
@@ -236,6 +240,14 @@ function body(c, agent, color, walk, reach, outfit = 'helmet') {
     rect(c, 7, 13.5, 1, 2, '#FFFFFF'); rect(c, 12, 13.5, 1, 2, '#FFFFFF');
     rect(c, 9.5, 13.5, 1, 1.5, '#B23A2E');
   }
+  // diamond armour: shoulders, sides and a belt line, the shirt and logo showing in the middle
+  if (outfit === 'blocky') {
+    rect(c, 4, 13, 3.5, 9, DIAMOND); rect(c, 12.5, 13, 3.5, 9, DIAMOND_DARK);
+    rect(c, 4, 13, 12, 1, DIAMOND_LIGHT); rect(c, 4, 21, 12, 1.5, DIAMOND_DARK);
+    rect(c, 5, 22.5, 4.5, 2, DIAMOND); rect(c, 10.5, 22.5, 4.5, 2, DIAMOND);
+  }
+  // smith's leather apron, below the logo
+  if (outfit === 'smith') { rect(c, 5.5, 20, 9, 5, '#5A3A22'); rect(c, 5.5, 20, 9, 0.5, '#7A5232'); rect(c, 7, 13.5, 0.5, 6.5, '#5A3A22'); rect(c, 12.5, 13.5, 0.5, 6.5, '#5A3A22'); }
   if (outfit === 'hoodie') { rect(c, 7.5, 13.5, 0.5, 3, '#DDDDDD'); rect(c, 12, 13.5, 0.5, 3, '#DDDDDD'); }
   // front arm
   if (reach) { rect(c, 13, 14, 3.5, 3, sleeve); ellipse(c, 16.5, 15, 1.5, 1.5, SKIN); }
@@ -270,6 +282,23 @@ function body(c, agent, color, walk, reach, outfit = 'helmet') {
   } else if (outfit === 'suit') {
     ellipse(c, 10, 6.5, 4.8, 3.5, '#3A2A1E', true);
     rect(c, 6, 5, 5, 1, '#3A2A1E');
+  } else if (outfit === 'smith') {
+    // short dark hair and a red headband
+    ellipse(c, 10, 6.5, 4.8, 3.5, '#2B1D14', true);
+    rect(c, 5.5, 6, 9.5, 1, '#B8342A'); rect(c, 4.5, 6.5, 1.5, 2, '#B8342A');
+  } else if (outfit === 'chef') {
+    // a tall white toque: a puffed top over a band
+    ellipse(c, 10, 2, 4, 2.5, '#FFFFFF'); rect(c, 7, 2, 6, 3, '#FFFFFF');
+    rect(c, 6.5, 4.5, 7, 1.5, '#E6E6E0'); rect(c, 8, 0.5, 1.5, 1, '#F4F4F0');
+  } else if (outfit === 'blocky') {
+    // a square head over the round one in a square diamond helmet, square eyes
+    rect(c, 5.5, 4.5, 9.5, 8, SKIN); rect(c, 5.5, 11.5, 9.5, 1, SKIN_SHADE);
+    rect(c, 5, 2.5, 10.5, 3.5, DIAMOND); rect(c, 5, 2.5, 10.5, 0.5, DIAMOND_LIGHT);
+    rect(c, 5, 6, 2, 5, DIAMOND); rect(c, 14.5, 6, 1, 2, DIAMOND); rect(c, 5, 6, 10.5, 0.5, DIAMOND_DARK);
+    rect(c, 7, 3.5, 1, 1, DIAMOND_LIGHT);
+    rect(c, 10.5, 7.5, 1.5, 1.5, '#FFFFFF'); rect(c, 11, 7.5, 1, 1.5, '#3A5AA8');
+    rect(c, 13, 7.5, 1.5, 1.5, '#FFFFFF'); rect(c, 13.5, 7.5, 1, 1.5, '#3A5AA8');
+    rect(c, 11, 10.5, 3, 0.5, '#9A5A48');
   } else if (outfit === 'wings') {
     ellipse(c, 10, 6, 5, 3.5, '#F2D06B', true);
     rect(c, 5, 5.5, 1.5, 1.5, '#F2D06B'); rect(c, 14, 5.5, 1.5, 1.5, '#F2D06B');
@@ -370,6 +399,31 @@ export function drawStamp(ctx, hx, hy, lift) {
   const y = hy - lift * 6;
   rect(ctx, hx + 2, y - 4, 2, 4, '#8A5A2B'); ellipse(ctx, hx + 3, y - 4.5, 1.5, 1.2, '#A87A48');
   rect(ctx, hx, y, 6, 2, '#4A4E56'); rect(ctx, hx, y + 2, 6, 1, '#C8263B');
+}
+
+// Smith's hammer held at (hx, hy), angle like the pickaxe's: a wooden handle, a square iron head.
+export function drawHammer(ctx, hx, hy, angle) {
+  const len = 11, ex = hx + Math.cos(angle) * len, ey = hy + Math.sin(angle) * len;
+  line(ctx, hx, hy, ex, ey, '#8A5A2B', 1);
+  const px = -Math.sin(angle), py = Math.cos(angle);
+  line(ctx, ex - px * 2.5, ey - py * 2.5, ex + px * 2.5, ey + py * 2.5, '#4A4E56', 3);
+  line(ctx, ex - px * 2.5, ey - py * 2.5, ex - px * 2, ey - py * 2, '#8E949E', 1);
+}
+
+// A block-world sword held at (hx, hy), pointing along angle: grip, a crossguard and a long blade.
+export function drawSword(ctx, hx, hy, angle) {
+  const dx = Math.cos(angle), dy = Math.sin(angle), px = -dy, py = dx;
+  line(ctx, hx - dx * 2, hy - dy * 2, hx + dx, hy + dy, '#5A3A22', 1);
+  line(ctx, hx + dx - px * 2.5, hy + dy - py * 2.5, hx + dx + px * 2.5, hy + dy + py * 2.5, '#6E4A2A', 1);
+  line(ctx, hx + dx * 2, hy + dy * 2, hx + dx * 13, hy + dy * 13, '#5CE0E8', 1.5);
+  line(ctx, hx + dx * 3, hy + dy * 3, hx + dx * 12, hy + dy * 12, '#C8FAFF', 0.5);
+}
+
+// Baker's rolling pin held at (hx, hy), rolled forward by `roll` (−1..1).
+export function drawRollingPin(ctx, hx, hy, roll) {
+  const x = hx - 3 + roll * 2.5;
+  rect(ctx, x, hy, 3, 1, '#8A5A2E'); rect(ctx, x + 3, hy - 0.5, 9, 2.5, '#D8A868'); rect(ctx, x + 3, hy - 0.5, 9, 0.5, '#F2D09A');
+  rect(ctx, x + 12, hy, 3, 1, '#8A5A2E');
 }
 
 export function drawArrow(ctx, x, y) {

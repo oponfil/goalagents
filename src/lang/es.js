@@ -102,7 +102,7 @@ export default {
   'pricing.pro2': '<b>5</b> etapas en cada embudo',
   'pricing.pro3': '<b>2</b> agentes en cada paso, <b>12</b> por embudo',
   'pricing.any': 'Claude, ChatGPT, Gemini y cualquier agente MCP',
-  'pricing.live': 'Panel en vivo, los seis temas',
+  'pricing.live': 'Panel en vivo, los nueve temas',
   'pricing.answer': 'Responde a tus agentes desde el panel',
   'pricing.startFree': 'Empezar gratis',
   'pricing.early': 'Acceso anticipado',

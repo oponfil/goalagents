@@ -103,7 +103,7 @@ export default {
   'pricing.pro2': '<b>5</b> giai đoạn mỗi phễu',
   'pricing.pro3': '<b>2</b> tác tử mỗi bước, <b>12</b> mỗi phễu',
   'pricing.any': 'Claude, ChatGPT, Gemini và mọi tác tử MCP',
-  'pricing.live': 'Bảng trực tiếp, đủ cả sáu chủ đề',
+  'pricing.live': 'Bảng trực tiếp, đủ cả chín chủ đề',
   'pricing.answer': 'Trả lời tác tử ngay trên bảng',
   'pricing.startFree': 'Bắt đầu miễn phí',
   'pricing.early': 'Truy cập sớm',

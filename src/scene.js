@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=8292e455';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=8292e455';
-import { themeOf } from './themes.js?v=8292e455';
-import { t as tr, lang, fmtDuration, flowUnit } from './i18n.js?v=8292e455';
+import { agentInfo, plural } from './data.js?v=3fe7e493';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=3fe7e493';
+import { themeOf } from './themes.js?v=3fe7e493';
+import { t as tr, lang, fmtDuration, flowUnit } from './i18n.js?v=3fe7e493';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -432,6 +432,23 @@ export class Scene {
         c.fillStyle = '#3CF27A'; c.fillRect(hx + 5 + u * (pipeX - hx - 5), hy - 3 - Math.sin(u * Math.PI) * 4, 1, 1.5);
       }
       hit = q > 0.95;
+    } else if (theme.tool === 'hammer') {
+      // Smith raises the hammer and brings it down on the red-hot bar: sparks fly.
+      const cyc = ((t + a.phase) % 0.9) / 0.9;
+      const ang = cyc < 0.7 ? 0.5 - (cyc / 0.7) * 2.2 : -1.7 + ((cyc - 0.7) / 0.3) * 2.2;
+      drawHammer(c, hx, hy - 1, ang);
+      hit = cyc > 0.95;
+    } else if (theme.tool === 'sword') {
+      // The hero winds up, then slashes at the slime fast.
+      const cyc = ((t + a.phase) % 0.8) / 0.8;
+      const ang = cyc < 0.6 ? 0.6 - (cyc / 0.6) * 2.4 : -1.8 + ((cyc - 0.6) / 0.4) * 2.4;
+      drawSword(c, hx, hy - 1, ang);
+      hit = cyc > 0.95;
+    } else if (theme.tool === 'rollingPin') {
+      // Baker rolls the dough back and forth; flour puffs up at each turn.
+      const cyc = ((t + a.phase) % 1) / 1;
+      drawRollingPin(c, hx - 1, hy + 4, Math.sin(cyc * Math.PI * 2));
+      hit = cyc > 0.96;
     } else if (theme.tool === 'stamp') {
       // Banker stamps the contract: lift, then press down hard.
       const cyc = ((t + a.phase) % 1.1) / 1.1;
