@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=fc689838';
-import { Scene, CW, H } from '../src/scene.js?v=fc689838';
-import { THEMES } from '../src/themes.js?v=fc689838';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=fc689838';
+import { AGENTS, FUNNELS } from '../src/data.js?v=67d628d5';
+import { Scene, CW, H } from '../src/scene.js?v=67d628d5';
+import { THEMES } from '../src/themes.js?v=67d628d5';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=67d628d5';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -53,8 +53,11 @@ function themesSheet() {
     const th = THEMES[name], ox = (i % cols) * W, oy = Math.floor(i / cols) * Hh, r = rng(7 + i);
     g.setTransform(K, 0, 0, K, ox * K, oy * K);
     th.backdrop(g, 0, W, Hh, r);
-    g.fillStyle = '#5E626B'; g.fillRect(86, 6, 9, 48);
-    g.fillStyle = '#8E939D'; g.fillRect(88, 6, 5, 48);
+    const [pe, pb, ps, pband] = th.pipe;
+    g.fillStyle = pe; g.fillRect(86, 6, 9, 48);
+    g.fillStyle = pb; g.fillRect(88, 6, 5, 48);
+    g.fillStyle = ps; g.fillRect(88, 6, 2, 48);
+    if (pband) for (let y = 14; y < 51; y += 14) { g.fillStyle = pband; g.fillRect(86, y, 9, th.bandH || 2); }
     th.plate(g, 77, 43, 26, 11);
     const id = agentsFor[i % agentsFor.length], ax = 57, ay = 26, hx = ax + 16.5, hy = ay + 15;
     drawStanding(g, ax, ay, id, AGENTS[id].color, -1, false, true, th.outfit);
@@ -190,7 +193,7 @@ function funnelGuide({ labels = true } = {}) {
   const s0 = stage(0), last = stage(n - 1);
   const ask = agent('claude', 'ask'), sleep = scene.spot(agent('grok', 'sleep'), 'rest'), work = scene.spot(agent('mistral', 'work'), 'work');
   const src0 = scene.hits.find(h => h.type === 'source');
-  const gauge = stage(3), resultsY = last.y + last.h + 40 + 9;
+  const resultsY = last.y + last.h + 40 + 9;
   // Each arrow ends on the left edge of what it explains.
   const notes = [
     [P(src0.x + 3, src0.y + 14), 'Sheet', 'The table where the agents keep track of everything.'],
@@ -198,7 +201,6 @@ function funnelGuide({ labels = true } = {}) {
     [P(ask.bubble.x, ask.bubble.y + 11), 'Question', 'An agent waits for your answer. Click it to reply.'],
     [P(sleep.x - 1, sleep.y + 1), 'Asleep', 'Resting until its next run; the timer counts down.'],
     [P(work.x + 1, work.y + 20), 'Agent at work', '+N is what its current run added.'],
-    [P(cx - 9, gauge.y + gauge.h + 15), 'Gauge', 'On pace for the goal? Straight up is just in time; red on the left is far behind.'],
     [P(cx - 45, resultsY + 8), 'Results', 'One per result the goal needs; filled ones are done.'],
     [P(cx - 23, resultsY + 54), 'Prediction', 'When the next result is due at the current pace.'],
   ];

@@ -178,8 +178,8 @@ function server(db: Db, caller: Caller) {
     title: 'Report counts',
     description: 'Counts after your work, cumulative: for each stage, how many items have ever reached it (an item that moved on to the next stage still counts here), and optionally the results so far. ' +
       'The dashboard takes the conversion between stages from these counts (next stage ÷ this one; 30% while one of them is 0), so keep them cumulative. ' +
-      'The dashboard computes flows, tank fill and gauges from these reports (automatic). Optionally set them yourself (manual): ' +
-      'fill_percent and flow_per_day per stage, pace per zone; null switches that one back to automatic.',
+      'The dashboard computes flows, tank fill and the pace of the results from these reports (automatic). Optionally set them yourself (manual): ' +
+      'fill_percent and flow_per_day per stage, pace for the output zone; null switches that one back to automatic.',
     inputSchema: req({
       funnel_id: funnelId,
       counts: z.record(z.string(), z.number().int().nonnegative()).default({}).describe('{ stage_key: count }, cumulative: every item that ever reached the stage'),
@@ -187,7 +187,7 @@ function server(db: Db, caller: Caller) {
       fill_percent: z.record(z.string(), z.number().min(0).max(100).nullable()).optional()
         .describe('Manual tank fill, { stage_key: 0-100 }: how much of what this stage needs for the whole goal is there. null = automatic'),
       pace: z.record(z.string(), z.number().min(0).max(1000).nullable()).optional()
-        .describe('Manual gauge, { zone: pace } with zones as in set_agent_state ("0" above the first stage … "n" below the last). Pace against the goal: 1 = just in time (red mark), 0.5 = half the pace needed, 2 = twice. null = automatic'),
+        .describe('Manual pace of the results against the goal, { zone: pace } with zones as in set_agent_state; only the output zone ("n", below the last stage) is shown, as the colour of the next-result line. 1 = just in time, 0.5 = half the pace needed, 2 = twice. null = automatic'),
       flow_per_day: z.record(z.string(), z.number().min(0).max(1e9).nullable()).optional()
         .describe('Manual flow, the "+N/d" written on a tank: { stage_key: items added to that stage per day }, and "results" for results per day. Give it when you know the real daily rate better than the count history shows (e.g. right after you start reporting). null = automatic: the average daily growth over the last 7 days of your count reports'),
       source_url: z.string().url().regex(/^https?:\/\//).nullable().optional()

@@ -10,12 +10,11 @@ Live at [goalagents.run](https://goalagents.run): your own board under Goals, wr
 
 ## How to read it
 
-<img src="docs/img/funnel.png" alt="One funnel with labels: the sheet, a tank, a question, a sleeping agent, an agent at work, a gauge, results and the prediction" width="620">
+<img src="docs/img/funnel.png" alt="One funnel with labels: the sheet, a tank, a question, a sleeping agent, an agent at work, results and the prediction" width="620">
 
 | On screen | Meaning |
 |---|---|
 | Tank, its number and `+N/d` | How many items have reached this stage (cumulative) and how many it gains per day (average over the last 7 days; an agent can set it; `+0/d` until there are two reports to compare). The tanks make one funnel, each narrowing to the next. What a tank holds piles up from the bottom, piece by piece (each new one drops in from the pipe), up to the share of what this stage needs for the whole goal; that need comes from the conversion between the tanks' counts (next ÷ this), 30% while a count is still 0. Hover a tank for its name |
-| Gauge in a zone | Will the tank below fill in time: what the zone's current flow brings by the goal's date against what the tank still misses. Straight up it fills just in time; right of it the tank is ahead, left of it behind, and in the red zone at the start on the left it is far behind. At zero while the flow is 0 or not known yet |
 | Agent with a tool | Working on that step |
 | Agent lying with a timer | Waiting for its next scheduled run |
 | Agent lying under an amber triangle with `2 h` | Did not wake up on time: its run was due more than 5 minutes ago and it has not reported since (agents report `work` first thing in a run; 5 minutes leave room for a scheduler that starts a little late). Click it for when it was due and when it was last heard from, and check on the agent |
@@ -87,7 +86,7 @@ Scripts and stylesheets are loaded with a version in the address (`i18n.js?v=3f2
 
 - `src/i18n.js` — interface languages: detection, the picker's choice, every text in English, Russian, Chinese and Thai; `src/lang/` — Spanish, Vietnamese and Japanese, merged in by key
 - `src/data.js` — demo funnels (with their translations) and the agent list
-- `src/scene.js` — Canvas 2D scene: layout, simulation, gauges, hit areas
+- `src/scene.js` — Canvas 2D scene: layout, simulation, heaps, hit areas
 - `src/themes.js` — themes: column backdrop, work piece, tank filling, result item
 - `src/sprites.js` — agents (outfits, tools, logos) drawn from shapes on a half-unit grid
 - `src/dashboard.js` — page wiring: scaling, sticky titles, drag to reorder, popups, answers to agents

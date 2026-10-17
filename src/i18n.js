@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=fc689838';
-import vi from './lang/vi.js?v=fc689838';
-import ja from './lang/ja.js?v=fc689838';
+import es from './lang/es.js?v=67d628d5';
+import vi from './lang/vi.js?v=67d628d5';
+import ja from './lang/ja.js?v=67d628d5';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -80,7 +80,7 @@ const STRINGS = {
     'ทุกเป้าหมายคือกรวย: งาน คู่ชีวิต งานวิจัย ผู้ติดตาม เอเจนต์ของคุณขยับมันทีละขั้น เห็นการไหล ผลลัพธ์ถัดไป และใครกำลังรอคุณอยู่'),
   'home.demo': L('Open the live demo', 'Открыть живое демо', '打开实时演示', 'เปิดเดโมสด'),
   'home.connect': L('Connect your agents', 'Подключить агентов', '连接你的智能体', 'เชื่อมต่อเอเจนต์ของคุณ'),
-  'home.shotAlt': L('One goal funnel with labels: the sheet, tanks, a question, agents asleep and at work, a gauge, results and the prediction', 'Одна воронка цели с подписями: таблица, баки, вопрос, агенты спят и работают, манометр, результаты и прогноз', '一个带标注的目标漏斗：表格、储罐、问题、睡眠和工作中的智能体、仪表、成果和预测', 'กรวยเป้าหมายหนึ่งอันพร้อมคำอธิบาย: ตาราง ถัง คำถาม เอเจนต์ที่หลับและทำงาน มาตรวัด ผลลัพธ์ และการคาดการณ์'),
+  'home.shotAlt': L('One goal funnel with labels: the sheet, tanks, a question, agents asleep and at work, results and the prediction', 'Одна воронка цели с подписями: таблица, баки, вопрос, агенты спят и работают, результаты и прогноз', '一个带标注的目标漏斗：表格、储罐、问题、睡眠和工作中的智能体、成果和预测', 'กรวยเป้าหมายหนึ่งอันพร้อมคำอธิบาย: ตาราง ถัง คำถาม เอเจนต์ที่หลับและทำงาน ผลลัพธ์ และการคาดการณ์'),
   'home.p1h': L('Goals as funnels', 'Цели как воронки', '目标即漏斗', 'เป้าหมายคือกรวย'),
   'home.p1': L('Not tasks — stages. How much is at each step, how fast it flows, when the next result is due.', 'Не задачи, а этапы. Сколько на каждом шаге, как быстро движется, когда следующий результат.', '不是任务，而是阶段。每一步有多少、流动多快、下一个成果何时到来。', 'ไม่ใช่งาน แต่เป็นขั้นตอน แต่ละขั้นมีเท่าไร ไหลเร็วแค่ไหน และผลลัพธ์ถัดไปจะมาเมื่อไร'),
   'home.p2h': L('Your agents, at work', 'Ваши агенты за работой', '你的智能体正在工作', 'เอเจนต์ของคุณกำลังทำงาน'),
@@ -99,8 +99,6 @@ const STRINGS = {
   'guide.asleep': L('Resting until its next run; the timer counts down.', 'Отдыхает до следующего запуска; таймер отсчитывает время.', '休息到下次运行；计时器在倒数。', 'พักจนถึงรอบถัดไป ตัวจับเวลากำลังนับถอยหลัง'),
   'guide.work.h': L('Agent at work', 'Агент за работой', '工作中的智能体', 'เอเจนต์กำลังทำงาน'),
   'guide.work': L('+N is what its current run added.', '+N — сколько добавил текущий запуск.', '+N 是本次运行新增的数量。', '+N คือสิ่งที่รอบปัจจุบันเพิ่มเข้ามา'),
-  'guide.gauge.h': L('Gauge', 'Манометр', '仪表', 'มาตรวัด'),
-  'guide.gauge': L('On pace for the goal? Straight up is just in time; red on the left is far behind.', 'Успеваете к цели? Стрелка вверх — точно в срок, красное слева — сильно отстаёте.', '能按时达成目标吗？指针朝上表示刚好赶上，左侧红区表示严重落后。', 'ทันเป้าหมายไหม? เข็มชี้ขึ้นคือทันพอดี สีแดงทางซ้ายคือช้ามาก'),
   'guide.results.h': L('Results', 'Результаты', '成果', 'ผลลัพธ์'),
   'guide.results': L('One per result the goal needs; filled ones are done.', 'По одному на каждый нужный результат; заполненные — уже получены.', '目标需要的每个成果一个；已填满的表示已完成。', 'หนึ่งช่องต่อผลลัพธ์ที่เป้าหมายต้องการ ช่องที่เต็มคือได้แล้ว'),
   'guide.prediction.h': L('Prediction', 'Прогноз', '预测', 'การคาดการณ์'),

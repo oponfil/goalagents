@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=fc689838';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=fc689838';
-import { themeOf } from './themes.js?v=fc689838';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=fc689838';
+import { agentInfo, plural } from './data.js?v=67d628d5';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=67d628d5';
+import { themeOf } from './themes.js?v=67d628d5';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=67d628d5';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -37,7 +37,6 @@ const outPlateTop = k => plateTop(k) - OUT_LIFT;
 // Below the last tank there is no tank to sit on: gauge and plate move up together (the same gap
 // between them as everywhere) so the pipe runs on past the plate to where results drip out.
 const OUT_LIFT = 5;
-const gaugeY = (k, out) => zoneTop(k) + 4 + GAUGE_R + 2 - (out ? OUT_LIFT : 0);
 export const DAY_SECONDS = 2;
 const PER_ROW = 10;  // result items per row under a funnel, the same for every theme
 // As on the page: Vietnamese needs Be Vietnam Pro (Rubik has no Vietnamese letters), Japanese takes
@@ -164,14 +163,13 @@ export class Scene {
         // No room around a zone: agents work in the open, on top of the tank below.
         const y = zoneTop(k);
         // The pipe runs from the tank above (or the hopper on top) down to the tank below.
-        this.pipe(c, cx, k < 0 ? y + 4 : y, y + ZH);
-        // On top: a small funnel at the very top of the column and a short pipe down to the gauge.
+        this.pipe(c, cx, k < 0 ? y + 4 : y, y + ZH, theme);
+        // On top: a small funnel at the very top of the column and a short pipe down from it.
         if (k < 0) {
-          this.pipe(c, cx, y + 1, y + 4);
+          this.pipe(c, cx, y + 1, y + 4, theme);
           if (f.source_url) this.sheets(c, cx, y - 26);
           this.hopper(c, cx, y - 8, y + 1);
         }
-        gaugeRim(c, cx, gaugeY(k, k === n - 1));
       }
       f.stages.forEach((s, j) => {
         // A thin outline: full top and bottom rows, one pixel down each side; inside, the theme's
@@ -233,10 +231,13 @@ export class Scene {
     return { x: cx - 12, y, w: 26, h: 34, type: 'source', url: this.funnels[fi].source_url };
   }
 
-  pipe(c, cx, y0, y1) {
-    c.fillStyle = '#5E626B'; c.fillRect(cx - 4, y0, 9, y1 - y0);
-    c.fillStyle = '#8E939D'; c.fillRect(cx - 2, y0, 5, y1 - y0);
-    c.fillStyle = '#B9BEC7'; c.fillRect(cx - 2, y0, 2, y1 - y0);
+  // The pipe in the theme's own material (iron, glass, hose, cable…), with its joints or lights.
+  pipe(c, cx, y0, y1, theme) {
+    const [edge, body, shine, band] = theme?.pipe || ['#5E626B', '#8E939D', '#B9BEC7', null];
+    c.fillStyle = edge; c.fillRect(cx - 4, y0, 9, y1 - y0);
+    c.fillStyle = body; c.fillRect(cx - 2, y0, 5, y1 - y0);
+    c.fillStyle = shine; c.fillRect(cx - 2, y0, 2, y1 - y0);
+    if (band) for (let y = y0 + 8; y < y1 - 3; y += 14) { c.fillStyle = band; c.fillRect(cx - 4, y, 9, theme.bandH || 2); }
   }
 
   update(dt) {
@@ -307,10 +308,9 @@ export class Scene {
       if (f.source_url) this.hits.push(this.sourceHit(fi));
       const cx = this.cx(fi), n = f.stages.length, theme = themeOf(f);
       for (let k = -1; k < n; k++) {
-        const y = zoneTop(k), fl = f.flows[k + 1], gy = gaugeY(k, k === n - 1);
+        const y = zoneTop(k), fl = f.flows[k + 1];
         // Below the last tank the drops run a little past the pipe's end, dripping out of it.
         this.drops(c, cx, y + 4, y + ZH + (k === n - 1 ? 9 : 0), fl, fi * 3 + k);
-        gaugeFace(c, cx, gy, project(f).zones[k + 1], Math.sin(t * 3 + fi + k) * 0.015);
         // The plate under each gauge is what the agents work on; only the output zone's has text
         // on it: when the next result is due.
         theme.plate(c, cx - 13, k === n - 1 ? outPlateTop(k) : plateTop(k), 26, PLATE_H);

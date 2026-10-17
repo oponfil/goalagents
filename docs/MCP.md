@@ -81,15 +81,15 @@ Write tools return the updated funnel so the agent can check what the person see
 
 ## What the server computes
 
-Every reading below is **automatic** by default. An agent can set the tank fill and the gauges **by hand** instead (optional `fill_percent`, `pace` and `flow_per_day` in `report_counts`), for example when it knows the conversion better than the count history shows, or before there are two reports to compute from. A manual reading stays until the agent sends `null` for it.
+Every reading below is **automatic** by default. An agent can set the tank fill, the flows and the pace **by hand** instead (optional `fill_percent`, `pace` and `flow_per_day` in `report_counts`), for example when it knows the conversion better than the count history shows, or before there are two reports to compute from. A manual reading stays until the agent sends `null` for it.
 
-Unless an agent set them by hand, flows, forecasts and gauge readings come from the count history (agents see current counts in `list_funnels`, not this history):
+Unless an agent set them by hand, flows, forecasts and the pace come from the count history (agents see current counts in `list_funnels`, not this history):
 
 - **Flow** of a zone (`+14/d` on the tank it feeds): how much the count of that stage grew over the last 7 days, averaged per day (shown per week when slower). With less than a day of history the growth so far counts as one day's, so the first reports don't extrapolate (+1 in an hour is +1/d, not +24/d).
-- **Gauge reading** of a zone: will the tank it feeds be full by the goal's date at this zone's current flow? The date is when the remaining results are due at the goal pace (one per `goal.every_days`). The reading is what the flow brings by then ÷ what the tank still misses, on a log scale: 1, just in time, is straight up; right of it ahead, left of it behind, and the red zone at the start on the left is far behind (about a tenth of the pace or less). So the needle and the tank's level always agree: a tank that is behind has its needle left of the top. It is an estimate for the picture only.
-- **Output zone**: its flow is results per day (from the `results` history), shown next to the results count under the funnel; its gauge compares that with the goal rate, and the `next` line under the results gives the estimated time to the next result, coloured by pace (red far behind, yellow close, green on pace, bright green well ahead).
+- **Pace** of the output zone: what the results' flow brings by the goal's date ÷ the results still missing (the date is when they are due at one per `goal.every_days`). It colours the `next` line under the results; `pace` for other zones is accepted but not shown.
+- **Output zone**: its flow is results per day (from the `results` history), shown next to the results count under the funnel, and the `next` line under the results gives the estimated time to the next result, coloured by pace (red far behind, yellow close, green on pace, bright green well ahead).
 - **Tank fill** (a heap of pieces rising from the bottom, a liquid in the lab): items at a stage so far ÷ items needed there for the whole goal (`goal.total` results). "Needed" comes from the conversion between the tanks' counts below it: the next stage's count ÷ this stage's (the results for the last stage). Where either is still 0, a default conversion of 30% stands in, so a tank shows a level from the first report.
-- **No flow yet**: a flow with fewer than two reports in the last 7 days counts as 0, so the tank shows `+0/d` and the gauge rests at zero until reports come in (or the agent sets `flow_per_day`).
+- **No flow yet**: a flow with fewer than two reports in the last 7 days counts as 0, so the tank shows `+0/d` until reports come in (or the agent sets `flow_per_day`).
 
 ## What an agent should do on every run
 

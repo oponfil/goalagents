@@ -486,12 +486,12 @@ const pieceMoney = {
 };
 
 export const THEMES = {
-  mine: { piece: pieceMine, tankBg: '#2A2420', emptyAlpha: 0.3, backdrop: backMine, frame: '#8A6238', zone: zoneMine, tank: tankMine, plate: plateMine, result: resultTreasure, outfit: 'helmet', tool: 'pickaxe', spark: '#FFE38A', accent: '#FFD866' },
-  lab: { tankBg: '#122233', emptyAlpha: 0.3, backdrop: backLab, frame: '#9FD3FF', zone: zoneLab, tank: tankLab, plate: plateLab, result: resultFlask, outfit: 'goggles', tool: 'beaker', spark: '#B585F2', accent: '#C4A3F5' },
-  garden: { piece: pieceGarden, tankBg: '#16240F', emptyAlpha: 0.3, backdrop: backGarden, frame: '#7A5232', tank: tankGarden, plate: plateGarden, result: resultPot, outfit: 'straw', tool: 'shears', spark: '#8FD46A', accent: '#F28AB8' },
-  love: { piece: pieceLove, tankBg: '#3A1A30', backdrop: backLove, frame: '#F28AB8', zone: zoneLove, tank: tankLove, plate: plateLove, result: resultHeart, outfit: 'wings', tool: 'bow', spark: '#F28AB8', accent: '#F28AB8' },
-  code: { piece: pieceCode, tankBg: '#06100A', emptyAlpha: 0.3, backdrop: backCode, frame: '#3CF27A', zone: zoneCode, tank: tankCode, plate: plateCode, result: resultChip, outfit: 'hoodie', tool: 'laptop', spark: '#3CF27A', accent: '#7CF0B0' },
-  money: { piece: pieceMoney, tankBg: '#14201A', backdrop: backMoney, frame: '#D9A520', zone: zoneMoney, tank: tankMoney, plate: plateMoney, result: resultBag, outfit: 'suit', tool: 'stamp', spark: '#FFD866', accent: '#9FE870' },
+  mine: { pipe: ['#3A2418', '#8A5A3A', '#B07A50', '#2A1A10'], piece: pieceMine, tankBg: '#2A2420', emptyAlpha: 0.3, backdrop: backMine, frame: '#8A6238', zone: zoneMine, tank: tankMine, plate: plateMine, result: resultTreasure, outfit: 'helmet', tool: 'pickaxe', spark: '#FFE38A', accent: '#FFD866' },
+  lab: { pipe: ['#7FB8D8', '#1E3A50', '#E8F6FF', null], tankBg: '#122233', emptyAlpha: 0.3, backdrop: backLab, frame: '#9FD3FF', zone: zoneLab, tank: tankLab, plate: plateLab, result: resultFlask, outfit: 'goggles', tool: 'beaker', spark: '#B585F2', accent: '#C4A3F5' },
+  garden: { pipe: ['#2E5A22', '#4E8A3A', '#7CC05A', '#24481A'], piece: pieceGarden, tankBg: '#16240F', emptyAlpha: 0.3, backdrop: backGarden, frame: '#7A5232', tank: tankGarden, plate: plateGarden, result: resultPot, outfit: 'straw', tool: 'shears', spark: '#8FD46A', accent: '#F28AB8' },
+  love: { pipe: ['#8A2A55', '#E06A9A', '#F7B8D0', '#D9A520'], piece: pieceLove, tankBg: '#3A1A30', backdrop: backLove, frame: '#F28AB8', zone: zoneLove, tank: tankLove, plate: plateLove, result: resultHeart, outfit: 'wings', tool: 'bow', spark: '#F28AB8', accent: '#F28AB8' },
+  code: { pipe: ['#0A140E', '#1E2A22', '#3A4A3E', '#3CF27A'], bandH: 1, piece: pieceCode, tankBg: '#06100A', emptyAlpha: 0.3, backdrop: backCode, frame: '#3CF27A', zone: zoneCode, tank: tankCode, plate: plateCode, result: resultChip, outfit: 'hoodie', tool: 'laptop', spark: '#3CF27A', accent: '#7CF0B0' },
+  money: { pipe: ['#7A5A10', '#C8961E', '#F2D068', '#5A400A'], piece: pieceMoney, tankBg: '#14201A', backdrop: backMoney, frame: '#D9A520', zone: zoneMoney, tank: tankMoney, plate: plateMoney, result: resultBag, outfit: 'suit', tool: 'stamp', spark: '#FFD866', accent: '#9FE870' },
 };
 
 export const themeOf = f => THEMES[f.theme] || THEMES.mine;
