@@ -259,3 +259,5 @@ html:lang(ja) { --font: "Rubik", "Noto Sans JP", system-ui, sans-serif; }
 .agent-note button { position: absolute; top: 3px; right: 4px; background: none; border: 0; color: var(--muted); font: 16px/1 var(--font); cursor: pointer; padding: 2px 3px; }
 .agent-note button:hover { color: var(--text); }
 .agent-note[hidden] { display: none; }
+/* On a phone the refresh button stays, as an icon only. */
+@media (max-width: 560px) { .sitebar .refresh { padding: 4px 7px; } }
