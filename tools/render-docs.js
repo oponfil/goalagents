@@ -1,12 +1,12 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=6ecccb9b';
-import { Scene, CW, drawWork, TOOL_PERIOD } from '../src/scene.js?v=6ecccb9b';
-import { guideScene, guideHeight, drawGuide, TH } from '../src/guide.js?v=6ecccb9b';
+import { AGENTS, FUNNELS } from '../src/data.js?v=5d99726b';
+import { Scene, CW, drawWork, TOOL_PERIOD } from '../src/scene.js?v=5d99726b';
+import { guideScene, guideHeight, drawGuide, TH } from '../src/guide.js?v=5d99726b';
 import { GIFEncoder, quantize, applyPalette } from 'https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js';
-import { THEMES } from '../src/themes.js?v=6ecccb9b';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=6ecccb9b';
+import { THEMES } from '../src/themes.js?v=5d99726b';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=5d99726b';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -153,11 +153,10 @@ async function ogCard() {
   g.drawImage(logo, 46, 196, 92, 92);
   g.textBaseline = 'alphabetic'; g.textAlign = 'left';
   g.font = `700 90px ${FONT}`;
-  g.fillStyle = '#F4EDE1'; g.fillText('Goal', 156, 274);
-  g.fillStyle = '#F2C14E'; g.fillText('craft', 156 + g.measureText('Goal').width, 274);
+  g.fillStyle = '#F4EDE1'; g.fillText('Goalcraft', 156, 274);
   g.font = `500 40px ${FONT}`; g.fillStyle = '#F4EDE1';
-  g.fillText('AI agents work your long goals.', 50, 370);
-  g.fillText('You see the whole funnel.', 50, 422);
+  g.fillText('Watch your AI agents', 50, 370);
+  g.fillText('craft your goals.', 50, 422);
   return c;
 }
 

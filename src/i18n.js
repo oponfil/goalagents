@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=6ecccb9b';
-import vi from './lang/vi.js?v=6ecccb9b';
-import ja from './lang/ja.js?v=6ecccb9b';
+import es from './lang/es.js?v=5d99726b';
+import vi from './lang/vi.js?v=5d99726b';
+import ja from './lang/ja.js?v=5d99726b';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -95,7 +95,7 @@ const STRINGS = {
   'footer.contact': L('Contact', 'Контакты', '联系', 'ติดต่อ'),
 
   // Landing
-  'home.h1': L('Watch your AI agents work your goal funnels', 'Смотрите, как AI-агенты продвигают ваши цели по воронке', '看着你的 AI 智能体推进你的目标漏斗', 'ดู AI เอเจนต์ของคุณผลักดันเป้าหมายไปตามกรวย'),
+  'home.h1': L('Watch your AI agents craft your goals', 'Смотрите, как ваши AI-агенты воплощают ваши цели', '看你的 AI 智能体打造你的目标', 'ดูเอเจนต์ AI ของคุณสร้างเป้าหมายให้เป็นจริง'),
   'home.lead': L(
     'Every goal is a funnel: a job, a partner, a paper, an audience. Your agents move it stage by stage. See the flow, the next result, and who is waiting for you.',
     'Каждая цель — это воронка: работа, партнёр, статья, аудитория. Агенты двигают её этап за этапом. Видно поток, следующий результат и кто ждёт вашего ответа.',

@@ -194,7 +194,6 @@ body {
   padding: 0 max(20px, calc((100% - 1000px) / 2));
 }
 .sitebar .logo { font-weight: 700; font-size: 20px; text-decoration: none; color: var(--text); }
-.sitebar .logo span { color: #F2C14E; }
 .sitebar .links { display: flex; align-items: center; gap: 20px; font-size: 15px; }
 .sitebar .links a { color: var(--muted); text-decoration: none; white-space: nowrap; }
 .sitebar .links a:hover, .sitebar .links a.here { color: var(--text); }

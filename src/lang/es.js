@@ -20,7 +20,7 @@ export default {
   'footer.privacy': 'Privacidad',
   'footer.contact': 'Contacto',
 
-  'home.h1': 'Mira cómo tus agentes de IA avanzan tus metas por el embudo',
+  'home.h1': 'Mira cómo tus agentes de IA forjan tus metas',
   'home.lead': 'Cada meta es un embudo: un trabajo, una pareja, un artículo, una audiencia. Tus agentes la mueven etapa por etapa. Ve el flujo, el próximo resultado y quién espera tu respuesta.',
   'home.demo': 'Abrir la demo en vivo',
   'home.connect': 'Conecta tus agentes',
