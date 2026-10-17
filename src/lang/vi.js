@@ -60,6 +60,7 @@ export default {
   'app.refreshTitle': 'Làm mới ngay',
   'units': { s: 's', m: 'p', h: 'h', d: 'ng', w: 't' },
   'demo.clock': (d) => `Demo · ngày ${d}`,
+  'demo.reply': 'Đã rõ, cảm ơn: tôi tiếp tục như vậy.',
   'demo.clockTitle': 'Trong demo thời gian trôi nhanh: hai giây là một ngày',
 
   'board.waiting': (n) => `${n} câu hỏi đang chờ bạn trả lời`,

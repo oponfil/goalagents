@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=f6bfcdbd';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=f6bfcdbd';
-import { t, lang } from './i18n.js?v=f6bfcdbd';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=cd7112fa';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=cd7112fa';
+import { t, lang } from './i18n.js?v=cd7112fa';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -256,8 +256,11 @@ export function mountDashboard(funnels, opts = {}) {
         if (error) { msg.textContent = error; send.disabled = false; return; }
         // Answered: that question goes. With none left, a waiting agent takes the answers at once
         // (back at work); a sleeping one keeps sleeping, its bubble gone.
+        const asked = a.questions.find(q => q.id === block.dataset.qid)?.question;
         a.questions = a.questions.filter(q => q.id !== block.dataset.qid);
         block.remove();
+        // The demo has no agent to reply: a moment later it answers back as a real one would.
+        if (!opts.live) setTimeout(() => { a.replies = [...(a.replies || []), { id: 'demo-' + Date.now(), question: asked, answer: text, reply: t('demo.reply') }]; }, 1200);
         if (a.questions.length) return pop.querySelector('.answer')?.focus();
         if (a.state !== 'sleep') a.state = 'work';
         hidePop();

@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=f6bfcdbd';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, drawReplyBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=f6bfcdbd';
-import { themeOf } from './themes.js?v=f6bfcdbd';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=f6bfcdbd';
+import { agentInfo, plural } from './data.js?v=cd7112fa';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, drawReplyBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=cd7112fa';
+import { themeOf } from './themes.js?v=cd7112fa';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=cd7112fa';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -103,7 +103,7 @@ export class Scene {
       this.sides.set(`${f.id ?? f.title}|${w.agent}`, side);
       const a = { ...w, f, side, rand: r, hitAt: 1 + r() * 3, phase: r() };
       // Open questions, oldest first (the demo gives one as a plain string).
-      a.questions = w.questions ?? (w.question ? [{ id: w.question_id, question: w.question }] : []);
+      a.questions = w.questions ?? (w.question ? [{ id: w.question_id ?? `demo-${w.agent}-${w.zone}`, question: w.question }] : []);
       a.replies = w.replies ?? [];
       if (w.state === 'sleep') a.wakeAt = w.wakeIn;
       if (w.state === 'work' && !live) a.workUntil = 20 + r() * 25;

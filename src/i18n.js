@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=f6bfcdbd';
-import vi from './lang/vi.js?v=f6bfcdbd';
-import ja from './lang/ja.js?v=f6bfcdbd';
+import es from './lang/es.js?v=cd7112fa';
+import vi from './lang/vi.js?v=cd7112fa';
+import ja from './lang/ja.js?v=cd7112fa';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -143,6 +143,7 @@ const STRINGS = {
   'units': L({ s: 's', m: 'm', h: 'h', d: 'd', w: 'w' }, { s: 'с', m: 'м', h: 'ч', d: 'д', w: 'н' },
     { s: '秒', m: '分', h: '时', d: '天', w: '周' }, { s: 'วิ', m: 'น.', h: 'ชม.', d: 'ว.', w: 'สป.' }),
   'demo.clock': L((d) => `Demo · day ${d}`, (d) => `Демо · день ${d}`, (d) => `演示 · 第 ${d} 天`, (d) => `เดโม · วันที่ ${d}`),
+  'demo.reply': L('Got it, thanks: carrying on with that.', 'Понял, спасибо: продолжаю так.', '明白了，谢谢：我就按这个继续。', 'รับทราบ ขอบคุณ: ทำต่อตามนั้น'),
   'demo.clockTitle': L('Demo time runs fast: one day every two seconds', 'В демо время идёт быстро: день за две секунды', '演示中时间过得很快：两秒一天', 'ในเดโมเวลาเดินเร็ว: สองวินาทีเท่ากับหนึ่งวัน'),
 
   // Board: popups and badges

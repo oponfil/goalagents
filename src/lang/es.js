@@ -59,6 +59,7 @@ export default {
   'app.refreshTitle': 'Actualizar ahora',
   'units': { s: 's', m: 'm', h: 'h', d: 'd', w: 'sem' },
   'demo.clock': (d) => `Demo · día ${d}`,
+  'demo.reply': 'Entendido, gracias: sigo así.',
   'demo.clockTitle': 'En la demo el tiempo corre rápido: un día cada dos segundos',
 
   'board.waiting': (n) => `${n} ${n === 1 ? 'pregunta espera' : 'preguntas esperan'} tu respuesta`,

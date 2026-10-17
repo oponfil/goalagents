@@ -60,6 +60,7 @@ export default {
   'app.refreshTitle': '今すぐ更新',
   'units': { s: '秒', m: '分', h: '時', d: '日', w: '週' },
   'demo.clock': (d) => `デモ · ${d}日目`,
+  'demo.reply': '了解しました、ありがとうございます。その方針で続けます。',
   'demo.clockTitle': 'デモでは時間が速く進みます：2秒で1日',
 
   'board.waiting': (n) => `${n}件の質問があなたの返事を待っています`,
