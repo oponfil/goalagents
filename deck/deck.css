@@ -33,7 +33,7 @@ ol.steps b { display: block; color: var(--text); font-size: 21px; margin-bottom:
 ol.steps b::before { content: counter(step) ". "; color: var(--accent); }
 /* The board screenshot as big as the screen allows, callouts on both sides with arrows into it. */
 .annot { position: relative; padding: 0 230px; }
-.annot .shot { display: block; height: calc(100vh - 250px); height: calc(100svh - 250px); min-height: 320px; width: auto; max-width: calc(96vw - 520px); object-fit: contain; margin: 0 auto; }
+.annot .shot { border: 0; display: block; height: calc(100vh - 250px); height: calc(100svh - 250px); min-height: 320px; width: auto; max-width: calc(96vw - 520px); object-fit: contain; margin: 0 auto; }
 .annot .arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .callout { position: absolute; width: 210px; font-size: 15px; line-height: 1.3; color: var(--muted); }
 .callout b { display: block; color: var(--accent); font-size: 18px; }

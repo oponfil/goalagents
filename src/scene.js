@@ -1,14 +1,14 @@
-import { agentInfo, plural } from './data.js?v=4f921199';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=4f921199';
-import { themeOf } from './themes.js?v=4f921199';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=4f921199';
+import { agentInfo, plural } from './data.js?v=8dc61f91';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=8dc61f91';
+import { themeOf } from './themes.js?v=8dc61f91';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=8dc61f91';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
 // The scene is tall enough for 5 tanks; shorter funnels end higher up. Titles live in the page header.
 export const CW = 200;
 const ZW = 164, TOP = 27, ZH = 40, LH = 46, MAX_STAGES = 5;
-// The pixel layer is drawn at RES× the logical grid: scenery stays blocky, gauges get finer pixels.
+// The pixel layer is drawn at RES× the logical grid: scenery stays blocky, small pieces get finer pixels.
 const RES = 2;
 const tankTop = j => TOP + ZH + j * (LH + ZH);
 const zoneTop = k => (k < 0 ? TOP : tankTop(k) + LH);
@@ -28,14 +28,13 @@ const tankHalf = (j, n, r) => {
   const top = tankW(j, n) / 2, bot = j + 1 < n ? tankW(j + 1, n) / 2 : 17;
   return Math.round(top + (bot - top) * r / (LH - 1));
 };
-const GAUGE_R = 9;
-// The work piece under each gauge (anvil, flower bed…) sits right on the tank below, with a bit of
-// pipe between it and the gauge; agents stand on the tank's top edge as on a floor.
+// The work piece in each zone (ore rock, flower bed…) sits on the pipe right above the tank below;
+// agents stand on the tank's top edge as on a floor.
 const PLATE_H = 11;
 const plateTop = k => zoneTop(k) + ZH - PLATE_H;
 const outPlateTop = k => plateTop(k) - OUT_LIFT;
-// Below the last tank there is no tank to sit on: gauge and plate move up together (the same gap
-// between them as everywhere) so the pipe runs on past the plate to where results drip out.
+// Below the last tank there is no tank to sit on: the plate moves up so the pipe runs on past it
+// to where results drip out.
 const OUT_LIFT = 5;
 export const DAY_SECONDS = 2;
 const PER_ROW = 10;  // result items per row under a funnel, the same for every theme
@@ -150,7 +149,7 @@ export class Scene {
     this.drawBackground();
   }
 
-  // Static layer: rock, tunnels, beams, pipes, gauge rims, tanks' glass.
+  // Static layer: backdrop, pipes, the hopper, tanks' outlines.
   drawBackground() {
     const c = this.bg.getContext('2d'), r = rng(42);
     const w = this.funnels.length * CW;
@@ -314,7 +313,7 @@ export class Scene {
         const y = zoneTop(k), fl = f.flows[k + 1];
         // Below the last tank the drops run a little past the pipe's end, dripping out of it.
         this.drops(c, cx, y + 4, y + ZH + (k === n - 1 ? 9 : 0), fl, fi * 3 + k);
-        // The plate under each gauge is what the agents work on; only the output zone's has text
+        // The plate in each zone is what the agents work on; only the output zone's has text
         // on it: when the next result is due.
         theme.plate(c, cx - 13, k === n - 1 ? outPlateTop(k) : plateTop(k), 26, PLATE_H);
       }
@@ -602,19 +601,16 @@ export class Scene {
   }
 }
 
-// Rough projection for the gauges and tanks, from the funnel's own numbers (visual only, not a
+// Rough projection for the tanks and the next result, from the funnel's own numbers (visual only, not a
 // forecast model).
 // Tank fill: items at a stage so far ÷ items needed there for the whole goal (goal.total results).
 // "Needed" uses the conversion between the tanks' counts, which agents keep cumulative: of the
 // items that reached a stage, the share that reached the next one (the results for the last
 // stage). Where a stage or the next one is still at 0 the conversion is unknown and a default of
 // 30% stands in, so every tank shows a level from the first report.
-// Gauge of a zone: will the tank it feeds be full by the goal's date at this zone's flow? The date
-// is when the remaining results are due at the goal pace (one per goal.every days). The reading is
-// what the flow brings by then ÷ what the tank still misses: 1 is straight up, so the needle and
-// the tank's level tell the same story. The output zone's "tank" is the results row.
-// A flow nobody reported counts as 0, and a reading that can't be estimated reads 0: every gauge
-// shows a needle.
+// Pace of a zone: what its flow brings by the goal's date (when the remaining results are due at
+// one per goal.every days) ÷ what the tank still misses; 1 is just in time. Only the output zone's
+// is shown, as the colour of the "next" line. A flow nobody reported counts as 0.
 const DEFAULT_CONVERSION = 0.3;
 function project(f) {
   const st = f.stages, n = st.length, every = f.goal?.every, total = f.goal?.total, fl = f.flows.map(v => v ?? 0);
@@ -638,57 +634,10 @@ function project(f) {
   const zones = fl.map((flow, i) => f.manualPace?.[i] ?? reading(flow, i));
   return { zones, out: zones[n], eta: fl[n] > 0 ? 1 / fl[n] : null, fill, need };
 }
-const SWEEP0 = 0.75 * Math.PI, SWEEP = 1.5 * Math.PI;
-// Pace vs goal: red — far behind, yellow — close, green — on pace, bright green — well ahead.
+// Pace vs goal, for the "next" line: red — far behind, yellow — close, green — on pace, bright
+// green — well ahead.
 function statusColor(r) {
   return r >= 1.5 ? '#3CF27A' : r >= 0.9 ? '#7BD88F' : r >= 0.5 ? '#F2C14E' : '#FF5A4E';
-}
-
-export function gaugeRim(c, cx, gy) {
-  fcircle(c, cx, gy, GAUGE_R + 1.5, '#2E3036');
-  fcircle(c, cx, gy, GAUGE_R + 0.5, '#8E939D');
-}
-
-// r === null: reading unknown — a dimmed dial with no needle (a "?" is printed over it).
-export function gaugeFace(c, cx, gy, r, wobble) {
-  const known = r != null;
-  fcircle(c, cx, gy, GAUGE_R - 0.5, known ? '#F1ECDD' : '#9C968A');
-  c.fillStyle = known ? '#D0362B' : '#7A5650';
-  // Straight up is just in time; right of it ahead, left of it behind. The red zone at the very
-  // start on the left is far behind (a tenth of the pace or less, or nothing moving).
-  for (let a = 0; a <= 0.15; a += 0.01) {
-    const ang = SWEEP0 + SWEEP * a;
-    for (let d = GAUGE_R - 3; d <= GAUGE_R - 1; d += 0.5) {
-      c.fillRect(snap(cx + Math.cos(ang) * d), snap(gy + Math.sin(ang) * d), 0.5, 0.5);
-    }
-  }
-  // Five ticks, the middle one (on time) longer.
-  for (let i = 0; i <= 4; i++) {
-    const ang = SWEEP0 + SWEEP * i / 4, inner = i === 2 ? GAUGE_R - 4.5 : GAUGE_R - 3.5;
-    fline(c, cx + Math.cos(ang) * inner, gy + Math.sin(ang) * inner, cx + Math.cos(ang) * (GAUGE_R - 1.5), gy + Math.sin(ang) * (GAUGE_R - 1.5), '#6B6D74');
-  }
-  if (!known) return;
-  // Log scale: 1 at the top, 30× ahead at the right end, 1/30 at the left end.
-  const pos = r > 0 ? 0.5 + Math.log10(r) / 3 : 0;
-  const ang = SWEEP0 + SWEEP * Math.max(0, Math.min(1, pos + wobble));
-  fline(c, cx, gy, cx + Math.cos(ang) * (GAUGE_R - 2.5), gy + Math.sin(ang) * (GAUGE_R - 2.5), '#1E2A44', 1);
-  c.fillStyle = '#1E2A44'; c.fillRect(cx - 1, gy - 1, 2, 2);
-}
-
-// Fine-pixel helpers: half-unit pixels on the RES=2 layer.
-const snap = v => Math.round(v * 2) / 2;
-function fcircle(c, cx, cy, r, col) {
-  c.fillStyle = col;
-  for (let y = -r; y <= r; y += 0.5) for (let x = -r; x <= r; x += 0.5) {
-    if (x * x + y * y <= r * r) c.fillRect(snap(cx + x), snap(cy + y), 0.5, 0.5);
-  }
-}
-function fline(c, x0, y0, x1, y1, col, size = 0.5) {
-  const steps = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) * 2));
-  c.fillStyle = col;
-  for (let i = 0; i <= steps; i++) {
-    c.fillRect(snap(x0 + (x1 - x0) * i / steps), snap(y0 + (y1 - y0) * i / steps), size, size);
-  }
 }
 
 function circle(c, cx, cy, r, col) {

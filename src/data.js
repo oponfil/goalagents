@@ -1,5 +1,5 @@
 // Demo data shown on the landing page. In the product this comes from agents via MCP.
-import { lang } from './i18n.js?v=4f921199';
+import { lang } from './i18n.js?v=8dc61f91';
 
 export const AGENTS = {
   // app: turns a web chat link into one that opens the desktop app, where the app has a link scheme.
@@ -43,7 +43,7 @@ export function agentButton(info) {
 // Label forms: [singular, plural]. A funnel has n = 2-5 stages; flows (per day) has n + 1 entries:
 // flows[0] is the inflow above the first tank, flows[k + 1] the zone below stage k, and
 // flows[n] (the output zone below the last tank) is results per day;
-// null means not reported yet (the gauge shows as unknown).
+// null means not reported yet (shown as +0).
 // goal: total — how many results the goal needs; every — the pace, one result per N days.
 // These are the only targets an agent sets. theme: look of the column (src/themes.js).
 // Workers: state work | sleep | ask; at most two per zone (left and right of the pipe).

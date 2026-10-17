@@ -1,9 +1,8 @@
 // The pitch deck: each slide's backdrop is one of the dashboard themes, with an agent of that theme
 // at work under the text. Arrow keys, Page Up/Down and Space move between slides.
-import { THEMES } from './themes.js?v=4f921199';
-import { AGENTS } from './data.js?v=4f921199';
-import { gaugeRim, gaugeFace } from './scene.js?v=4f921199';
-import { drawStanding, drawLying, drawBubble, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, MINER_H } from './sprites.js?v=4f921199';
+import { THEMES } from './themes.js?v=8dc61f91';
+import { AGENTS } from './data.js?v=8dc61f91';
+import { drawStanding, drawLying, drawBubble, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, MINER_H } from './sprites.js?v=8dc61f91';
 
 const K = 4;  // screen pixels per logical pixel, as blocky as the dashboard
 
@@ -39,9 +38,10 @@ function vignette(slide) {
   const c = canvas.getContext('2d');
   c.setTransform(res, 0, 0, res, 0, 0);
   const cx = 46, floor = VH - 3;
-  c.fillStyle = '#5E626B'; c.fillRect(cx - 4, 0, 9, floor);
-  c.fillStyle = '#8E939D'; c.fillRect(cx - 2, 0, 5, floor);
-  c.fillStyle = '#B9BEC7'; c.fillRect(cx - 2, 0, 2, floor);
+  const [pe, pb, ps] = theme.pipe;
+  c.fillStyle = pe; c.fillRect(cx - 4, 0, 9, floor);
+  c.fillStyle = pb; c.fillRect(cx - 2, 0, 5, floor);
+  c.fillStyle = ps; c.fillRect(cx - 2, 0, 2, floor);
   theme.plate(c, cx - 13, floor - 11, 26, 11);
   c.fillStyle = theme.frame; c.fillRect(2, floor, VW - 4, 3);
   const x = cx - 38, y = floor - MINER_H, hx = x + 16.5, hy = y + 15, pipeX = cx - 5;
@@ -70,8 +70,11 @@ function callouts() {
     const wide = getComputedStyle(svg).display !== 'none';
     svg.innerHTML = '';
     if (!wide || !img.complete) return;
-    const b = box.getBoundingClientRect(), r = img.getBoundingClientRect();
-    const ix = r.left - b.left, iy = r.top - b.top;
+    // The picture is fitted into its box (object-fit: contain): measure the drawn area, not the box.
+    const b = box.getBoundingClientRect(), outer = img.getBoundingClientRect();
+    const k = Math.min(outer.width / img.naturalWidth, outer.height / img.naturalHeight);
+    const r = { width: img.naturalWidth * k, height: img.naturalHeight * k };
+    const ix = outer.left - b.left + (outer.width - r.width) / 2, iy = outer.top - b.top + (outer.height - r.height) / 2;
     for (const side of ['left', 'right']) {
       let bottom = -Infinity;
       [...box.querySelectorAll(`.callout[data-side="${side}"]`)]
@@ -92,8 +95,23 @@ function callouts() {
     }
   });
 }
-// Bullet icons, drawn like the board: an unread gauge, an agent idle, a funnel, a gauge, an agent asking.
+// Bullet icons, drawn like the board: an empty funnel tank with a "?", an agent idle, a funnel, a
+// tank with its heap, an agent asking.
 const IW = 36, IH = 32;
+function tankIcon(c, heap) {
+  const th = THEMES.mine, cx = IW / 2, top = 8, H = 18, half = r => Math.round(16 - 6 * r / (H - 1));
+  c.fillStyle = th.pipe[0]; c.fillRect(cx - 2, 0, 5, top); c.fillStyle = th.pipe[1]; c.fillRect(cx - 1, 0, 3, top);
+  for (let r = 0; r < H; r++) {
+    const h = half(r);
+    c.fillStyle = th.frame;
+    if (r === 0 || r === H - 1) c.fillRect(cx - h, top + r, h * 2, 1);
+    else { c.fillRect(cx - h, top + r, 1, 1); c.fillRect(cx + h - 1, top + r, 1, 1); c.fillStyle = th.tankBg; c.fillRect(cx - h + 1, top + r, h * 2 - 2, 1); }
+  }
+  if (heap) {
+    const P = th.piece;
+    [[-2, 0], [-1, 0], [0, 0], [1, 0], [-1.5, 1], [-0.5, 1], [0.5, 1], [-1, 2], [0, 2]].forEach(([i, row]) => P.draw(c, cx - P.w / 2 + i * P.w, top + H - 2 - (row + 1) * P.h, 3, 5));
+  }
+}
 function icons() {
   document.querySelectorAll('ul.icons li[data-icon]').forEach(li => {
     let canvas = li.querySelector('canvas');
@@ -103,11 +121,9 @@ function icons() {
     const c = canvas.getContext('2d');
     c.setTransform(res, 0, 0, res, 0, 0);
     const kind = li.dataset.icon;
-    if (kind === 'gauge' || kind === 'gauge-unknown') {
-      c.fillStyle = '#5E626B'; c.fillRect(IW / 2 - 4, 26, 9, 6); c.fillStyle = '#8E939D'; c.fillRect(IW / 2 - 2, 26, 5, 6);
-      gaugeRim(c, IW / 2, 15);
-      gaugeFace(c, IW / 2, 15, kind === 'gauge' ? 1.6 : null, 0);
-      if (kind === 'gauge-unknown') { c.fillStyle = '#2B2B2B'; c.font = '700 9px Rubik, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', IW / 2, 15.5); }
+    if (kind === 'tank' || kind === 'tank-unknown') {
+      tankIcon(c, kind === 'tank');
+      if (kind === 'tank-unknown') { c.fillStyle = '#F4EDE1'; c.font = '700 11px Rubik, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', IW / 2, 17.5); }
     } else if (kind === 'idle') {
       drawLying(c, 4, 10, 'claude', AGENTS.claude.color, false, 'helmet');
       c.fillStyle = '#BFD7FF'; c.font = '700 7px Rubik, sans-serif'; c.fillText('z', 30, 10); c.font = '700 5px Rubik, sans-serif'; c.fillText('z', 33, 5);

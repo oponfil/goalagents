@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="deck.css?v=4f921199">
+  <link rel="stylesheet" href="deck.css?v=8dc61f91">
 </head>
 <body>
   <main id="deck">
@@ -41,7 +41,7 @@
         <p class="kicker">The problem</p>
         <h2>Long goals run on many agents, in many chats</h2>
         <ul class="big icons">
-          <li data-icon="gauge-unknown">No view of progress: are you on pace for the goal?</li>
+          <li data-icon="tank-unknown">No view of progress: are you on pace for the goal?</li>
           <li data-icon="idle">Agents' questions get lost in chats, and the agents stand idle waiting</li>
         </ul>
       </div>
@@ -64,7 +64,7 @@
         <h2>One board for all your goals</h2>
         <ul class="big icons">
           <li data-icon="funnel">Each goal is a funnel. Agents write their progress into it through MCP.</li>
-          <li data-icon="gauge">You see progress at a glance: how full each stage is, whether you're on pace, when the next result is due.</li>
+          <li data-icon="tank">You see progress at a glance: how full each stage is, whether you're on pace, when the next result is due.</li>
           <li data-icon="ask">Agents ask, you answer right on the board, and they carry on.</li>
         </ul>
       </div>
@@ -91,13 +91,13 @@
         <div class="annot">
           <img class="shot" src="../docs/img/overview.png" alt="The GoalAgents board: four goal funnels with agents working between the tanks">
           <svg class="arrows" aria-hidden="true"></svg>
-          <div class="callout" data-side="left" data-x="0.125" data-y="0.057"><b>Sheet</b>opens the list the agent keeps</div>
-          <div class="callout" data-side="left" data-x="0.06" data-y="0.433"><b>Tank</b>how much of what the goal needs is there</div>
-          <div class="callout" data-side="left" data-x="0.054" data-y="0.235"><b>Red badge</b>an agent is waiting for your answer</div>
-          <div class="callout" data-side="left" data-x="0.098" data-y="0.886"><b>next</b>when the next result is due</div>
-          <div class="callout" data-side="right" data-x="0.89" data-y="0.36"><b>Gauge</b>on pace for the goal? The red mark is just in time</div>
-          <div class="callout" data-side="right" data-x="0.932" data-y="0.113"><b>+N</b>what the agent's last run added</div>
-          <div class="callout" data-side="right" data-x="0.977" data-y="0.813"><b>Results</b>one per result; empty ones are still to come</div>
+          <div class="callout" data-side="left" data-x="0.125" data-y="0.05"><b>Sheet</b>opens the list the agent keeps</div>
+          <div class="callout" data-side="left" data-x="0.054" data-y="0.23"><b>Red badge</b>an agent is waiting for your answer</div>
+          <div class="callout" data-side="left" data-x="0.04" data-y="0.307"><b>Tank</b>how many items have reached this stage</div>
+          <div class="callout" data-side="left" data-x="0.103" data-y="0.9"><b>next</b>when the next result is due</div>
+          <div class="callout" data-side="right" data-x="0.93" data-y="0.099"><b>+N</b>what the agent's last run added</div>
+          <div class="callout" data-side="right" data-x="0.875" data-y="0.466"><b>Heap</b>piles up piece by piece toward what the goal needs</div>
+          <div class="callout" data-side="right" data-x="0.975" data-y="0.837"><b>Results</b>one per result; empty ones are still to come</div>
         </div>
       </div>
     </section>
@@ -138,6 +138,6 @@
 
   </main>
   <div id="counter" aria-hidden="true"></div>
-  <script type="module" src="../src/deck.js?v=4f921199"></script>
+  <script type="module" src="../src/deck.js?v=8dc61f91"></script>
 </body>
 </html>

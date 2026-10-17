@@ -155,7 +155,7 @@ function tankLove(c, x, y, w, h, j, n) {
   }
 }
 
-// --- Work pieces under the gauge, where agents strike and the flow is written: (c, x, y, w, h).
+// --- Work pieces in each zone, where agents strike: (c, x, y, w, h).
 // Flat, about 36×11 units centred on the pipe, drawn in half-unit pixels.
 
 // Fill a rounded blob row by row: halfWidth(t) for t in 0..1 from top to bottom.
@@ -375,7 +375,7 @@ function resultBag(c, x, y, empty) {
   rect(c, x + 6, y + 11, 1, 2, '#2E6B3A'); rect(c, x + 8.5, y + 13, 1, 2, '#2E6B3A');
 }
 
-// --- Garden theme: backdrop, tanks, the bush under the gauge, flower pots ---
+// --- Garden theme: backdrop, tanks, the flower bed in each zone, flower pots ---
 
 function backGarden(c, x, w, h, r) {
   rect(c, x, 0, w, h, '#142012');

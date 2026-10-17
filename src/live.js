@@ -1,5 +1,5 @@
 // The person's own funnels, written by their agents through MCP, redrawn when the agents write.
-import { supabase } from './auth.js?v=4f921199';
+import { supabase } from './auth.js?v=8dc61f91';
 
 const DAY = 86400e3;
 const WINDOW_DAYS = 7;
@@ -7,8 +7,7 @@ const WINDOW_DAYS = 7;
 // Flow of one reported value (a stage count or the results), per day: how much it grew over the
 // last 7 days, an average per day. Only increases count, so a stage that items leave does not read
 // as negative. With less than a day of history the growth so far counts as one day's: +1 in the
-// first hour is +1/d, not +24/d. Until there are two reports to compare it is 0: "+0/d" and a
-// gauge at zero rather than an empty one.
+// first hour is +1/d, not +24/d. Until there are two reports to compare it is 0: "+0/d".
 function flowOf(reports, now) {
   if (reports.length < 2) return 0;
   let grew = 0;
@@ -32,7 +31,7 @@ function toScene(f, reports, now) {
     // Flow per day: set by the agent, or the growth between its reports.
     flows: [...stages.map(s => (s.flow_per_day != null ? Number(s.flow_per_day) : flowOf(series(s.key), now))),
       f.output_flow_per_day != null ? Number(f.output_flow_per_day) : flowOf(series(null), now)],
-    // Other readings an agent set by hand (null = computed): tank fill 0-1 and gauge pace per zone.
+    // Other readings an agent set by hand (null = computed): tank fill 0-1 and pace per zone.
     manualFill: stages.map(s => (s.fill_percent == null ? null : Number(s.fill_percent) / 100)),
     manualPace: [...stages.map(s => (s.pace == null ? null : Number(s.pace))), f.output_pace == null ? null : Number(f.output_pace)],
     cubes: f.results,
