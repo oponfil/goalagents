@@ -1,12 +1,12 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=b34377a6';
-import { Scene, CW, drawWork, TOOL_PERIOD } from '../src/scene.js?v=b34377a6';
-import { guideScene, guideHeight, drawGuide, TH } from '../src/guide.js?v=b34377a6';
+import { AGENTS, FUNNELS } from '../src/data.js?v=c1cdcc9a';
+import { Scene, CW, drawWork, TOOL_PERIOD } from '../src/scene.js?v=c1cdcc9a';
+import { guideScene, guideHeight, drawGuide, TH } from '../src/guide.js?v=c1cdcc9a';
 import { GIFEncoder, quantize, applyPalette } from 'https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js';
-import { THEMES } from '../src/themes.js?v=b34377a6';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=b34377a6';
+import { THEMES } from '../src/themes.js?v=c1cdcc9a';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawHammer, drawSword, drawRollingPin } from '../src/sprites.js?v=c1cdcc9a';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -71,10 +71,13 @@ function agentsSheet() {
   return c;
 }
 
-// One tile per theme: a working agent on the tank's top edge by its work piece, the tank, results.
-// Each tile at time t (seconds into a LOOP-long loop): the agent works as on the board, its tool
-// going through a whole number of strokes in the loop (each stroke stretched a little to fit).
-const LOOP = 2.4;
+// One tile per theme: a working agent by the pipe on its plate, a funnel tank filling up and three
+// results under it (two done, one still to come). Each tile at time t (seconds into a LOOP-long
+// loop) is drawn as the board draws it: the agent where the board puts a worker (38 units left of
+// the pipe's centre), its tool going through a whole number of strokes in the loop (each stroke
+// stretched a little to fit), and the tank empty at the start, its pieces (or the lab's liquid)
+// falling in from the pipe one by one as when the page opens, then holding till the loop restarts.
+const LOOP = 4.8;
 const scratch = document.createElement('canvas').getContext('2d');
 function themesSheet(t = 0.3) {
   const names = Object.keys(THEMES), K = 4, W = 180, Hh = 112, cols = 3;
@@ -84,49 +87,73 @@ function themesSheet(t = 0.3) {
     const th = THEMES[name], ox = (i % cols) * W, oy = Math.floor(i / cols) * Hh, r = rng(7 + i);
     g.setTransform(K, 0, 0, K, ox * K, oy * K);
     th.backdrop(g, 0, W, Hh, r);
-    const [pe, pb, ps, pband] = th.pipe;
-    g.fillStyle = pe; g.fillRect(86, 6, 9, 48);
-    g.fillStyle = pb; g.fillRect(88, 6, 5, 48);
-    g.fillStyle = ps; g.fillRect(88, 6, 2, 48);
-    if (pband) for (let y = 14; y < 51; y += 14) { g.fillStyle = pband; g.fillRect(86, y, 9, th.bandH || 2); }
-    th.plate(g, 77, 43, 26, 11);
-    const id = agentsFor[i % agentsFor.length], ax = 57, ay = 26, hx = ax + 16.5, hy = ay + 15;
+    // The pipe as on the board: 9 wide around cx, the plate 26 wide from cx - 13.
+    const cx = 90, [pe, pb, ps, pband] = th.pipe;
+    g.fillStyle = pe; g.fillRect(cx - 4, 6, 9, 48);
+    g.fillStyle = pb; g.fillRect(cx - 2, 6, 5, 48);
+    g.fillStyle = ps; g.fillRect(cx - 2, 6, 2, 48);
+    if (pband) for (let y = 14; y < 51; y += 14) { g.fillStyle = pband; g.fillRect(cx - 4, y, 9, th.bandH || 2); }
+    th.plate(g, cx - 13, 43, 26, 11);
+    const id = agentsFor[i % agentsFor.length], ax = cx - 38, ay = 26, hx = ax + 16.5, hy = ay + 15;
     drawStanding(g, ax, ay, id, AGENTS[id].color, -1, false, true, th.outfit);
     const strokes = Math.max(1, Math.round(LOOP / (TOOL_PERIOD[th.tool] ?? 1.2))), cycAt = time => ((time / LOOP * strokes) % 1 + 1) % 1;
-    drawWork(g, th.tool, hx, hy, cycAt(t), 86);
+    drawWork(g, th.tool, hx, hy, cycAt(t), cx - 5);
     // Sparks by the pipe for a quarter second after the tool lands, as on the board.
     let landed = false;
     for (let d = 0; d <= 0.25 && !landed; d += 0.02) landed = drawWork(scratch, th.tool, 0, 0, cycAt(t - d), 0);
-    if (landed) for (let k = 0; k < 4; k++) { g.fillStyle = th.spark; g.fillRect(80 - ((k * 7 + i) % 6), 36 + ((k * 5 + i * 3) % 8), 2, 2); }
-    // A funnel tank as on the board: a thin trapezoid, its pieces piled from the bottom middle
-    // (a liquid in the lab), about half full.
-    // The sides slope as gently as on the board (7 units each over the tank's height).
-    const tx = 90, ty = 54, TH = 26, half = row => Math.round(74 - 7 * row / (TH - 1));
-    // Which stage's pieces each sample shows: gold for the mine, blue floppies for code, banknotes
-    // for money, the middle stage elsewhere.
-    const [sj, sn] = { mine: [3, 5], code: [0, 5], money: [1, 5], forge: [3, 5], bakery: [1, 5], blocks: [3, 5] }[name] || [1, 3];
+    if (landed) for (let k = 0; k < 4; k++) { g.fillStyle = th.spark; g.fillRect(cx - 6 - ((k * 7 + i) % 6), ay + 10 + ((k * 5 + i * 3) % 8), 2, 2); }
+    // The tank: a trapezoid 112 wide at the top narrowing to 84 at the bottom.
+    const ty = 54, TH = 26, half = row => Math.round(56 - 14 * row / (TH - 1));
     for (let row = 0; row < TH; row++) {
       const h = half(row);
       g.fillStyle = th.frame;
-      if (row === 0 || row === TH - 1) g.fillRect(tx - h, ty + row, h * 2, 1);
-      else { g.fillRect(tx - h, ty + row, 1, 1); g.fillRect(tx + h - 1, ty + row, 1, 1); g.fillStyle = th.tankBg; g.fillRect(tx - h + 1, ty + row, h * 2 - 2, 1); }
+      if (row === 0 || row === TH - 1) g.fillRect(cx - h, ty + row, h * 2, 1);
+      else { g.fillRect(cx - h, ty + row, 1, 1); g.fillRect(cx + h - 1, ty + row, 1, 1); g.fillStyle = th.tankBg; g.fillRect(cx - h + 1, ty + row, h * 2 - 2, 1); }
     }
+    // Which stage's pieces each sample shows: gold for the mine, blue floppies for code, banknotes
+    // for money, the middle stage elsewhere.
+    const [sj, sn] = { mine: [3, 5], code: [0, 5], money: [1, 5], forge: [3, 5], bakery: [1, 5], blocks: [3, 5] }[name] || [1, 3];
     if (th.piece) {
-      const P = th.piece, cells = [];
+      // Cells low and middle first, half of them taken; a piece leaves the pipe every EVERY
+      // seconds and lands FALL seconds later.
+      const P = th.piece, cells = [], EVERY = 0.07, FALL = 0.45;
       for (let row = 0; row < Math.floor((TH - 3) / P.h); row++) {
         const top = ty + TH - 2 - (row + 1) * P.h, hw = half(Math.round(top - ty)) - 1.5, k = Math.floor(hw * 2 / P.w);
         for (let m = 0; m < k; m++) {
-          const px = tx - k * P.w / 2 + m * P.w + (row % 2 ? P.w / 4 : 0);
-          if (px + P.w <= tx + hw) cells.push({ x: px, y: top, score: row * 1.6 + Math.abs(px + P.w / 2 - tx) / P.w * 0.7 });
+          const px = cx - k * P.w / 2 + m * P.w + (row % 2 ? P.w / 4 : 0);
+          if (px + P.w <= cx + hw) cells.push({ x: px, y: top, score: row * 1.6 + Math.abs(px + P.w / 2 - cx) / P.w * 0.7 + ((m * 7 + row * 3) % 5) * 0.05 });
         }
       }
-      cells.sort((a, b) => a.score - b.score).slice(0, Math.round(cells.length * 0.5)).forEach((cell, m) => P.draw(g, cell.x, cell.y, sj, sn, m));
+      cells.sort((a, b) => a.score - b.score).slice(0, Math.round(cells.length * 0.5)).forEach((cell, m) => {
+        const q = (t - m * EVERY) / FALL;
+        if (q < 0) return;
+        if (q >= 1) return P.draw(g, cell.x, cell.y, sj, sn, m);
+        const sx = cx - P.w / 2, sy = ty - 2;
+        P.draw(g, Math.round((sx + (cell.x - sx) * q) * 2) / 2, Math.round((sy + (cell.y - sy) * q * q) * 2) / 2, sj, sn, m);
+      });
     } else {
-      g.save(); g.beginPath();
-      for (let row = 12; row < TH - 1; row++) { const h = half(row) - 1; g.rect(tx - h, ty + row, h * 2, 1); }
-      g.clip(); th.tank(g, 10, ty, 160, TH, 1, 3, 0, 11 + i); g.restore();
+      // The lab: the liquid rises a row per drop, up to half the tank.
+      const rows = TH - 2, want = Math.round(rows * 0.5), EVERY = 0.12, FALL = 0.4;
+      const shown = Math.max(0, Math.min(want, Math.floor((t - FALL) / EVERY) + 1));
+      if (shown) {
+        g.save(); g.beginPath();
+        for (let row = rows - shown + 1; row <= rows; row++) { const h = half(row) - 1; g.rect(cx - h, ty + row, h * 2, 1); }
+        g.clip(); th.tank(g, 10, ty + 1, 160, rows, sj, sn, 0, 11 + i); g.restore();
+      }
+      const surface = ty + 1 + rows - shown;
+      g.fillStyle = th.drop(sj, sn);
+      for (let k = shown; k < want; k++) {
+        const q = (t - k * EVERY) / FALL;
+        if (q >= 0 && q < 1) g.fillRect(cx - 0.5, Math.round((ty - 2 + (surface - ty + 1) * q * q) * 2) / 2, 1.5, 2);
+      }
     }
-    for (let k = 0; k < 3; k++) th.result(g, 64 + k * 18, 86, false);
+    // Two results done and one to come, the empty one faded as on the board.
+    for (let k = 0; k < 3; k++) {
+      const empty = k === 2;
+      if (empty) g.globalAlpha = th.emptyAlpha ?? 1;
+      th.result(g, cx - 26 + k * 18, 86, empty);
+      g.globalAlpha = 1;
+    }
     g.setTransform(1, 0, 0, 1, 0, 0);
     g.font = `700 ${6 * K}px ${FONT}`; g.textAlign = 'left'; g.fillStyle = '#F4EDE1';
     g.shadowColor = 'rgba(0,0,0,0.8)'; g.shadowBlur = K * 1.5;
@@ -237,10 +264,10 @@ function funnelGuide({ labels = true, scene = null, show = true } = {}) {
   return c;
 }
 
-// The animated pictures. Themes: 2.4 seconds in 40 frames, each tool through whole strokes. The funnel: 2.4
+// The animated pictures. Themes: 4.8 seconds in 60 frames, each tool through whole strokes. The funnel: 2.4
 // seconds of the live scene, labels and all. Both at half the PNG size.
 function themesGif() {
-  const full = themesSheet(), n = 40;
+  const full = themesSheet(), n = 60;
   return gif(i => themesSheet(i * LOOP / n), n, full.width / 2, full.height / 2, LOOP / n * 1000);
 }
 function funnelGif() {
@@ -271,7 +298,13 @@ try {
     await save(plain, 'funnel-plain.png');
     throw Object.assign(new Error(), { done: 'Saved docs/img/funnel.png, funnel.gif and funnel-plain.png. Points: ' + plain.points.join('; ') });
   }
-  if (only) throw Object.assign(new Error(), { done: `Nothing saved: ?only= takes themes, funnel or og` });
+  // ?only=preview&t=1.2 shows the theme samples at one moment of the loop, saving nothing.
+  if (only === 'preview') {
+    const c = themesSheet(+new URLSearchParams(location.search).get('t') || 0);
+    c.style.width = '100%'; document.body.appendChild(c);
+    throw Object.assign(new Error(), { done: 'Preview, nothing saved' });
+  }
+  if (only) throw Object.assign(new Error(), { done: `Nothing saved: ?only= takes themes, funnel, og or preview` });
   await save(agentsSheet(), 'agents.png');
   await save(themesGif(), 'themes.gif');
   await save(await ogCard(), 'og.png');
