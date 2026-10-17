@@ -2,8 +2,8 @@
 // profile button (the Google photo, or a plain silhouette) whose menu holds the rarely used
 // settings: the language, email when an agent asks, and signing out. A signed-in person's language
 // is kept in their account too.
-import { supabase, siteUrl } from './auth.js?v=38d7b930';
-import { t, lang, chosen, LANGS, SHORT, setLang, onLangSaved, adoptLang } from './i18n.js?v=38d7b930';
+import { supabase, siteUrl } from './auth.js?v=21bb7ed3';
+import { t, lang, chosen, LANGS, SHORT, setLang, onLangSaved, adoptLang } from './i18n.js?v=21bb7ed3';
 
 const links = document.querySelector('nav .links');
 const signin = document.querySelector('.links a.signin');

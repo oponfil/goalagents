@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=38d7b930';
-import { Scene, CW, H } from '../src/scene.js?v=38d7b930';
-import { THEMES } from '../src/themes.js?v=38d7b930';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=38d7b930';
+import { AGENTS, FUNNELS } from '../src/data.js?v=21bb7ed3';
+import { Scene, CW, H } from '../src/scene.js?v=21bb7ed3';
+import { THEMES } from '../src/themes.js?v=21bb7ed3';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=21bb7ed3';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -165,7 +165,19 @@ async function ogCard(board) {
 // One funnel with labels on its right, each with a line to the part it explains: the README's guide
 // to reading the board. The Job Search demo funnel after a few seconds, while Grok still sleeps.
 function funnelGuide({ labels = true } = {}) {
-  const scale = 2, dpr = 2, K = scale * dpr, TH = 22, side = 440, f0 = FUNNELS[0];
+  const scale = 2, dpr = 2, K = scale * dpr, TH = 22, side = 440, job = FUNNELS[0];
+  // A three-stage Job Search is enough to show every part: jobs found → applied → interview → offer.
+  const f0 = {
+    ...job,
+    stages: [job.stages[0], job.stages[1], job.stages[3]],
+    flows: [job.flows[0], job.flows[1], job.flows[3], job.flows[5]],
+    workers: [
+      { agent: 'chatgpt', zone: -1, state: 'work' }, { agent: 'perplexity', zone: -1, state: 'work' },
+      { agent: 'claude', zone: 0, state: 'ask', question: job.workers.find(w => w.state === 'ask').question }, { agent: 'gemini', zone: 0, state: 'work' },
+      { agent: 'grok', zone: 1, state: 'sleep', wakeIn: 12 }, { agent: 'deepseek', zone: 1, state: 'work' },
+      { agent: 'mistral', zone: 2, state: 'work' },
+    ],
+  };
   // The agents the arrows point at stand on the left, by the labels, so no arrow crosses anything
   // on its way; the agent sharing a zone with them goes right.
   const sides = new Map([['claude', 'L'], ['gemini', 'R'], ['grok', 'L'], ['deepseek', 'R'], ['mistral', 'L'], ['qwen', 'R']]
@@ -178,9 +190,12 @@ function funnelGuide({ labels = true } = {}) {
   // Without labels (the landing page writes them as text, in the page's language) the picture is
   // just the funnel.
   const left = labels ? side : 0;
-  const [c, g] = canvas(left + fw, TH * K + src.height);
+  // The scene is tall enough for five stages: cut it just below the lines under the results.
+  const tanks = scene.hits.filter(h => h.type === 'stage'), lastTank = tanks[tanks.length - 1];
+  const contentH = Math.min(src.height, Math.ceil((lastTank.y + lastTank.h + 49 + Math.ceil(Math.max(f0.goal.total, f0.cubes) / 10) * 22 + 50) * K));
+  const [c, g] = canvas(left + fw, TH * K + contentH);
   g.fillStyle = '#1B1714'; g.fillRect(0, 0, c.width, c.height);
-  g.drawImage(src, 0, 0, fw, src.height, left, TH * K, fw, src.height);
+  g.drawImage(src, 0, 0, fw, contentH, left, TH * K, fw, contentH);
   g.drawImage(scene.titleStrip(0, TH), left, 0, fw, TH * K);
   g.font = `600 ${19 * dpr}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
   g.fillStyle = '#F4EDE1'; g.fillText(f0.title, left + fw / 2, TH * K / 2);
