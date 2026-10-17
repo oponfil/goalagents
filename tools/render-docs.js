@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=fe97aa4f';
-import { Scene, CW } from '../src/scene.js?v=fe97aa4f';
-import { THEMES } from '../src/themes.js?v=fe97aa4f';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=fe97aa4f';
+import { AGENTS, FUNNELS } from '../src/data.js?v=8292e455';
+import { Scene, CW } from '../src/scene.js?v=8292e455';
+import { THEMES } from '../src/themes.js?v=8292e455';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=8292e455';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -134,21 +134,20 @@ async function ogCard() {
 // to reading the board. The Job Search demo funnel after a few seconds, while Grok still sleeps.
 function funnelGuide({ labels = true } = {}) {
   const scale = 2, dpr = 2, K = scale * dpr, TH = 22, side = 440, job = FUNNELS[0];
-  // A three-stage Job Search is enough to show every part: jobs found → applied → interview → offer.
+  // A two-stage Job Search is enough to show every part: jobs found → interview → offer.
   const f0 = {
     ...job,
-    stages: [job.stages[0], job.stages[1], job.stages[3]],
-    flows: [job.flows[0], job.flows[1], job.flows[3], job.flows[5]],
+    stages: [job.stages[0], job.stages[3]],
+    flows: [job.flows[0], job.flows[3], job.flows[5]],
     workers: [
       { agent: 'chatgpt', zone: -1, state: 'work' }, { agent: 'perplexity', zone: -1, state: 'work' },
       { agent: 'claude', zone: 0, state: 'ask', question: job.workers.find(w => w.state === 'ask').question }, { agent: 'gemini', zone: 0, state: 'work' },
-      { agent: 'grok', zone: 1, state: 'sleep', wakeIn: 12 }, { agent: 'deepseek', zone: 1, state: 'work' },
-      { agent: 'mistral', zone: 2, state: 'work' },
+      { agent: 'grok', zone: 1, state: 'sleep', wakeIn: 12 }, { agent: 'mistral', zone: 1, state: 'work' },
     ],
   };
   // The agents the arrows point at stand on the left, by the labels, so no arrow crosses anything
   // on its way; the agent sharing a zone with them goes right.
-  const sides = new Map([['claude', 'L'], ['gemini', 'R'], ['grok', 'L'], ['deepseek', 'R'], ['mistral', 'L'], ['qwen', 'R']]
+  const sides = new Map([['chatgpt', 'L'], ['perplexity', 'R'], ['claude', 'L'], ['gemini', 'R'], ['grok', 'L'], ['mistral', 'R']]
     .map(([id, sd]) => [`${f0.title}|${id}`, sd]));
   const scene = new Scene(document.createElement('canvas'), [f0], { sides });
   scene.resize(scale, dpr);
@@ -174,18 +173,20 @@ function funnelGuide({ labels = true } = {}) {
   const stage = j => scene.hits.find(h => h.type === 'stage' && h.j === j);
   const agent = (id, state) => scene.agents.find(a => a.agent === id && a.state === state);
   const s0 = stage(0), last = stage(n - 1);
-  const ask = agent('claude', 'ask'), sleep = scene.spot(agent('grok', 'sleep'), 'rest'), work = scene.spot(agent('mistral', 'work'), 'work');
+  const ask = agent('claude', 'ask'), sleep = scene.spot(agent('grok', 'sleep'), 'rest'), work = scene.spot(agent('chatgpt', 'work'), 'work');
   const src0 = scene.hits.find(h => h.type === 'source');
   const resultsY = last.y + last.h + 40 + 9;
+  // The tank's left side halfway down: the sides run straight from this tank's top to the next one's.
+  const s1 = stage(1), tankMid = s0.w / 2 - (s0.w - s1.w) / 2 * (s0.h / 2) / (s1.y - s0.y);
   // Each arrow ends on the left edge of what it explains.
   const notes = [
     [P(src0.x + 3, src0.y + 14), 'Sheet', 'The table where the agents keep track of everything.'],
-    [P(s0.x + 1, s0.y + 6), 'Tank', 'Items at this stage so far, and +N a day.'],
+    [P(cx - tankMid + 2, s0.y + s0.h / 2), 'Tank', 'Items at this stage so far, and +N a day.'],
     [P(ask.bubble.x, ask.bubble.y + 11), 'Question', 'An agent waits for your answer. Click it to reply.'],
     [P(sleep.x - 1, sleep.y + 1), 'Asleep', 'Resting until its next run; the timer counts down.'],
-    [P(work.x + 1, work.y + 20), 'Agent at work', '+N is what its current run added.'],
+    [P(work.x + 1, work.y + 12), 'Agent at work', '+N is what its current run added.'],
     [P(cx - 45, resultsY + 8), 'Results', 'One per result the goal needs; filled ones are done.'],
-    [P(cx - 23, resultsY + 54), 'Prediction', 'When the next result is due at the current pace.'],
+    [P(cx - 23, resultsY + 48), 'Prediction', 'When the next result is due at the current pace.'],
   ];
   // The landing page's labels point at the same places: each as a fraction of the picture.
   if (!labels) {
