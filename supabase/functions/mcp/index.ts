@@ -363,7 +363,7 @@ function server(db: Db, caller: Caller) {
 Deno.serve(
   pipeline(
     [
-      // The project's Auth issuer, not the goalagents.supabase.co name the request came in on.
+      // The project's Auth issuer, not the goalcraft.supabase.co name the request came in on.
       withOAuthProtectedResource({ authorizationServer: Deno.env.get('MCP_AUTH_ISSUER') }),
       withSupabase({ auth: 'user' }),
     ],
