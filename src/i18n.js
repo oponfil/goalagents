@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=a0e80956';
-import vi from './lang/vi.js?v=a0e80956';
-import ja from './lang/ja.js?v=a0e80956';
+import es from './lang/es.js?v=f1cee86f';
+import vi from './lang/vi.js?v=f1cee86f';
+import ja from './lang/ja.js?v=f1cee86f';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -163,6 +163,8 @@ const STRINGS = {
     (late, seen) => `Следующий запуск должен был быть ${late} назад, последний раз выходил на связь ${seen} назад.`,
     (late, seen) => `它本应在 ${late}前运行；上次联系是 ${seen}前。`,
     (late, seen) => `รอบถัดไปควรเริ่มเมื่อ ${late}ที่แล้ว ติดต่อครั้งล่าสุดเมื่อ ${seen}ที่แล้ว`),
+  'board.lost': L((who) => `No word from ${who}`, (who) => `${who} не выходит на связь`, (who) => `${who} 没有消息`, (who) => `ไม่มีสัญญาณจาก ${who}`),
+  'board.lostNote': L((ago) => `It is shown at work, but its last signal was ${ago} ago.`, (ago) => `Он числится за работой, но последний сигнал был ${ago} назад.`, (ago) => `它显示为工作中，但最后一次信号是 ${ago}前。`, (ago) => `แสดงว่ากำลังทำงาน แต่สัญญาณล่าสุดคือ ${ago}ที่แล้ว`),
   'board.runs': L('Last runs', 'Последние запуски', '最近的运行', 'การรันล่าสุด'),
   'board.runNow': L('running', 'идёт', '进行中', 'กำลังรัน'),
   'board.noRuns': L('No runs recorded yet.', 'Запусков пока не записано.', '还没有记录到运行。', 'ยังไม่มีการรันที่บันทึกไว้'),

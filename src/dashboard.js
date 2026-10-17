@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=a0e80956';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=a0e80956';
-import { t, lang } from './i18n.js?v=a0e80956';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=f1cee86f';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=f1cee86f';
+import { t, lang } from './i18n.js?v=f1cee86f';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -231,11 +231,12 @@ export function mountDashboard(funnels, opts = {}) {
         <div class="pop-sub">${where}</div>
         ${asleep && !missed ? `<p class="pop-note">${esc(t('board.nextRun', when))}</p>` : ''}${missed}${asks}${reply}${history}`;
     }
-    const state = scene.overdue(a) ? 'board.overdue' : a.state === 'sleep' ? 'board.resting'
+    const lost = scene.lost(a) ? `<p class="pop-note warn">${esc(t('board.lostNote', fmtDuration(scene.silence(a))))}</p>` : '';
+    const state = scene.overdue(a) ? 'board.overdue' : scene.lost(a) ? 'board.lost' : a.state === 'sleep' ? 'board.resting'
       : a.state === 'walk' ? (a.to === 'work' ? 'board.starting' : 'board.finished')
         : 'board.working';
     return `<div class="pop-title">${t(state, who)}</div>
-      <div class="pop-sub">${where}</div>${missed}
+      <div class="pop-sub">${where}</div>${missed}${lost}
       ${chat ? `<a class="btn" href="${esc(chat)}" ${opens(chat, web)}>${esc(t('board.open', info.product || info.name))}</a>` : ''}${history}`;
   }
 

@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=a0e80956';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=a0e80956';
-import { themeOf } from './themes.js?v=a0e80956';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=a0e80956';
+import { agentInfo, plural } from './data.js?v=f1cee86f';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=f1cee86f';
+import { themeOf } from './themes.js?v=f1cee86f';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=f1cee86f';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -467,6 +467,23 @@ export class Scene {
       g.fillText(s, x * S, y * S);
     };
     const shadowed = fn => { g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowOffsetY = S * 0.6; fn(); g.shadowColor = 'transparent'; g.shadowOffsetY = 0; };
+    // An amber warning triangle with a time in it: an agent overdue or out of contact.
+    const warn = (text, cx, base) => {
+      g.font = `700 ${7 * S}px ${FONT}`;
+      const tw = g.measureText(text).width / S, h = 17, half = Math.max(12, tw / 2 + 7);
+      g.beginPath();
+      g.moveTo(cx * S, (base - h) * S); g.lineTo((cx + half) * S, base * S); g.lineTo((cx - half) * S, base * S);
+      g.closePath();
+      g.lineJoin = 'round'; g.lineWidth = 1.6 * S; g.strokeStyle = '#1B1714'; g.fillStyle = '#F2A33C';
+      g.fill(); g.stroke();
+      T(text, cx, base - 4.2, 7, '#1B1714', 'center', 700);
+    };
+    // Working, but silent for too long: the same triangle over its head, with how long it has been.
+    for (const a of this.agents) {
+      if (!this.lost(a)) continue;
+      const p = this.spot(a, 'work');
+      warn(fmtDuration(this.silence(a)), p.x + 10, p.y - 4);
+    }
     const unit = PERIODS[this.period];
     this.funnels.forEach((f, fi) => {
       const cx = this.cx(fi), n = f.stages.length;
@@ -503,17 +520,8 @@ export class Scene {
       const p = this.spot(a, 'rest');
       // Past its next run and still no word from it: how late it is, in an amber warning triangle,
       // instead of the timer.
-      if (this.overdue(a)) {
-        const late = fmtDuration(t - a.wakeAt);
-        g.font = `700 ${7 * S}px ${FONT}`;
-        const tw = g.measureText(late).width / S, cx = p.x + 14, base = p.y - 3, h = 17, half = Math.max(12, tw / 2 + 7);
-        g.beginPath();
-        g.moveTo(cx * S, (base - h) * S); g.lineTo((cx + half) * S, base * S); g.lineTo((cx - half) * S, base * S);
-        g.closePath();
-        g.lineJoin = 'round'; g.lineWidth = 1.6 * S; g.strokeStyle = '#1B1714'; g.fillStyle = '#F2A33C';
-        g.fill(); g.stroke();
-        T(late, cx, base - 4.2, 7, '#1B1714', 'center', 700);
-      } else if (a.wakeAt != null) shadowed(() => T(fmtTimer(a.wakeAt - t), p.x + 14, p.y - 8, 8.5, '#F4EDE1', 'center', 700));
+      if (this.overdue(a)) warn(fmtDuration(t - a.wakeAt), p.x + 14, p.y - 3);
+      else if (a.wakeAt != null) shadowed(() => T(fmtTimer(a.wakeAt - t), p.x + 14, p.y - 8, 8.5, '#F4EDE1', 'center', 700));
       for (let i = 0; i < 2; i++) {
         const q = ((t * 0.6 + i * 0.5) % 1);
         g.globalAlpha = 1 - q;
@@ -609,10 +617,14 @@ export class Scene {
   }
 
   stageNeed(fi, j) { return project(this.funnels[fi]).need[j]; }
-  // A sleeping agent that should have run more than 5 minutes ago and has not reported since (an
+  // A sleeping agent that should have run more than 10 minutes ago and has not reported since (an
   // agent says set_agent_state(work) first thing in a run). Only a sign to check on it: its
   // schedule may have slipped, or it may have stopped.
-  overdue(a) { return this.live && a.state === 'sleep' && a.wakeAt != null && this.t - a.wakeAt > OVERDUE; }
+  overdue(a) { return this.live && a.state === 'sleep' && a.wakeAt != null && this.t - a.wakeAt > SILENT; }
+  // Seconds since the agent last said anything (live only; the demo's agents are never silent).
+  silence(a) { return this.live && a.seenAgo != null ? this.t + a.seenAgo : 0; }
+  // A working agent with no heartbeat for over 10 minutes: it may have stopped without saying so.
+  lost(a) { return a.state === 'work' && this.silence(a) > SILENT; }
   // Seconds until a sleeping agent's next run, or null.
   sleepLeft(a) { return a.state === 'sleep' && a.wakeAt != null ? a.wakeAt - this.t : null; }
   // Open questions in a funnel: from agents asking and agents that asked and went to sleep.
@@ -686,7 +698,9 @@ function fmtFlow(perDay, key) {
 
 const fmtEta = days => (days == null || !isFinite(days) ? '—' : '≈' + fmtDuration(days * 86400));
 
-const OVERDUE = 5 * 60;
+// One rule for silence: an agent heard from nothing for 10 minutes past when it should have spoken
+// (its next run, or its last heartbeat while working; agents send one at least every 5 minutes).
+const SILENT = 10 * 60;
 
 export { fmtDuration };
 

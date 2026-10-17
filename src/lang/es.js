@@ -70,6 +70,8 @@ export default {
   'board.whenRuns': 'cuando vuelva a ejecutarse',
   'board.overdue': (who) => `${who} no despertó a tiempo`,
   'board.missed': (late, seen) => `Su próxima ejecución debía empezar hace ${late}; la última señal fue hace ${seen}.`,
+  'board.lost': (who) => `${who} no da señales`,
+  'board.lostNote': (ago) => `Figura trabajando, pero su última señal fue hace ${ago}.`,
   'board.runs': 'Últimas ejecuciones',
   'board.runNow': 'en curso',
   'board.noRuns': 'Aún no hay ejecuciones registradas.',

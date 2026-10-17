@@ -71,6 +71,8 @@ export default {
   'board.whenRuns': '次に実行されるとき',
   'board.overdue': (who) => `${who} が予定どおりに起きませんでした`,
   'board.missed': (late, seen) => `次の実行は${late}前の予定でした。最後の連絡は${seen}前です。`,
+  'board.lost': (who) => `${who} から連絡がありません`,
+  'board.lostNote': (ago) => `作業中と表示されていますが、最後の信号は${ago}前です。`,
   'board.runs': '最近の実行',
   'board.runNow': '実行中',
   'board.noRuns': 'まだ実行の記録がありません。',

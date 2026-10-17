@@ -58,7 +58,7 @@ Only counts, dates and links are stored. Item lists (vacancies, people, papers) 
 | `agent` | `claude`, `chatgpt`, `grok`, `gemini`, `deepseek`, `kimi`, `qwen`, `mistral`, `perplexity`, `hermes`; sets shirt colour and logo. Any other name gets a plain grey shirt |
 | `funnel_id`, `zone` | Where the agent stands |
 | `state` | `work` (mining), `sleep` (waiting for its next scheduled run), `ask` (waiting for the person) |
-| `next_run_at` | For `sleep`: when it starts again; shown as a countdown. More than 5 minutes past it with no new state from the agent, the dashboard marks it as not woken up, so call `set_agent_state(work)` first thing in every run |
+| `next_run_at` | For `sleep`: when it starts again; shown as a countdown. More than 10 minutes past it with no new state from the agent, the dashboard marks it as not woken up, so call `set_agent_state(work)` first thing in every run |
 | `question` | For `ask`: what the agent needs from the person |
 | `question_id` | For `ask`: the open question; the person answers it on the dashboard |
 | `chat_url` | Link to the agent's chat or session |
@@ -94,7 +94,8 @@ Unless an agent set them by hand, flows and forecasts come from the count histor
 
 ## What an agent should do on every run
 
-1. First thing, before any other work: `set_agent_state(state: "work")` in the zone it works on (5 minutes past its `next_run_at` without it, the dashboard shows it as not woken up).
+1. First thing, before any other work: `set_agent_state(state: "work")` in the zone it works on (10 minutes past its `next_run_at` without it, the dashboard shows it as not woken up).
+   While it works, it repeats `set_agent_state(state: "work")` at least every 5 minutes as a heartbeat (the run's counter goes on); after 10 minutes without one the dashboard shows the person it lost contact.
 2. Do its job; after meaningful progress call `report_counts` (and `add_result` when a result appears).
 3. If it needs the person — approval, a missing file, a decision — `set_agent_state(state: "ask", question)` and poll `get_answer(question_id)`; the person answers on the dashboard. While the agent is in `ask` it stands waiting and takes the answer at once. If it goes to sleep before the answer comes, the question stays in a bubble over the sleeping agent and the dashboard tells the person the answer will be picked up only on the agent's next run; the agent calls `get_answer` then. With the answer in hand it always replies in one short line with `reply`; if it needs more from the person, it asks a new question (a new `!`). If the person answers in the agent's chat instead, the agent calls `close_question` so the `!` goes away.
 4. At the end: `set_agent_state(state: "sleep", next_run_at)` until its next scheduled run, or `clear_agent` if it has no schedule.
