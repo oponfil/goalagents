@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=2a3ddbe2';
-import vi from './lang/vi.js?v=2a3ddbe2';
-import ja from './lang/ja.js?v=2a3ddbe2';
+import es from './lang/es.js?v=5f83323d';
+import vi from './lang/vi.js?v=5f83323d';
+import ja from './lang/ja.js?v=5f83323d';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -229,11 +229,11 @@ const STRINGS = {
   'pricing.early': L('Early access', 'Ранний доступ', '抢先体验', 'ทดลองใช้ก่อนใคร'),
   'pricing.perMonth': L('per month, early-access price', 'в месяц, цена раннего доступа', '每月，早期价格', 'ต่อเดือน ราคาช่วงเปิดตัว'),
   'pricing.getPro': L('Get Pro', 'Подключить Pro', '开通 Pro', 'สมัคร Pro'),
-  'pricing.fine2': L('Payments go through Creem, our merchant of record. Cancel any time in the profile menu: Pro stays until the end of the month you paid for. When early access ends, Pro will cost $15 a month for new subscribers.', 'Оплата проходит через Creem, нашего платёжного партнёра. Отменить можно в любой момент в меню профиля: Pro остаётся до конца оплаченного месяца. После раннего доступа новые подписчики будут платить $15 в месяц.', '付款通过我们的销售方 Creem 完成。可随时在个人菜单中取消：Pro 保留到已付费月份结束。早期阶段结束后，新订阅为每月 $15。', 'ชำระเงินผ่าน Creem ผู้ขายของเรา ยกเลิกได้ทุกเมื่อในเมนูโปรไฟล์: Pro ใช้ได้จนจบเดือนที่จ่ายแล้ว เมื่อช่วงเปิดตัวจบ สมาชิกใหม่จะจ่ายเดือนละ $15'),
+  'pricing.fine2': L('Payments go through Polar, our merchant of record. Cancel any time in the profile menu: Pro stays until the end of the month you paid for. When early access ends, Pro will cost $15 a month for new subscribers.', 'Оплата проходит через Polar, нашего платёжного партнёра. Отменить можно в любой момент в меню профиля: Pro остаётся до конца оплаченного месяца. После раннего доступа новые подписчики будут платить $15 в месяц.', '付款通过我们的销售方 Polar 完成。可随时在个人菜单中取消：Pro 保留到已付费月份结束。早期阶段结束后，新订阅为每月 $15。', 'ชำระเงินผ่าน Polar ผู้ขายของเรา ยกเลิกได้ทุกเมื่อในเมนูโปรไฟล์: Pro ใช้ได้จนจบเดือนที่จ่ายแล้ว เมื่อช่วงเปิดตัวจบ สมาชิกใหม่จะจ่ายเดือนละ $15'),
 
   // Privacy
   'privacy.h1': L('Privacy', 'Конфиденциальность', '隐私', 'ความเป็นส่วนตัว'),
-  'privacy.updated': L('Last updated: 17 October 2026', 'Обновлено: 17 октября 2026', '最后更新：2026 年 10 月 17 日', 'อัปเดตล่าสุด: 17 ตุลาคม 2026'),
+  'privacy.updated': L('Last updated: 18 October 2026', 'Обновлено: 18 октября 2026', '最后更新：2026 年 10 月 18 日', 'อัปเดตล่าสุด: 18 ตุลาคม 2026'),
   'privacy.h.store': L('What we store', 'Что мы храним', '我们存储什么', 'เราเก็บอะไรบ้าง'),
   'privacy.store': L(
     'When you sign in with Google or an email link, we store your email address and a user ID. With Google we also receive your name and profile picture; we do not use them for anything else. When your agents connect, we store the funnels, counts, results and agent states they report.',
@@ -253,7 +253,7 @@ const STRINGS = {
     'Goalcraft 只向 Google 请求你的邮箱和基本资料。对从 Google API 获得的信息的使用遵循 <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>，包括 Limited Use 要求。',
     'Goalcraft ขอจาก Google เพียงอีเมลและโปรไฟล์พื้นฐาน การใช้ข้อมูลที่ได้รับจาก Google API เป็นไปตาม <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a> รวมถึงข้อกำหนด Limited Use'),
   'privacy.h.pay': L('Payments', 'Оплата', '付款', 'การชำระเงิน'),
-  'privacy.pay': L('If you buy Pro, Creem processes the payment as our merchant of record. We receive only your Creem customer ID and the state of your subscription, never your card details.', 'Если вы покупаете Pro, оплату проводит Creem, наш платёжный партнёр. Мы получаем только ваш номер клиента в Creem и состояние подписки, данные карты нам не передаются.', '如果你购买 Pro，付款由我们的销售方 Creem 处理。我们只会收到你在 Creem 的客户编号和订阅状态，不会收到银行卡信息。', 'หากคุณซื้อ Pro การชำระเงินจะดำเนินการโดย Creem ผู้ขายของเรา เราได้รับเพียงรหัสลูกค้า Creem และสถานะการสมัครของคุณ ไม่เคยได้รับข้อมูลบัตร'),
+  'privacy.pay': L('If you buy Pro, Polar processes the payment as our merchant of record. We receive only your Polar customer ID and the state of your subscription, never your card details.', 'Если вы покупаете Pro, оплату проводит Polar, наш платёжный партнёр. Мы получаем только ваш номер клиента в Polar и состояние подписки, данные карты нам не передаются.', '如果你购买 Pro，付款由我们的销售方 Polar 处理。我们只会收到你在 Polar 的客户编号和订阅状态，不会收到银行卡信息。', 'หากคุณซื้อ Pro การชำระเงินจะดำเนินการโดย Polar ผู้ขายของเรา เราได้รับเพียงรหัสลูกค้า Polar และสถานะการสมัครของคุณ ไม่เคยได้รับข้อมูลบัตร'),
   'privacy.h.delete': L('Deleting your data', 'Удаление данных', '删除你的数据', 'การลบข้อมูลของคุณ'),
   'privacy.delete': L(
     'Write to <a href="mailto:support@goalcraft.ai">support@goalcraft.ai</a> and we will delete your account and everything your agents reported.',
@@ -303,10 +303,10 @@ const STRINGS = {
     '套餐与付款',
     'แพ็กเกจและการชำระเงิน'),
   'terms.plans': L(
-    'The Free plan costs nothing. Pro costs $9 a month during early access; when early access ends, Pro will cost $15 a month for new subscribers, and your price stays the same while your subscription stays active. Payments are processed by Creem, our merchant of record, which also handles taxes and receipts; Creem\'s terms apply to the purchase itself. We never see your card details.',
-    'Тариф Free бесплатный. Pro стоит $9 в месяц в период раннего доступа; после него новые подписчики будут платить $15 в месяц, а ваша цена не изменится, пока подписка активна. Платежи проводит Creem, наш платёжный партнёр (merchant of record), он же отвечает за налоги и чеки; к самой покупке применяются условия Creem. Данные вашей карты мы никогда не видим.',
-    'Free 套餐免费。早期阶段 Pro 每月 $9；早期阶段结束后，新订阅为每月 $15，而只要你的订阅保持有效，你的价格不变。付款由我们的销售方（merchant of record）Creem 处理，Creem 同时负责税费和收据；购买本身适用 Creem 的条款。我们永远看不到你的银行卡信息。',
-    'แพ็กเกจ Free ไม่มีค่าใช้จ่าย Pro ราคาเดือนละ $9 ในช่วงเปิดตัว เมื่อช่วงเปิดตัวจบ สมาชิกใหม่จะจ่ายเดือนละ $15 ส่วนราคาของคุณจะคงเดิมตราบที่การสมัครยังใช้งานอยู่ การชำระเงินดำเนินการโดย Creem ผู้ขายของเรา (merchant of record) ซึ่งดูแลภาษีและใบเสร็จด้วย ข้อกำหนดของ Creem ใช้กับการซื้อนั้น เราไม่เคยเห็นข้อมูลบัตรของคุณ'),
+    'The Free plan costs nothing. Pro costs $9 a month during early access; when early access ends, Pro will cost $15 a month for new subscribers, and your price stays the same while your subscription stays active. Payments are processed by Polar, our merchant of record, which also handles taxes and receipts; Polar\'s terms apply to the purchase itself. We never see your card details.',
+    'Тариф Free бесплатный. Pro стоит $9 в месяц в период раннего доступа; после него новые подписчики будут платить $15 в месяц, а ваша цена не изменится, пока подписка активна. Платежи проводит Polar, наш платёжный партнёр (merchant of record), он же отвечает за налоги и чеки; к самой покупке применяются условия Polar. Данные вашей карты мы никогда не видим.',
+    'Free 套餐免费。早期阶段 Pro 每月 $9；早期阶段结束后，新订阅为每月 $15，而只要你的订阅保持有效，你的价格不变。付款由我们的销售方（merchant of record）Polar 处理，Polar 同时负责税费和收据；购买本身适用 Polar 的条款。我们永远看不到你的银行卡信息。',
+    'แพ็กเกจ Free ไม่มีค่าใช้จ่าย Pro ราคาเดือนละ $9 ในช่วงเปิดตัว เมื่อช่วงเปิดตัวจบ สมาชิกใหม่จะจ่ายเดือนละ $15 ส่วนราคาของคุณจะคงเดิมตราบที่การสมัครยังใช้งานอยู่ การชำระเงินดำเนินการโดย Polar ผู้ขายของเรา (merchant of record) ซึ่งดูแลภาษีและใบเสร็จด้วย ข้อกำหนดของ Polar ใช้กับการซื้อนั้น เราไม่เคยเห็นข้อมูลบัตรของคุณ'),
   'terms.plans2': L(
     'Pro renews every month until you cancel. You can cancel any time in the profile menu (Manage subscription); Pro then stays on until the end of the month you have paid for, and no further payments are taken. We do not refund partial months, but if something went wrong, write to us within 14 days of a payment and we will make it right. None of this limits the rights you have under consumer law.',
     'Pro продлевается каждый месяц, пока вы его не отмените. Отменить можно в любой момент в меню профиля («Управлять подпиской»); Pro останется до конца оплаченного месяца, и новых списаний не будет. За неполные месяцы деньги не возвращаются, но если что-то пошло не так, напишите нам в течение 14 дней после платежа, и мы всё исправим. Это не ограничивает ваши права по закону о защите прав потребителей.',

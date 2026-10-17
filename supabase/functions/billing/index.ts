@@ -1,15 +1,15 @@
-// Payments for Goalcraft Pro through Creem (the merchant of record: it takes the money, handles
+// Payments for Goalcraft Pro through Polar (the merchant of record: it takes the money, handles
 // taxes and sends the receipts). Three routes:
-//   POST /billing/checkout  a signed-in person starts paying: a Creem checkout link
+//   POST /billing/checkout  a signed-in person starts paying: a Polar checkout link
 //   POST /billing/portal    a paying person manages or cancels their subscription: a portal link
-//   POST /billing/webhook   Creem tells us what happened; this moves accounts.pro_until
-// Function secrets: CREEM_API_KEY, CREEM_WEBHOOK_SECRET (both from the Creem dashboard),
-// CREEM_PRODUCT_ID, and CREEM_API (https://test-api.creem.io/v1 in test mode,
-// https://api.creem.io/v1 live).
+//   POST /billing/webhook   Polar tells us what happened; this moves accounts.pro_until
+// Function secrets: POLAR_ACCESS_TOKEN (an organization access token), POLAR_WEBHOOK_SECRET (from
+// the webhook endpoint), POLAR_PRODUCT_ID, and POLAR_API (https://api.polar.sh/v1 by default,
+// https://sandbox-api.polar.sh/v1 for the sandbox).
 import { createClient } from 'npm:@supabase/supabase-js@2.117.2'
 
 const SITE = 'https://goalcraft.ai'
-const API = Deno.env.get('CREEM_API') ?? 'https://test-api.creem.io/v1'
+const API = Deno.env.get('POLAR_API') ?? 'https://api.polar.sh/v1'
 const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 const DAY = 86400e3
 
@@ -21,14 +21,14 @@ const cors = {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, 'content-type': 'application/json' } })
 
-async function creem(path: string, body: unknown) {
+async function polar(path: string, body: unknown) {
   const res = await fetch(API + path, {
     method: 'POST',
-    headers: { 'x-api-key': Deno.env.get('CREEM_API_KEY')!, 'content-type': 'application/json' },
+    headers: { authorization: `Bearer ${Deno.env.get('POLAR_ACCESS_TOKEN')}`, 'content-type': 'application/json' },
     body: JSON.stringify(body),
   })
   const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(`Creem ${path}: ${res.status} ${JSON.stringify(data).slice(0, 300)}`)
+  if (!res.ok) throw new Error(`Polar ${path}: ${res.status} ${JSON.stringify(data).slice(0, 300)}`)
   return data
 }
 
@@ -39,71 +39,74 @@ async function person(req: Request) {
   return data.user
 }
 
+// The Polar customer is tied to our user id (external_customer_id), so the webhook and the portal
+// find the person without anything stored first.
 async function checkout(req: Request) {
   const user = await person(req)
   if (!user) return json({ error: 'sign_in' }, 401)
-  const session = await creem('/checkouts', {
-    product_id: Deno.env.get('CREEM_PRODUCT_ID'),
-    request_id: user.id,
-    customer: { email: user.email },
+  const session = await polar('/checkouts/', {
+    products: [Deno.env.get('POLAR_PRODUCT_ID')],
+    external_customer_id: user.id,
+    customer_email: user.email,
     success_url: `${SITE}/app/?pro=1`,
     metadata: { user_id: user.id },
   })
-  return json({ url: session.checkout_url })
+  return json({ url: session.url })
 }
 
 async function portal(req: Request) {
   const user = await person(req)
   if (!user) return json({ error: 'sign_in' }, 401)
-  const { data } = await admin.from('accounts').select('creem_customer_id').eq('user_id', user.id).maybeSingle()
-  if (!data?.creem_customer_id) return json({ error: 'no_subscription' }, 404)
-  const res = await creem('/customers/billing', { customer_id: data.creem_customer_id })
-  return json({ url: res.customer_portal_link })
+  const { data } = await admin.from('accounts').select('customer_id').eq('user_id', user.id).maybeSingle()
+  if (!data?.customer_id) return json({ error: 'no_subscription' }, 404)
+  const res = await polar('/customer-sessions/', { customer_id: data.customer_id, return_url: `${SITE}/app/` })
+  return json({ url: res.customer_portal_url })
 }
 
-// Creem signs the raw body with HMAC-SHA256 and the webhook secret, hex in creem-signature.
-async function signed(body: string, signature: string | null) {
-  if (!signature) return false
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(Deno.env.get('CREEM_WEBHOOK_SECRET')!),
+// Standard Webhooks, as Polar sends them: webhook-signature holds "v1,<base64>" entries, each an
+// HMAC-SHA256 of "<webhook-id>.<webhook-timestamp>.<body>" keyed with the secret's own bytes.
+// Older than five minutes is refused, so a recorded request can't be played back later.
+async function signed(req: Request, body: string) {
+  const id = req.headers.get('webhook-id'), ts = req.headers.get('webhook-timestamp'), sig = req.headers.get('webhook-signature')
+  if (!id || !ts || !sig || Math.abs(Date.now() / 1000 - Number(ts)) > 300) return false
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(Deno.env.get('POLAR_WEBHOOK_SECRET')!),
     { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
-  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(body)))
-  const hex = [...mac].map(b => b.toString(16).padStart(2, '0')).join('')
-  if (hex.length !== signature.length) return false
-  let diff = 0
-  for (let i = 0; i < hex.length; i++) diff |= hex.charCodeAt(i) ^ signature.charCodeAt(i)
-  return diff === 0
+  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${id}.${ts}.${body}`)))
+  const expected = btoa(String.fromCharCode(...mac))
+  return sig.split(' ').some(part => {
+    const value = part.split(',')[1] ?? ''
+    if (value.length !== expected.length) return false
+    let diff = 0
+    for (let i = 0; i < value.length; i++) diff |= value.charCodeAt(i) ^ expected.charCodeAt(i)
+    return diff === 0
+  })
 }
 
 async function webhook(req: Request) {
   const body = await req.text()
-  if (!(await signed(body, req.headers.get('creem-signature')))) return json({ error: 'bad_signature' }, 401)
-  const event = JSON.parse(body), type: string = event.eventType, o = event.object ?? {}
-  const customer: string | undefined = typeof o.customer === 'string' ? o.customer : o.customer?.id
-  const subscription: string | undefined = o.object === 'subscription' ? o.id : o.subscription?.id
-  // Whose account: the user id we put in the checkout's metadata, else the Creem customer we stored.
-  let userId: string | undefined = o.metadata?.user_id ?? o.subscription?.metadata?.user_id
-  if (!userId && customer) {
-    const { data } = await admin.from('accounts').select('user_id').eq('creem_customer_id', customer).maybeSingle()
-    userId = data?.user_id
-  }
+  if (!(await signed(req, body))) return json({ error: 'bad_signature' }, 401)
+  const event = JSON.parse(body), type: string = event.type, o = event.data ?? {}
+  // Only subscriptions move Pro: each of their events carries the whole subscription.
+  if (!type.startsWith('subscription.')) return json({ ignored: type })
+  const userId: string | undefined = o.customer?.external_id ?? o.metadata?.user_id
   if (!userId) return json({ ignored: type })
 
   const { data: account } = await admin.from('accounts').select('pro_until').eq('user_id', userId).maybeSingle()
   const until = account?.pro_until ? Date.parse(account.pro_until) : 0
-  const periodEnd = o.current_period_end_date ? Date.parse(o.current_period_end_date) : 0
-  const change: Record<string, unknown> = { subscription_status: o.object === 'subscription' ? o.status : type.split('.')[1] }
-  if (customer) change.creem_customer_id = customer
-  if (subscription) change.creem_subscription_id = subscription
-
-  const paid = ['checkout.completed', 'subscription.active', 'subscription.paid'].includes(type) || (type === 'subscription.update' && o.status === 'active')
-  if (paid) {
+  const periodEnd = o.current_period_end ? Date.parse(o.current_period_end) : 0
+  const change: Record<string, unknown> = {
+    subscription_status: o.cancel_at_period_end && o.status === 'active' ? 'canceled' : o.status,
+    customer_id: o.customer_id ?? o.customer?.id,
+    subscription_id: o.id,
+  }
+  if (o.status === 'active') {
     // Paid: Pro through the paid period plus two days of slack for the next charge, never less
     // than what the person already had (an early-access year, say).
     const paidTo = periodEnd ? periodEnd + 2 * DAY : Date.now() + 33 * DAY
-    Object.assign(change, { plan: 'pro', pro_until: new Date(Math.max(until, paidTo)).toISOString(), subscription_status: 'active' })
+    Object.assign(change, { plan: 'pro', pro_until: new Date(Math.max(until, paidTo)).toISOString() })
   }
-  // Cancelled, expired or unpaid: only the status changes. pro_until already ends with the last
-  // paid month (plus the slack), so Pro lapses on its own, and time granted otherwise is kept.
+  // Cancelled, ended or unpaid: only the status changes. pro_until already ends with the last paid
+  // month (plus the slack), so Pro lapses on its own, and time granted otherwise is kept.
   const { error } = await admin.from('accounts').update(change).eq('user_id', userId)
   if (error) return json({ error: error.message }, 500)
   return json({ ok: type })
