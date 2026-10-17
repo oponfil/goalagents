@@ -1,8 +1,8 @@
 // The dashboard page around the scene: sticky funnel titles, drag to reorder, popups.
 // Shared by the demo (src/main.js) and the person's own funnels (src/live.js).
-import { agentInfo, agentButton, chatLink, plural } from './data.js?v=2c98be8d';
-import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=2c98be8d';
-import { t, lang } from './i18n.js?v=2c98be8d';
+import { agentInfo, agentButton, chatLink, plural } from './data.js?v=766f130b';
+import { Scene, CW, fmtCount, fmtDuration } from './scene.js?v=766f130b';
+import { t, lang } from './i18n.js?v=766f130b';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Web chats open in a new tab; app links (claude://, codex://) hand over to the app without an
@@ -166,19 +166,32 @@ export function mountDashboard(funnels, opts = {}) {
   canvas.addEventListener('pointermove', e => {
     const h = scene.hitTest(...toLogical(e));
     canvas.style.cursor = h && h.type !== 'stage' ? 'pointer' : 'default';
-    // A tank shows only its number and flow; what it holds pops up on hover.
-    if (h?.type !== 'stage' || e.pointerType === 'touch') return (tip.hidden = true);
+    // A tank shows only its number and flow; what it holds pops up on hover. The sheet on top says
+    // where the list it opens is kept.
+    if (!['stage', 'source'].includes(h?.type) || e.pointerType === 'touch') return (tip.hidden = true);
     showTip(e, h);
   });
   let tipTimer;
   function showTip(e, h) {
-    const s = scene.funnels[h.fi].stages[h.j], label = plural(s.count, s.forms);
-    tip.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    if (h.type === 'source') tip.textContent = t('board.sheet', sheetPlace(h.url));
+    else {
+      const s = scene.funnels[h.fi].stages[h.j], label = plural(s.count, s.forms);
+      tip.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    }
     tip.hidden = false;
     tip.style.left = Math.max(8, Math.min(window.innerWidth - tip.offsetWidth - 8, e.clientX + 14)) + 'px';
     tip.style.top = e.clientY + 18 + 'px';
   }
   canvas.addEventListener('pointerleave', () => { tip.hidden = true; });
+  // The service a list link leads to, by its address; any other site by its own name.
+  function sheetPlace(url) {
+    let host;
+    try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { return url; }
+    const known = [['docs.google.com', 'Google Sheets'], ['notion.so', 'Notion'], ['notion.site', 'Notion'], ['airtable.com', 'Airtable'],
+      ['github.com', 'GitHub'], ['gitlab.com', 'GitLab'], ['trello.com', 'Trello'], ['coda.io', 'Coda'], ['clickup.com', 'ClickUp'],
+      ['onedrive.live.com', 'Excel'], ['sharepoint.com', 'Excel'], ['dropbox.com', 'Dropbox']];
+    return known.find(([d]) => host === d || host.endsWith('.' + d))?.[1] ?? host;
+  }
 
   canvas.addEventListener('click', e => {
     const h = scene.hitTest(...toLogical(e));
@@ -252,7 +265,7 @@ export function mountDashboard(funnels, opts = {}) {
       list.textContent = '…';
       try {
         const rows = await opts.runs(a);
-        const st = a.f.stages, when = new Intl.DateTimeFormat(lang, { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+        const st = a.f.stages, when = new Intl.DateTimeFormat(lang, { hour: '2-digit', minute: '2-digit' });
         list.innerHTML = rows.length ? rows.map(r => {
           const into = r.zone < st.length ? st[r.zone].forms : a.f.result;
           const took = r.ended_at ? fmtDuration((Date.parse(r.ended_at) - Date.parse(r.started_at)) / 1000) : t('board.runNow');

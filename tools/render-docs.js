@@ -1,10 +1,10 @@
 // Renders the README pictures (agents sheet, theme samples, the board) and the link preview card from the same drawing code as
 // the dashboard and saves them through serve.py: open http://localhost:5173/tools/render-docs.html
 // (always in English: the page adds ?lang=en to itself).
-import { AGENTS, FUNNELS } from '../src/data.js?v=2c98be8d';
-import { Scene, CW, H } from '../src/scene.js?v=2c98be8d';
-import { THEMES } from '../src/themes.js?v=2c98be8d';
-import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=2c98be8d';
+import { AGENTS, FUNNELS } from '../src/data.js?v=766f130b';
+import { Scene, CW } from '../src/scene.js?v=766f130b';
+import { THEMES } from '../src/themes.js?v=766f130b';
+import { drawStanding, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp } from '../src/sprites.js?v=766f130b';
 
 const FONT = 'Rubik, system-ui, sans-serif';
 
@@ -105,60 +105,28 @@ function themesSheet() {
   return c;
 }
 
-// The dashboard itself: the first four funnels (without Dating) after a short run of the demo, so tanks have
-// moved and agents are mid-action.
-// The first columns of the demo as the dashboard shows them: titles on their column's backdrop
-// (with the red badge of agents waiting), then the scene after 12 seconds of simulated time.
-function overview() {
-  const scale = 2, dpr = 2, cols = 4, K = scale * dpr, TH = 22;
-  // The Dating funnel stays in the live demo but out of the pictures.
-  const scene = new Scene(document.createElement('canvas'), FUNNELS.filter(f => f.theme !== 'love'));
-  scene.resize(scale, dpr);
-  for (let i = 0; i < 12 * 30; i++) { scene.update(1 / 30); scene.render(); }
-  scene.render();
-  const src = scene.canvas, w = Math.round(src.width * cols / scene.funnels.length);
-  const [c, g] = canvas(w, TH * K + src.height);
-  g.drawImage(src, 0, 0, w, src.height, 0, TH * K, w, src.height);
-  for (let fi = 0; fi < cols; fi++) {
-    const f = scene.funnels[fi], x = fi * CW * K, cx = x + CW * K / 2, cy = TH * K / 2;
-    g.drawImage(scene.titleStrip(fi, TH), x, 0, CW * K, TH * K);
-    g.font = `600 ${19 * dpr}px ${FONT}`;
-    g.textAlign = 'center'; g.textBaseline = 'middle';
-    const waiting = scene.waitingFor(f), tw = g.measureText(f.title).width, bw = waiting ? 28 * dpr : 0;
-    g.shadowColor = 'rgba(0,0,0,0.8)'; g.shadowBlur = 6 * dpr; g.shadowOffsetY = dpr;
-    g.fillStyle = '#F4EDE1'; g.fillText(f.title, cx - bw / 2, cy);
-    g.shadowColor = 'transparent';
-    if (waiting) {
-      const bx = cx - bw / 2 + tw / 2 + 8 * dpr + 10 * dpr;
-      g.fillStyle = '#FF6B5E'; g.beginPath(); g.arc(bx, cy, 10 * dpr, 0, Math.PI * 2); g.fill();
-      g.font = `600 ${13 * dpr}px ${FONT}`; g.fillStyle = '#FFFFFF'; g.fillText(String(waiting), bx, cy + dpr / 2);
-    }
-  }
-  return c;
-}
-
-// The link preview card (Open Graph, 1200×630): name and tagline on the left, three funnels of the
-// board on the right.
-async function ogCard(board) {
+// The link preview card (Open Graph, 1200×630), as Telegram and others show it: name and tagline on
+// the left, one big miner with a pickaxe on the right, facing them.
+async function ogCard() {
   const [c, g] = canvas(1200, 630);
   g.fillStyle = '#1B1714'; g.fillRect(0, 0, 1200, 630);
-  // Three whole funnels, top to bottom, on the right.
-  const sw = board.width * 3 / 4, sh = board.height, dh = 630, dw = Math.round(sw * dh / sh);
-  g.drawImage(board, 0, 0, sw, sh, 1200 - dw, 0, dw, dh);
-  g.fillStyle = '#4A3F35'; g.fillRect(1200 - dw - 4, 0, 4, 630);
+  // One miner with a pickaxe, big, facing left toward the name: drawn as on the board and mirrored.
+  const K = 12;
+  g.setTransform(-K, 0, 0, K, 1110, 25);
+  drawStanding(g, 2, 11, 'claude', AGENTS.claude.color, -1, false, true, THEMES.mine.outfit);
+  drawPickaxe(g, 18.5, 25, -0.9);
+  g.setTransform(1, 0, 0, 1, 0, 0);
   const logo = new Image();
   await new Promise(r => { logo.onload = r; logo.src = '/favicon.svg'; });
   g.imageSmoothingEnabled = false;
-  g.drawImage(logo, 46, 210, 62, 62);
+  g.drawImage(logo, 46, 196, 92, 92);
   g.textBaseline = 'alphabetic'; g.textAlign = 'left';
-  g.font = `700 60px ${FONT}`;
-  g.fillStyle = '#F4EDE1'; g.fillText('Goal', 120, 264);
-  g.fillStyle = '#F2C14E'; g.fillText('Agents', 120 + g.measureText('Goal').width, 264);
-  g.font = `500 28px ${FONT}`; g.fillStyle = '#F4EDE1';
-  g.fillText('AI agents work your long goals.', 48, 336);
-  g.fillText('You see the whole funnel.', 48, 374);
-  g.font = `600 26px ${FONT}`; g.fillStyle = '#F2C14E';
-  g.fillText('goalagents.run', 48, 446);
+  g.font = `700 90px ${FONT}`;
+  g.fillStyle = '#F4EDE1'; g.fillText('Goal', 156, 274);
+  g.fillStyle = '#F2C14E'; g.fillText('Agents', 156 + g.measureText('Goal').width, 274);
+  g.font = `500 40px ${FONT}`; g.fillStyle = '#F4EDE1';
+  g.fillText('AI agents work your long goals.', 50, 370);
+  g.fillText('You see the whole funnel.', 50, 422);
   return c;
 }
 
@@ -257,7 +225,11 @@ function funnelGuide({ labels = true } = {}) {
 const status = document.getElementById('status');
 try {
   await document.fonts.ready;
-  // ?only=funnel renders just the funnel guide, leaving the other pictures as they are.
+  // ?only=og renders just the link preview card; ?only=funnel just the funnel guide.
+  if (new URLSearchParams(location.search).get('only') === 'og') {
+    await save(await ogCard(), 'og.png');
+    throw Object.assign(new Error(), { done: 'Saved docs/img/og.png' });
+  }
   if (new URLSearchParams(location.search).get('only') === 'funnel') {
     await save(funnelGuide(), 'funnel.png');
     const plain = funnelGuide({ labels: false });
@@ -266,9 +238,7 @@ try {
   }
   await save(agentsSheet(), 'agents.png');
   await save(themesSheet(), 'themes.png');
-  // The board itself only feeds the link preview card.
-  const board = overview();
-  await save(await ogCard(board), 'og.png');
+  await save(await ogCard(), 'og.png');
   await save(funnelGuide(), 'funnel.png');
   await save(funnelGuide({ labels: false }), 'funnel-plain.png');
   status.textContent = 'Saved docs/img/agents.png, themes.png, og.png, funnel.png and funnel-plain.png';

@@ -6,9 +6,9 @@
 // Static pages mark text with data-i18n="key" (text), data-i18n-html="key" (text with links) and
 // data-i18n-attr="placeholder:key; title:key"; scripts call t(key, …args).
 
-import es from './lang/es.js?v=2c98be8d';
-import vi from './lang/vi.js?v=2c98be8d';
-import ja from './lang/ja.js?v=2c98be8d';
+import es from './lang/es.js?v=766f130b';
+import vi from './lang/vi.js?v=766f130b';
+import ja from './lang/ja.js?v=766f130b';
 
 export const LANGS = { en: 'English', ru: 'Русский', es: 'Español', zh: '中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt' };
 export const SHORT = { en: 'EN', ru: 'RU', es: 'ES', zh: '中文', ja: 'JA', th: 'ไทย', vi: 'VI' };
@@ -165,7 +165,7 @@ const STRINGS = {
     (late, seen) => `รอบถัดไปควรเริ่มเมื่อ ${late}ที่แล้ว ติดต่อครั้งล่าสุดเมื่อ ${seen}ที่แล้ว`),
   'board.lost': L((who) => `No word from ${who}`, (who) => `${who} не выходит на связь`, (who) => `${who} 没有消息`, (who) => `ไม่มีสัญญาณจาก ${who}`),
   'board.lostNote': L((ago) => `It is shown at work, but its last signal was ${ago} ago.`, (ago) => `Он числится за работой, но последний сигнал был ${ago} назад.`, (ago) => `它显示为工作中，但最后一次信号是 ${ago}前。`, (ago) => `แสดงว่ากำลังทำงาน แต่สัญญาณล่าสุดคือ ${ago}ที่แล้ว`),
-  'board.runs': L('Last runs', 'Последние запуски', '最近的运行', 'การรันล่าสุด'),
+  'board.runs': L('Previous runs', 'Предыдущие запуски', '之前的运行', 'การรันก่อนหน้า'),
   'board.runNow': L('running', 'идёт', '进行中', 'กำลังรัน'),
   'board.noRuns': L('No runs recorded yet.', 'Запусков пока не записано.', '还没有记录到运行。', 'ยังไม่มีการรันที่บันทึกไว้'),
   'board.runsFailed': L('Could not load the runs.', 'Не удалось загрузить запуски.', '无法加载运行记录。', 'โหลดการรันไม่สำเร็จ'),
@@ -177,6 +177,7 @@ const STRINGS = {
   'board.replyIn': L((who) => `Reply in ${who}`, (who) => `Ответить в ${who}`, (who) => `在 ${who} 中回复`, (who) => `ตอบใน ${who}`),
   'board.answer': L('Your answer', 'Ваш ответ', '你的回复', 'คำตอบของคุณ'),
   'board.send': L('Send answer', 'Отправить ответ', '发送回复', 'ส่งคำตอบ'),
+  'board.sheet': L((where) => `Open the list in ${where}`, (where) => `Открыть список в ${where}`, (where) => `在 ${where} 中打开列表`, (where) => `เปิดรายการใน ${where}`),
   'board.close': L('Close', 'Закрыть', '关闭', 'ปิด'),
   'board.goalReached': L('goal reached ✓', 'цель достигнута ✓', '目标已达成 ✓', 'ถึงเป้าหมายแล้ว ✓'),
   'board.goal': L((total, every) => `goal: ${total}, 1 per ${every}`, (total, every) => `цель: ${total}, 1 за ${every}`, (total, every) => `目标：${total}，每 ${every} 1 个`, (total, every) => `เป้าหมาย: ${total}, 1 ต่อ ${every}`),

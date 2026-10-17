@@ -1,7 +1,7 @@
-import { agentInfo, plural } from './data.js?v=2c98be8d';
-import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=2c98be8d';
-import { themeOf } from './themes.js?v=2c98be8d';
-import { t as tr, lang, fmtDuration } from './i18n.js?v=2c98be8d';
+import { agentInfo, plural } from './data.js?v=766f130b';
+import { drawStanding, drawLying, drawPickaxe, drawShears, drawBeaker, drawBow, drawArrow, drawLaptop, drawStamp, drawBubble, BUBBLE_STEP, line, P, MINER_H } from './sprites.js?v=766f130b';
+import { themeOf } from './themes.js?v=766f130b';
+import { t as tr, lang, fmtDuration } from './i18n.js?v=766f130b';
 
 // Logical (pixel-art) layout of one funnel column. Funnels have 2-5 tanks with a mining zone above
 // each tank and one more below the last (the output zone, where results come out into flasks).
@@ -20,14 +20,14 @@ export const sceneHeight = funnels => Math.max(H, ...funnels.map(f =>
   flasksY(f.stages.length) + Math.ceil(slots(f) / PER_ROW) * 22 + 52));
 // Result items under a funnel: one per result the goal needs, and more once agents go past it.
 const slots = f => Math.max(f.goal?.total || 0, f.cubes || 0);
-// The tanks make one funnel: each is a trapezoid from its own width at the top to the next one's
-// at the bottom, 184 wide at the top of the funnel and 72 at the last tank, whatever their number.
-// The last one narrows to 34, a little wider than the work piece under it.
-const tankW = (j, n) => Math.round((184 - (n > 1 ? j * 112 / (n - 1) : 0)) / 2) * 2;
+// The tanks make one funnel: their sides lie on two straight lines, from 184 wide at the top of the
+// first tank to 26 at the bottom of the last, as wide as the work piece under it, so the
+// gaps between the tanks cut one funnel. The angle follows the number of stages.
 const tankHalf = (j, n, r) => {
-  const top = tankW(j, n) / 2, bot = j + 1 < n ? tankW(j + 1, n) / 2 : 17;
-  return Math.round(top + (bot - top) * r / (LH - 1));
+  const y = j * (LH + ZH) + r, span = (n - 1) * (LH + ZH) + LH - 1;
+  return Math.round(92 - 79 * y / span);
 };
+const tankW = (j, n) => tankHalf(j, n, 0) * 2;
 // The work piece in each zone (ore rock, flower bed…) sits on the pipe right above the tank below;
 // agents stand on the tank's top edge as on a floor.
 const PLATE_H = 11;
@@ -467,8 +467,9 @@ export class Scene {
       g.fillText(s, x * S, y * S);
     };
     const shadowed = fn => { g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowOffsetY = S * 0.6; fn(); g.shadowColor = 'transparent'; g.shadowOffsetY = 0; };
-    // An amber warning triangle with a time in it: an agent overdue or out of contact.
-    const warn = (text, cx, base) => {
+    // An amber warning triangle with a time in it: an agent overdue or out of contact. A click on it
+    // opens the agent, as a click on the agent does.
+    const warn = (a, text, cx, base) => {
       g.font = `700 ${7 * S}px ${FONT}`;
       const tw = g.measureText(text).width / S, h = 17, half = Math.max(12, tw / 2 + 7);
       g.beginPath();
@@ -477,12 +478,13 @@ export class Scene {
       g.lineJoin = 'round'; g.lineWidth = 1.6 * S; g.strokeStyle = '#1B1714'; g.fillStyle = '#F2A33C';
       g.fill(); g.stroke();
       T(text, cx, base - 4.2, 7, '#1B1714', 'center', 700);
+      this.hits.push({ x: cx - half - 2, y: base - h - 2, w: half * 2 + 4, h: h + 4, type: 'agent', a });
     };
     // Working, but silent for too long: the same triangle over its head, with how long it has been.
     for (const a of this.agents) {
       if (!this.lost(a)) continue;
       const p = this.spot(a, 'work');
-      warn(fmtDuration(this.silence(a)), p.x + 10, p.y - 4);
+      warn(a, fmtDuration(this.silence(a)), p.x + 10, p.y - 4);
     }
     const unit = PERIODS[this.period];
     this.funnels.forEach((f, fi) => {
@@ -520,7 +522,7 @@ export class Scene {
       const p = this.spot(a, 'rest');
       // Past its next run and still no word from it: how late it is, in an amber warning triangle,
       // instead of the timer.
-      if (this.overdue(a)) warn(fmtDuration(t - a.wakeAt), p.x + 14, p.y - 3);
+      if (this.overdue(a)) warn(a, fmtDuration(t - a.wakeAt), p.x + 14, p.y - 3);
       else if (a.wakeAt != null) shadowed(() => T(fmtTimer(a.wakeAt - t), p.x + 14, p.y - 8, 8.5, '#F4EDE1', 'center', 700));
       for (let i = 0; i < 2; i++) {
         const q = ((t * 0.6 + i * 0.5) % 1);
